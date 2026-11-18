@@ -11,6 +11,21 @@
   const btn=root.querySelector('[data-wonder-submit]');
   const feedback=root.querySelector('[data-wonder-feedback]');
   const recheck=root.querySelector('[data-wonder-recheck]');
+  const allInquiry=root.querySelector('#bw13-inquiry-all');
+  const requiredInquiry=root.querySelector('#bw13-inquiry-required');
+  const countInquiry=root.querySelector('#bw13-inquiry-count');
+  const inquiryConsents=Array.from(form.querySelectorAll('input[data-bw13-inquiry]'));
+  function syncInquiryConsent(){
+    const n=inquiryConsents.filter(x=>x.checked).length;
+    allInquiry.checked=n===inquiryConsents.length;
+    allInquiry.indeterminate=n>0 && n<inquiryConsents.length;
+    countInquiry.textContent='총 '+n+'/3개 선택';
+  }
+  allInquiry.addEventListener('change',()=>{inquiryConsents.forEach(x=>x.checked=allInquiry.checked);syncInquiryConsent();});
+  requiredInquiry.addEventListener('click',()=>{inquiryConsents.forEach(x=>x.checked=x.dataset.consentType==='required');syncInquiryConsent();});
+  inquiryConsents.forEach(x=>x.addEventListener('change',syncInquiryConsent));
+  syncInquiryConsent();
+
   const config=window.BRIDGE_WONDER_CONTACT_CONFIG || {};
   const api=String(config.webAppUrl||'').trim();
   const validEndpoint=/^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(api);
@@ -49,6 +64,7 @@
     setBusy(false);
     recheck.hidden=true;
     form.reset();
+    syncInquiryConsent();
     if(window.sessionStorage) {
       try{sessionStorage.removeItem('bw_last_inquiry_id');}catch(_){}
     }

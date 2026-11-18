@@ -882,3 +882,57 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid #b7
  .enroll-submit-row{flex-direction:column;align-items:stretch}.enroll-submit-row .btn{width:100%}
 }
 @media(prefers-reduced-motion:reduce){.enroll-panel,.enroll-submit-row .btn{transition:none!important}}
+
+/* V12 · legally relevant contract disclosure, restrained editorial language */
+.enroll-contract-summary{margin:32px 0 8px;padding:24px 25px;background:#f6f8f3;border:1px solid #dae3d7;border-radius:17px}
+.enroll-contract-summary h3{font-size:18px;letter-spacing:-.03em;color:#354e39;margin:0 0 8px}
+.enroll-contract-summary>p{font-size:13px;color:#5c6c5e;margin:0 0 19px;line-height:1.9}
+.enroll-contract-summary ol{padding-left:24px;margin:0;display:grid;gap:14px}
+.enroll-contract-summary li{font-size:13px;line-height:1.9;color:#4b594c;padding-left:4px;overflow-wrap:anywhere}
+.enroll-contract-summary li strong{font-weight:750;color:#354e39}
+.enroll-contract-summary .caption{margin:20px 0 0;border-top:1px solid #dfe6da;padding-top:16px;font-size:12px}
+@media(max-width:650px){.enroll-contract-summary{padding:20px 16px}.enroll-contract-summary ol{gap:14px;padding-left:20px}.enroll-contract-summary li{font-size:12px}}
+
+/* V13 | consent hierarchy and accessible selection controls */
+.consent-intro{margin:11px 0 20px;line-height:1.9!important;color:#56685b!important}
+.consent-intro strong{color:#344d3a;font-weight:700}
+.consent-toolbar{border:1px solid #cbd9cc;border-radius:17px;background:#f5f8f2;overflow:hidden;margin:22px 0 24px}
+.consent-all-control{display:flex;align-items:center;gap:14px;padding:17px 20px;cursor:pointer;min-height:76px}
+.consent-all-control input{width:23px;height:23px;flex:none;accent-color:#3d6446;cursor:pointer}
+.consent-all-control span{flex:1;min-width:0}
+.consent-all-control strong{display:block;font-size:17px;font-weight:790;color:#344f3c;line-height:1.4}
+.consent-all-control small{display:block;font-size:12px;line-height:1.8;color:#617464;margin-top:4px}
+.consent-tools{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;border-top:1px solid #dce7dc;padding:11px 18px}
+.consent-required-only{padding:10px 14px;min-height:42px;border:1px solid #b8cbbd;background:#fff;color:#3c5b43;border-radius:10px;font-size:12px;font-weight:730;cursor:pointer}
+.consent-required-only:hover,.consent-required-only:focus-visible{background:#ecf3eb;border-color:#769980}
+.consent-count{font-size:12px;color:#526c5a;font-weight:650}
+.consent-section-title{display:flex;align-items:center;gap:12px;justify-content:space-between;border-bottom:1px solid #dde7dc;padding:5px 0 13px;margin:23px 0 0}
+.consent-section-title h3{font-size:16px;color:#3f5b46;font-weight:760;margin:0}
+.consent-section-title>span{font-size:11px;font-weight:750;color:#637966;background:#ebf2e9;border-radius:999px;padding:5px 11px}
+.consent-section-title.is-optional{margin-top:30px}
+.consent-section-title.is-optional>span{background:#f2ede3;color:#7b6e55}
+.consent-kind{display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-style:normal;line-height:1;letter-spacing:0;font-weight:730;min-height:21px;min-width:36px;border-radius:5px;vertical-align:1px;margin-right:7px;padding:4px 6px}
+.consent-kind.is-required{background:#e5eee4;color:#3c6248}
+.consent-kind.is-optional{background:#f4eadb;color:#785e3c}
+.consent-optional-note{margin:14px 0 3px!important;color:#5e705f!important}
+.consent-optional-footnote{font-size:12px;line-height:1.9;color:#687769;margin:17px 0 9px}
+.consent-optional-footnote a{color:#3c6445;text-decoration:underline;text-underline-offset:3px}
+.enroll-consents .wonder-consent-label{padding:18px 8px;border-radius:8px;margin:1px 0;transition:background-color .16s ease}
+.enroll-consents .wonder-consent-label:hover{background:#f8faf5}
+.enroll-consents .wonder-consent-label:has(input:focus-visible){outline:2px solid #719c73;outline-offset:3px}
+.enroll-consents .wonder-consent-label input{width:21px;height:21px;margin-top:3px}
+.enroll-consents .wonder-consent-label strong{font-size:14px;line-height:1.65;font-weight:760}
+.enroll-consents .wonder-consent-label small{color:#657669;font-size:12px;line-height:1.82}
+@media(max-width:680px){
+ .consent-toolbar{margin:16px 0 22px;border-radius:14px}
+ .consent-all-control{padding:14px 13px;gap:10px}
+ .consent-all-control strong{font-size:15px}
+ .consent-all-control small{font-size:11px}
+ .consent-tools{padding:10px 12px}
+ .consent-count{font-size:11px}
+ .consent-section-title h3{font-size:14px}
+ .enroll-consents .wonder-consent-label{padding:17px 2px;gap:11px}
+ .enroll-consents .wonder-consent-label input{width:20px;height:20px}
+ .enroll-consents .wonder-consent-label strong{font-size:12px}
+ .enroll-consents .wonder-consent-label small{font-size:11px}
+}

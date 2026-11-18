@@ -1,0 +1,19 @@
+{
+  "v12_graphics_sha256": {
+    "assets/img/snowy.webp": "836a748008d805e33813ccdcdc75a6540b38cd74f59bec64758791bea737a766",
+    "assets/img/colors.webp": "411eb53195160cddb83c128a79a2c82ab4730c8cfeb34eabc4d42efbbf0ad569",
+    "assets/img/bridge-wonder-og.png": "c8e99b11c0afd2ef7dd46ed99cfb51887efc5c3315b3cef4dc1d726a683cf4e8",
+    "assets/img/story-book.webp": "990f29f12b6892baa3818eb003d2bc84f64495855c25d48eee1030a77f505bb9",
+    "assets/img/brand-mark.png": "b1e52bfd1cd1394edf5ad33c44d8a59029de3924120ef960ebd8b5de65174f5a",
+    "assets/img/teddy.webp": "f6874b77ab0a29bc12409156020578358defeacbe6ca97847a3c06c7ffdb8258",
+    "assets/img/bridge-academy-official-logo.webp": "457b778dd299d8380765b878af0e577448aa56a77f29fe035300e69e9b6bec88",
+    "assets/img/favicon.png": "0f4b7bf08da95c8f420650b446eb90eca31c5b502ffca339823c38b1503fa9bb",
+    "assets/img/welcome.webp": "07def71ed8c4fcc5ff02ec23b6d7a035c1385ffb7eb9288f7ed145303c96ebf0",
+    "assets/img/bridge-wonder-logo.png": "6ce4739718bbf8c6be71280c22a6fd5add25e40f3bd3331d284c997bb5a92963"
+  },
+  "v14_images_match_v12": true,
+  "base_v12_css_length": 100202,
+  "v13_consent_css_length": 3580,
+  "backend_functional_version": "BW-CONSENT-2026-11-18-V13",
+  "site_version": "14.0"
+}
