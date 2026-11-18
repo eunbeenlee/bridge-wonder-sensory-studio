@@ -766,3 +766,119 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid #b7
 
 /* V10 — operational forms, generous spacing, accessible interaction */
 .registration-section{background:#f8f3e9}.registration-caveat{background:#fffaf1;border:1px solid var(--line);border-radius:18px;padding:20px 25px;margin:0 0 28px;max-width:900px}.registration-caveat p{margin:4px 0 0;color:#656e61}.registration-form{background:var(--paper);padding:clamp(20px,4vw,44px);border:1px solid var(--line);border-radius:26px;box-shadow:0 14px 40px rgba(65,78,50,.05)}.registration-form .wonder-form-fields{margin-bottom:20px}.choice-line{display:flex;flex-wrap:wrap;gap:12px;margin:8px 0}.choice-line label{display:inline-flex;align-items:center;gap:9px;min-height:46px;padding:8px 16px;border:1px solid #d4d9c9;border-radius:12px;background:#fff;cursor:pointer;font-size:14px}.choice-line input{width:17px;height:17px;accent-color:var(--forest)}.wonder-consent{display:grid;gap:10px}.wonder-consent-label{align-items:flex-start}.wonder-consent-label input{accent-color:var(--forest);margin-top:5px}.consent-heading{margin:6px 0 0;font-weight:800;font-size:16px}.legal-link a{color:var(--forest);font-weight:700;text-decoration:underline;text-underline-offset:4px}.registration-form .wonder-submit-row{flex-wrap:wrap}.registration-form .btn{white-space:normal}.form-field b{color:var(--orange)}@media(max-width:600px){.registration-form{padding:19px 15px}.choice-line{display:grid;grid-template-columns:1fr 1fr}.choice-line label{justify-content:center;padding:8px}.registration-form .wonder-submit-row{display:grid}.registration-form .wonder-submit-row button{width:100%}}
+/* V11 · clear separation between consultation and pre-enrollment */
+.enrollment-gateway{background:#f5f5ee;border-block:1px solid #e4e7dc}
+.enrollment-gateway-inner{display:flex;align-items:center;justify-content:space-between;gap:35px}
+.enrollment-gateway-inner>.btn{flex:none}
+.enrollment-gateway .section-title{margin-bottom:13px}
+.enrollment-gateway .section-lead{margin:0}
+.enrollment-subhero{background:linear-gradient(112deg,#eff1e7,#fbf9f2 60%,#f6efdf);padding:95px 0 75px}
+.enrollment-heading{max-width:860px}
+.enrollment-heading h1{font-size:clamp(38px,5vw,59px);color:var(--forest);margin:18px 0}
+.enrollment-heading>p{font-size:16px;color:#586d55;max-width:680px;line-height:1.85}
+.enrollment-explain{margin-top:28px;display:flex;gap:12px 20px;flex-wrap:wrap;align-items:center;border:1px solid #dfe5d9;border-radius:17px;padding:20px;background:#fffdf9}
+.enrollment-explain strong{color:var(--forest)}.enrollment-explain span{flex:1;font-size:13px;color:#647262;min-width:230px}
+.enrollment-explain a{color:var(--forest);font-weight:750;text-decoration:underline;text-underline-offset:3px}
+.registration-section{background:var(--paper)}
+.registration-section>.container{max-width:980px}
+.registration-section .registration-caveat{border-left:3px solid var(--sage);padding:16px 20px;background:#f3f5ec;border-radius:0 14px 14px 0;margin-bottom:28px}
+.registration-caveat p{margin:4px 0 0;font-size:13px;color:#586853}
+.registration-section .registration-form{max-width:none;border:1px solid #e0e6db;border-radius:22px;padding:35px;background:white}
+.signature-box{margin-top:28px;border:1px solid #cad6c4;background:#fbfcf7;border-radius:19px;padding:22px 24px 24px;min-width:0}
+.signature-box legend{color:var(--forest);font-size:19px;font-weight:800;padding:0 10px}
+.signature-box>p{font-size:13px;color:#566751;line-height:1.8}
+.signature-summary{background:white;border-radius:12px;border:1px solid #e0e6da;padding:16px 19px;margin:16px 0 22px}
+.signature-summary strong{color:var(--forest);font-size:13px}.signature-summary ul{margin:8px 0 0;padding-left:19px;font-size:12px;color:#64715f;line-height:1.95}
+.signature-mode{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:17px}
+.signature-mode label{display:flex;align-items:center;gap:9px;border:1px solid #d3ddce;border-radius:10px;padding:12px 17px;background:#fff;font-weight:700;font-size:13px;cursor:pointer}
+.signature-mode input,.signature-agreement input{accent-color:#40543a;width:17px;height:17px}
+.signature-canvas-shell{background:#fff;border:1.5px solid #9dad96;border-radius:13px;overflow:hidden;margin-top:9px}
+.signature-canvas-shell canvas{display:block;width:100%;height:150px;touch-action:none;cursor:crosshair;max-width:100%}
+[data-sign-draw]>label,[data-sign-typed]>label{font-size:13px;font-weight:750;color:var(--forest)}
+.signature-clear{background:transparent;border:0;border-bottom:1px solid #798e76;color:#546951;font-weight:700;margin-top:9px;padding:6px 0;font-size:12px}
+[data-sign-typed] input{margin:10px 0 15px;border:1px solid #cfdacb;border-radius:9px;padding:13px;width:100%;font-size:16px;background:#fff;max-width:460px}
+.signature-agreement{margin-top:18px;padding-top:16px;border-top:1px solid #e0e5d9}
+.enrollment-next{background:#f7f8f1}.enrollment-next-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}
+.enrollment-next-grid>div{padding:24px;border:1px solid #dfe6d9;background:#fffefb;border-radius:17px}
+.enrollment-next-grid strong{font-size:14px;color:#3e5a3d}
+.enrollment-next-grid p{margin:7px 0 0;color:#61715d;font-size:13px}
+.enrollment-next .caption{margin-top:19px}
+.registration-form .wonder-submit-row{margin-top:25px}
+@media(max-width:840px){.enrollment-gateway-inner{flex-direction:column;align-items:flex-start}.enrollment-next-grid{grid-template-columns:1fr}}
+@media(max-width:600px){.enrollment-subhero{padding:54px 0}.enrollment-heading h1{font-size:37px}.enrollment-explain{padding:18px}.enrollment-gateway-inner>.btn{width:100%}.registration-section .registration-form{padding:22px 16px;border-radius:16px}.signature-box{padding:20px 14px}.signature-mode label{flex:1;justify-content:center;padding:12px 9px}.signature-canvas-shell canvas{height:135px}.enrollment-next-grid>div{padding:19px}.registration-form .wonder-submit-row{flex-direction:column;align-items:stretch}.registration-form .wonder-submit-row .btn{width:100%;white-space:normal}}
+
+/* V11 — private post-consultation enrollment / digital records.
+ * Aligned with Bridge Wonder's existing sage, ivory and maple palette.
+ * No customer data, signature or agreement is stored in GitHub.
+ */
+[hidden]{display:none!important}
+.enroll-hero{padding:72px 0 57px;background:linear-gradient(112deg,#f7f5ec 0%,#f5f3e9 66%,#edf1e7 100%);border-bottom:1px solid #e1e6d9}
+.enroll-top-inner{max-width:1176px}
+.enroll-hero h1{font-size:clamp(43px,5.5vw,70px);color:var(--forest);font-weight:700;margin:15px 0 15px;line-height:1.15}
+.enroll-hero p{font-size:16px;color:#566b58;line-height:2;max-width:740px;margin:0 0 32px}
+.enroll-stage-list{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:900px;border-top:1px solid #dce4d5;padding-top:20px}
+.enroll-stage-list div{display:flex;align-items:center;gap:11px;font-size:13px;color:#647464;font-weight:650}
+.enroll-stage-list span{font-size:11px;font-weight:800;color:#ba794f;font-variant-numeric:tabular-nums}
+.enroll-section{padding:68px 0 115px}
+.enroll-layout{display:grid;grid-template-columns:minmax(0,1fr) 287px;gap:28px;align-items:start}
+.enroll-main{min-width:0;display:grid;gap:22px}
+.enroll-panel{background:#fffefa;border:1px solid #dfe5da;border-radius:24px;padding:37px 40px 40px;box-shadow:0 8px 35px rgba(55,71,53,.035);min-width:0}
+.enroll-panel-number{display:flex;align-items:center;gap:13px;font-size:12px;letter-spacing:.09em;font-weight:800;color:#ad693e;margin-bottom:16px}
+.enroll-panel-number span{color:#59705a;letter-spacing:0;font-size:13px}
+.enroll-panel h2{font-size:clamp(24px,2.5vw,34px);font-weight:700;letter-spacing:-.04em;color:#344d37;margin:0 0 15px}
+.enroll-panel>p{font-size:14px;color:#6a7868;line-height:1.95;margin-bottom:24px;max-width:690px}
+.enroll-code-input>label,.enroll-field-label{display:block;font-size:13px;font-weight:800;color:#3b563e;margin-bottom:9px}
+.enroll-code-line{display:flex;gap:10px;align-items:center}
+.enroll-code-line input{min-width:0;flex:1;border:1px solid #c9d5c3;background:#fff;border-radius:12px;padding:15px 15px;font-size:15px;letter-spacing:.03em;color:#3e5842}
+.enroll-code-line button{flex:none;border-radius:12px;min-height:51px}
+.enroll-code-input small{display:block;font-size:12px;color:#7b8876;margin-top:9px;line-height:1.7}
+.enroll-terms-grid{display:grid;grid-template-columns:190px minmax(0,1fr);margin:15px 0 27px;border-top:1px solid #dfe5d8;font-size:14px}
+.enroll-terms-grid dt,.enroll-terms-grid dd{border-bottom:1px solid #e5e9e1;margin:0;padding:14px 16px}
+.enroll-terms-grid dt{background:#f5f8f1;font-weight:750;color:#647566}
+.enroll-terms-grid dd{font-weight:650;color:#374c39;overflow-wrap:anywhere}
+.enroll-refund{border:1px solid #dbe1d5;border-radius:14px;padding:21px 23px;background:#f7f9f4}
+.enroll-refund h3{font-size:16px;color:#36513a;font-weight:800;margin:0 0 9px}
+.enroll-refund p{color:#536a55;white-space:pre-wrap;line-height:1.95;font-size:14px;margin:0}
+.enroll-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 18px;margin-top:25px}
+.enroll-fields .form-field{min-width:0}
+.enroll-fields .form-field>label{font-size:13px;font-weight:750;color:#3e5c43;margin-bottom:8px}
+.enroll-fields .form-field>label span,.enroll-field-label span{color:#b95d3a}
+.enroll-fields .form-field input,.enroll-fields .form-field select{display:block;width:100%;max-width:none;min-width:0;border:1px solid #cbd7c6;border-radius:11px;min-height:52px;background:#fff;padding:13px 14px;font-size:16px;color:#374d3b}
+.enroll-fields .form-field small{display:block;color:#819080;font-size:11px;line-height:1.65;margin-top:7px}
+.enroll-fields .form-field-wide{grid-column:1/-1}
+.enroll-fields .choice-line{margin-top:8px;gap:10px}
+.enroll-fields .choice-line label{min-height:48px;border-radius:11px}
+.enroll-consents{min-width:0;border:0;padding:0;margin:37px 0 0}
+.enroll-consents legend{font-size:20px;font-weight:780;color:#405a43;padding:0 0 4px}
+.enroll-consents>p{font-size:13px;color:#718070;line-height:1.9}
+.enroll-consents .wonder-consent-label{border-bottom:1px solid #e6ebe3;padding:15px 3px;display:flex;gap:14px}
+.enroll-consents .wonder-consent-label input{flex:none;width:18px;height:18px;accent-color:#456447;margin-top:4px}
+.enroll-consents .wonder-consent-label strong{font-size:13px;color:#435b44}
+.enroll-consents .wonder-consent-label small{font-size:12px;line-height:1.9;color:#718071}
+.enroll-legal{margin:15px 0 0!important}.enroll-legal a{font-size:13px;color:#496d4e;text-decoration:underline;text-underline-offset:4px}
+.enroll-panel .signature-box{margin-top:36px;border-radius:17px}
+.enroll-panel .signature-box label input[type=checkbox]{accent-color:#456247}
+.enroll-panel .signature-canvas-shell canvas{height:145px;touch-action:none;display:block}
+.enroll-submit-row{display:flex;align-items:center;flex-wrap:wrap;gap:11px;margin:26px 0 6px}
+.enroll-submit-row .btn{border-radius:12px;white-space:normal;text-align:center;font-size:13px;min-height:54px}
+.enroll-aside{position:sticky;top:112px;display:grid;gap:15px}
+.enroll-aside-card{border:1px solid #e0e8dc;border-radius:18px;padding:24px;background:#f8faf4}
+.enroll-aside-card .eyebrow{font-size:11px}
+.enroll-aside-card h2,.enroll-aside-card h3{font-weight:750;font-size:19px;color:#3e5c45;margin:9px 0 12px}
+.enroll-aside-card p{color:#627461;font-size:13px;line-height:1.95;margin-bottom:13px}
+.enroll-aside-card a{font-weight:750;font-size:13px;text-decoration:underline;text-underline-offset:3px;color:#4d6a4c}
+.enroll-aside-card.muted{background:#fffdf7;border-color:#ebe8dc}
+.visually-hidden{position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden;opacity:0}
+@media(max-width:980px){.enroll-layout{grid-template-columns:minmax(0,1fr)}.enroll-aside{position:static;grid-template-columns:repeat(2,1fr)}}
+@media(max-width:680px){
+ .enroll-hero{padding:48px 0 32px}.enroll-hero h1{font-size:41px}.enroll-hero p{font-size:14px;line-height:1.9;margin-bottom:23px}
+ .enroll-stage-list{grid-template-columns:repeat(2,1fr);gap:14px 10px;padding-top:18px}.enroll-stage-list div{font-size:11px;gap:7px}
+ .enroll-section{padding:24px 0 80px}.enroll-main{gap:14px}.enroll-panel{padding:24px 17px 28px;border-radius:17px}.enroll-panel h2{font-size:25px}.enroll-panel>p{font-size:13px}
+ .enroll-code-line{flex-direction:column;align-items:stretch}.enroll-code-line button{width:100%}
+ .enroll-terms-grid{grid-template-columns:110px minmax(0,1fr);font-size:12px}.enroll-terms-grid dt,.enroll-terms-grid dd{padding:12px 10px}
+ .enroll-refund{padding:17px 14px}.enroll-fields{grid-template-columns:1fr;gap:18px}.enroll-fields .form-field-wide{grid-column:1}
+ .enroll-consents .wonder-consent-label strong{font-size:12px}.enroll-consents .wonder-consent-label small{font-size:11px}
+ .enroll-aside{grid-template-columns:1fr}.enroll-aside-card{padding:21px}.enroll-panel .signature-box{padding:18px 13px}
+ .enroll-submit-row{flex-direction:column;align-items:stretch}.enroll-submit-row .btn{width:100%}
+}
+@media(prefers-reduced-motion:reduce){.enroll-panel,.enroll-submit-row .btn{transition:none!important}}
