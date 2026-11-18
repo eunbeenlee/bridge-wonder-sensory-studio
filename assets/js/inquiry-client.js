@@ -53,7 +53,8 @@
       try{sessionStorage.removeItem('bw_last_inquiry_id');}catch(_){}
     }
   }
-  window.__BW_STORE_ACK=verified;
+  window.__BW_REGISTRY_ACK=window.__BW_REGISTRY_ACK||function(){};
+  window.__BW_STORE_ACK=function(d){verified(d);window.__BW_REGISTRY_ACK(d);};
 
   function pollOnce(id){
     return new Promise(resolve=>{
@@ -96,12 +97,15 @@
     const topic=String(data.get('topic')||'');
     const contactTime=String(data.get('contactTime')||'상관없음');
     const note=String(data.get('note')||'').trim();
+    const contactMethod=String(data.get('contactMethod')||'');
+    const legalGuardian=Boolean(form.querySelector('[name=legalGuardian]')?.checked);
+    const marketing=Boolean(form.querySelector('[name=marketing]')?.checked);
     const valid=guardian.length>=2 && guardian.length<=35 && /^0[0-9]{8,10}$/.test(phone)
       && /^\d{1,2}$/.test(months) && Number(months)>=7 && Number(months)<=48
       && ['체험수업 상담','정규 수업 문의','기타 문의'].includes(topic)
       && ['상관없음','오전','오후','저녁'].includes(contactTime)
-      && note.length<=550 && form.querySelector('[name="consent"]').checked;
-    return {valid,guardian,phone,months,topic,contactTime,note,website:String(data.get('website')||'')};
+      && note.length<=400 && ['문자','전화'].includes(contactMethod) && legalGuardian && form.querySelector('[name="consent"]').checked;
+    return {valid,guardian,phone,months,topic,contactTime,note,contactMethod,legalGuardian,marketing,website:String(data.get('website')||'')};
   }
   form.addEventListener('submit',async(event)=>{
     event.preventDefault();
@@ -118,9 +122,9 @@
     render('pending','상담 접수 정보를 전달하고 있습니다.','저장 확인까지 잠시 소요될 수 있습니다. 화면을 닫지 말아 주세요.');
     try{sessionStorage.setItem('bw_last_inquiry_id',activeId);}catch(_){}
     const payload=new URLSearchParams({
-      source:'bridgewonder-v8',rid:activeId,guardian:input.guardian,phone:input.phone,
+      source:'bridgewonder-v10',rid:activeId,guardian:input.guardian,phone:input.phone,
       months:input.months,topic:input.topic,contactTime:input.contactTime,note:input.note,
-      consent:'yes',website:input.website
+      consent:'yes',legalGuardian:input.legalGuardian?'yes':'no',marketing:input.marketing?'yes':'no',contactMethod:input.contactMethod,website:input.website
     });
     // A 'simple' POST avoids CORS preflight. Response is intentionally unreadable.
     // Status is confirmed by separate, non-sensitive JSONP polling.
