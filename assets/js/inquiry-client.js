@@ -26,6 +26,24 @@
   inquiryConsents.forEach(x=>x.addEventListener('change',syncInquiryConsent));
   syncInquiryConsent();
 
+  // Korean mobile numbers remain strings; never convert to Number.
+  // +82 10 ... is normalized to 010..., while malformed values are rejected.
+  function normalizeMobile(value){
+    let digits=String(value||'').replace(/[^0-9]/g,'');
+    if(/^8210[0-9]{8}$/.test(digits)) digits='0'+digits.slice(2);
+    return /^01(?:0[0-9]{8}|[16789][0-9]{7,8})$/.test(digits)?digits:'';
+  }
+  function displayMobile(digits){
+    if(!digits)return '';
+    return digits.slice(0,3)+'-'+digits.slice(3,digits.length===11?7:6)+'-'+digits.slice(digits.length===11?7:6);
+  }
+  const phoneInput=form.querySelector('[name="phone"]');
+  if(phoneInput){
+    phoneInput.addEventListener('blur',()=>{
+      const digits=normalizeMobile(phoneInput.value);
+      if(digits)phoneInput.value=displayMobile(digits);
+    });
+  }
   const config=window.BRIDGE_WONDER_CONTACT_CONFIG || {};
   const api=String(config.webAppUrl||'').trim();
   const validEndpoint=/^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(api);
@@ -107,8 +125,8 @@
 
   function payloadFromForm(){
     const data=new FormData(form);
-    const guardian=String(data.get('guardian')||'').trim();
-    const phone=String(data.get('phone')||'').replace(/[^0-9]/g,'');
+    const childName=String(data.get('childName')||'').trim();
+    const phone=normalizeMobile(data.get('phone'));
     const months=String(data.get('months')||'').trim();
     const topic=String(data.get('topic')||'');
     const contactTime=String(data.get('contactTime')||'상관없음');
@@ -116,12 +134,12 @@
     const contactMethod=String(data.get('contactMethod')||'');
     const legalGuardian=Boolean(form.querySelector('[name=legalGuardian]')?.checked);
     const marketing=Boolean(form.querySelector('[name=marketing]')?.checked);
-    const valid=guardian.length>=2 && guardian.length<=35 && /^0[0-9]{8,10}$/.test(phone)
+    const valid=childName.length>=1 && childName.length<=35 && Boolean(phone)
       && /^\d{1,2}$/.test(months) && Number(months)>=7 && Number(months)<=48
       && ['체험수업 상담','정규 수업 문의','기타 문의'].includes(topic)
       && ['상관없음','오전','오후','저녁'].includes(contactTime)
       && note.length<=400 && ['문자','전화'].includes(contactMethod) && legalGuardian && form.querySelector('[name="consent"]').checked;
-    return {valid,guardian,phone,months,topic,contactTime,note,contactMethod,legalGuardian,marketing,website:String(data.get('website')||'')};
+    return {valid,childName,phone,months,topic,contactTime,note,contactMethod,legalGuardian,marketing,website:String(data.get('website')||'')};
   }
   form.addEventListener('submit',async(event)=>{
     event.preventDefault();
@@ -129,7 +147,7 @@
     if(!validEndpoint){render('error','상담 접수가 아직 연결되지 않았습니다.','전화 010-2693-2471 또는 Instagram DM으로 문의해 주세요.');return;}
     if(!form.reportValidity())return;
     const input=payloadFromForm();
-    if(!input.valid){render('error','입력 내용을 다시 확인해 주세요.','보호자 이름, 전화번호, 아이 월령(7~48개월), 문의 종류, 개인정보 동의를 확인해 주세요.');return;}
+    if(!input.valid){render('error','입력 내용을 다시 확인해 주세요.','아이 이름, 보호자 휴대전화(010-1234-5678), 아이 월령(7~48개월), 문의 종류와 개인정보 동의를 확인해 주세요.');return;}
     if(!window.fetch){render('error','이 브라우저에서는 온라인 신청을 지원하지 않습니다.','브라우저를 업데이트하거나 전화로 문의해 주세요.');return;}
     try {activeId=makeRequestId();} catch(err){render('error','안전한 접수를 시작할 수 없습니다.',err.message);return;}
     confirmed=false;
@@ -138,7 +156,7 @@
     render('pending','상담 접수 정보를 전달하고 있습니다.','저장 확인까지 잠시 소요될 수 있습니다. 화면을 닫지 말아 주세요.');
     try{sessionStorage.setItem('bw_last_inquiry_id',activeId);}catch(_){}
     const payload=new URLSearchParams({
-      source:'bridgewonder-v10',rid:activeId,guardian:input.guardian,phone:input.phone,
+      source:'bridgewonder-v21-child-consultation',rid:activeId,childName:input.childName,phone:input.phone,
       months:input.months,topic:input.topic,contactTime:input.contactTime,note:input.note,
       consent:'yes',legalGuardian:input.legalGuardian?'yes':'no',marketing:input.marketing?'yes':'no',contactMethod:input.contactMethod,website:input.website
     });

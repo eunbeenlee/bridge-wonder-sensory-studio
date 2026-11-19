@@ -1,0 +1,18 @@
+# Bridge Wonder 직원 관리자 직접 접속 · 2026-11-19
+
+## 설치 방법
+1. `staff/index.html` 한 파일을 현재 Bridge Wonder GitHub 저장소의 같은 경로에 **덮어쓰기**합니다.
+2. GitHub Desktop `Commit to main` → `Push origin`.
+3. Pages 배포 후 `https://bridgewonder.bridgeacademy.co.kr/staff/` 에 접속하면 기존 로그인 화면으로 **같은 탭 자동 이동**합니다.
+4. 브라우저 북마크는 공개 도메인의 `/staff/` 주소로 저장합니다.
+
+## 중요한 제한 및 보안
+- Google Apps Script가 실제 화면을 제공하므로 최종 주소 표시줄은 `script.google.com/macros/s/.../exec`로 바뀝니다.
+- GitHub Pages만으로 기존 Apps Script 서버 기능을 자체 도메인에 유지할 수는 없습니다. iframe 방식도 계정·브라우저 설정 및 Google CSP 때문에 권장하지 않습니다.
+- 로그인/OTP/권한/원본 Google Sheets/학부모 시스템은 변경하지 않았습니다.
+- 화면에 '파일을 열 수 없음'이 나타나면 시크릿 창에서 원장 Google 계정 하나로 로그인해 재시도합니다.
+- 새 관리자 URL로 변경하면 `assets/js/staff-config.js`의 주소를 수정해야 합니다.
+- `?preview=1`은 리디렉션하지 않고 브랜드 연결 화면을 미리보기 하는 용도입니다.
+
+## 연결되는 기존 관리자 웹 앱
+https://script.google.com/macros/s/AKfycbwQVKOruJFxxUHVrsrsDvIpv95jz-ag5SbozlJcJ9mDNrpdGFyYp-uIsT2y2_-3n-xa/exec
