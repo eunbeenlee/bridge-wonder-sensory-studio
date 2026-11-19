@@ -13,36 +13,32 @@
     const state={token:'',user:null,page:'home',classes:[],templates:[],inquiries:[],registrations:[],roster:[],staff:[],attendance:[],busy:false,navigationSeq:0};
     let toastTimer;
     const toast=(message,error=false)=>{const el=$('toast');el.textContent=message;el.style.background=error?'#92513e':'#354f33';el.style.display='block';clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.style.display='none',3900);};
-    const bw24ReadTTL={staffListClasses:22000,staffDashboard:11000,staff20Capacity:13000,staff20Themes:20000,staff20ActionCenter:11000};
-    const bw24ReadCache=new Map();
-    const bw24Inflight=new Map();
+    // V25.1: requests are optimized in the separate GitHub acceleration module.
     const bw24Timings=[];
-    function bw24ClearCache(){bw24ReadCache.clear();bw24Inflight.clear();}
+    const bw25Accel=window.BW25Acceleration?.create({
+      concurrency:4,readTimeoutMs:30000,writeTimeoutMs:45000,
+      invoke:(name,args)=>new Promise((resolve,reject)=>{try{
+        google.script.run.withSuccessHandler(resolve).withFailureHandler(e=>reject(new Error(e?.message||String(e))))[name](...args);
+      }catch(e){reject(e);}}),
+      onTiming:(name,ms)=>{bw24Timings.push({name,ms});if(bw24Timings.length>60)bw24Timings.shift();},
+      onSlow:(name,ms)=>{if(ms>5000)console.info('[Bridge Wonder] delayed '+name+' ('+ms+'ms)');}
+    });
+    function bw24ClearCache(){bw25Accel?.invalidate();}
     function call(name,...args){
-      const ttl=bw24ReadTTL[name]||0;
-      const key=ttl?name+'|'+String(state.token||'')+'|'+JSON.stringify(args):'';
-      if(ttl){const item=bw24ReadCache.get(key);if(item && item.expires>Date.now())return Promise.resolve(item.value);
-        if(bw24Inflight.has(key))return bw24Inflight.get(key);
-      }
-      const started=Date.now(),navSeq=state.navigationSeq;
-      const job=new Promise((resolve,reject)=>{try{
-        google.script.run.withSuccessHandler(resolve).withFailureHandler(e=>reject(new Error(e&&e.message?e.message:String(e))))[name](...args);
+      if(bw25Accel)return bw25Accel.request(name,args,{session:state.token,nav:state.navigationSeq});
+      // Safe fallback: no caching and no automatic retry when accelerator is unavailable.
+      return new Promise((resolve,reject)=>{try{
+        google.script.run.withSuccessHandler(resolve).withFailureHandler(e=>reject(new Error(e?.message||String(e))))[name](...args);
       }catch(e){reject(e);}});
-      const promise=job.then(result=>{
-        if(name.startsWith('staffList')||name.startsWith('staff20')||name==='staffDashboard'||name==='staff22GetCourseSettings'){
-          if(navSeq!==state.navigationSeq && !/Save|Set/.test(name))throw Error('BW24_STALE_VIEW');
-        }
-        if(ttl)bw24ReadCache.set(key,{value:result,expires:Date.now()+ttl});
-        if(/^staff(?:Save|Update|Append|20Save|20Set|22Save|24Save|24Reset|Doc(?:Generate|Send|Repair))/.test(name))bw24ClearCache();
-        return result;
-      }).finally(()=>{if(ttl)bw24Inflight.delete(key);const elapsed=Date.now()-started;
-        bw24Timings.push({name,ms:elapsed});if(bw24Timings.length>60)bw24Timings.shift();
-        if(elapsed>2000)console.info('[Bridge Wonder] '+name+' response: '+elapsed+'ms');
-      });
-      if(ttl)bw24Inflight.set(key,promise);
-      return promise;
     }
-    function setBusy(form,busy){if(!form)return;form.querySelectorAll('button,select,input').forEach(el=>el.disabled=busy);}
+    const bw25DisabledSnapshot=new WeakMap();
+    function setBusy(form,busy){
+      if(!form)return;
+      form.querySelectorAll('button,select,input,textarea').forEach(el=>{
+        if(busy){if(!bw25DisabledSnapshot.has(el))bw25DisabledSnapshot.set(el,el.disabled);el.disabled=true;}
+        else if(bw25DisabledSnapshot.has(el)){el.disabled=bw25DisabledSnapshot.get(el);bw25DisabledSnapshot.delete(el);}
+      });
+    }
     function loginError(err){const text=String(err?.message||err||'처리 중 문제가 발생했습니다.');$('loginFeedback').textContent=text;}
     // BW23: password by default. OTP only during initial setup and explicit recovery.
     let bw23EnrollMode='setup';
@@ -109,7 +105,7 @@
     }
     $('logoutBtn').onclick=logout;$('logoutMobile').onclick=logout;
     async function startApp(){if(!state.user){try{state.user=await call('staffCurrentUser',state.token);}catch(e){await logout();return;}}$('loginScreen').hidden=true;$('workspace').hidden=false;$('staffName').textContent=state.user.name||'선생님';$('staffEmail').textContent=state.user.email||'';$('roleBadge').textContent=ROLE_NAMES[state.user.role]||'직원';renderNav();await showPage('home');}
-    function renderNav(){const allowed=MENU.filter(m=>bw24Can(m[0]));for(const id of ['sideNav','mobileNav']){$(id).innerHTML=allowed.map(m=>`<button type="button" data-page="${m[0]}" class="nav-btn ${m[0]===state.page?'active':''}"><i aria-hidden="true">${m[1]}</i>${m[2]}</button>`).join('');$(id).querySelectorAll('button[data-page]').forEach(b=>b.onclick=()=>showPage(b.dataset.page));}}
+    function renderNav(){const allowed=MENU.filter(m=>bw24Can(m[0]));const signature=state.page+'|'+allowed.map(m=>m[0]).join(',');for(const id of ['sideNav','mobileNav']){const el=$(id);if(el.dataset.bw25NavSignature===signature)continue;el.innerHTML=allowed.map(m=>`<button type="button" data-page="${m[0]}" class="nav-btn ${m[0]===state.page?'active':''}"><i aria-hidden="true">${m[1]}</i>${m[2]}</button>`).join('');el.dataset.bw25NavSignature=signature;el.querySelectorAll('button[data-page]').forEach(b=>b.onclick=()=>showPage(b.dataset.page));}}
 
     function bw24ApplyReadonly(page){
       if(bw24Can(page,'write')||!bw24Can(page,'read')||['home','registrations','roster','security'].includes(page))return;
@@ -126,7 +122,7 @@
     function table(columns,rows){if(!rows.length)return `<div class="empty">표시할 기록이 없습니다.</div>`;return `<div class="table-scroll"><table class="data-table"><thead><tr>${columns.map(x=>`<th scope="col">${x}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div>`;}
     function tag(s){return `<span class="tag ${/실패|중지|결석/.test(s)?'off':/대기|신규|확인전/.test(s)?'waiting':''}">${h(s||'미확인')}</span>`;}
     function loading(){return `<div class="panel bw24-loading"><span class="bw24-pulse" aria-hidden="true"></span><p class="muted" role="status">자료를 불러오는 중입니다. 화면 이동은 계속할 수 있어요.</p></div>`;}
-    async function showPage(page){if(!state.user||!bw24Can(page))return;state.page=page;const seq=++state.navigationSeq;renderNav();const m=MENU.find(x=>x[0]===page);$('topTitle').textContent=m[2];$('pageBody').innerHTML=loading();try{document.scrollingElement?.scrollTo({top:0,behavior:'auto'});if(page==='home')await renderHome();if(page==='inquiries')await renderInquiries();if(page==='registrations')await renderRegistrations();if(page==='classes')await renderClasses();if(page==='courseSettings')await renderCourseSettings();if(page==='roster')await renderRoster();if(page==='attendance')await renderAttendance();if(page==='operations')await renderOperations();if(page==='tuition')await renderTuition();if(page==='safety')await renderSafety();if(page==='handoff')await renderHandoff();if(page==='staffCompliance')await renderStaffCompliance();if(page==='users')await renderUsers();if(page==='security')await renderSecurity();if(page==='documents')await renderDocuments();if(page==='capacity')await renderCapacity();if(page==='waitlist')await renderWaitlist();if(page==='makeups')await renderMakeups();if(page==='themes')await renderThemes();if(seq===state.navigationSeq)bw24ApplyReadonly(page);}catch(e){if(seq!==state.navigationSeq||e.message==='BW24_STALE_VIEW')return;if(/로그인이 필요|접속 시간이 만료|사용 권한이 중지/.test(e.message)){await logout();toast('로그인 상태를 다시 확인해 주세요.',true);}else $('pageBody').innerHTML=head(m[2],'')+panel('자료를 불러오지 못했습니다.','',`<p class="danger">${h(e.message)}</p><button id="retryPage" class="btn btn-outline spaced">다시 시도</button>`),$('retryPage').onclick=()=>showPage(page);}}
+    async function showPage(page){if(!state.user||!bw24Can(page))return;state.page=page;const seq=++state.navigationSeq;bw25Accel?.setNavigation(seq);renderNav();const m=MENU.find(x=>x[0]===page);$('topTitle').textContent=m[2];$('pageBody').innerHTML=loading();try{document.scrollingElement?.scrollTo({top:0,behavior:'auto'});if(page==='home')await renderHome();if(page==='inquiries')await renderInquiries();if(page==='registrations')await renderRegistrations();if(page==='classes')await renderClasses();if(page==='courseSettings')await renderCourseSettings();if(page==='roster')await renderRoster();if(page==='attendance')await renderAttendance();if(page==='operations')await renderOperations();if(page==='tuition')await renderTuition();if(page==='safety')await renderSafety();if(page==='handoff')await renderHandoff();if(page==='staffCompliance')await renderStaffCompliance();if(page==='users')await renderUsers();if(page==='security')await renderSecurity();if(page==='documents')await renderDocuments();if(page==='capacity')await renderCapacity();if(page==='waitlist')await renderWaitlist();if(page==='makeups')await renderMakeups();if(page==='themes')await renderThemes();if(seq===state.navigationSeq)bw24ApplyReadonly(page);}catch(e){if(seq!==state.navigationSeq||e.message==='BW24_STALE_VIEW')return;if(/로그인이 필요|접속 시간이 만료|사용 권한이 중지/.test(e.message)){await logout();toast('로그인 상태를 다시 확인해 주세요.',true);}else $('pageBody').innerHTML=head(m[2],'')+panel('자료를 불러오지 못했습니다.','',`<p class="danger">${h(e.message)}</p><button id="retryPage" class="btn btn-outline spaced">다시 시도</button>`),$('retryPage').onclick=()=>showPage(page);}}
     async function renderHome(){const r=await call('staffDashboard',state.token);if(state.page!=='home')return;
       $('pageBody').innerHTML=head('오늘의 업무','필요한 일부터 빠르게 확인하고 바로 처리하세요.')+`<div class="metric-grid"><article class="metric"><div class="metric-name">${r.role==='teacher'?'내 담당 반':'운영 중인 수강반'}</div><div class="metric-value">${h(r.classCount)}</div></article>${r.newInquiries===null?'':`<article class="metric"><div class="metric-name">새로운 상담 문의</div><div class="metric-value">${h(r.newInquiries)}</div></article>`}${r.pendingEnrollments===null?'':`<article class="metric"><div class="metric-name">확인 필요한 등록</div><div class="metric-value">${h(r.pendingEnrollments)}</div></article>`}</div>`+
       panel('업무 바로가기','계정에 부여된 권한에 따라 필요한 화면만 표시됩니다.',`<div class="cards-list">${MENU.filter(x=>x[3].includes(state.user.role)&&!['home','security'].includes(x[0])).map(x=>`<button data-goto="${x[0]}" class="btn btn-outline">${h(x[2])}</button>`).join('')}</div>`)+
@@ -388,8 +384,9 @@
       panel('최근 접속·작업 이력','로그인은 계정으로 식별하며, 읽기·수정·권한 변경 등이 기록됩니다.',table(['시각','계정','업무','대상','결과'],audit.map(a=>`<tr><td>${h(a.at)}</td><td>${h(a.user)}</td><td>${h(a.action)}</td><td>${h(a.target)}</td><td>${tag(a.result)}</td></tr>`)))+
       `<div class="warning">현재 Apps Script는 접속 IP 주소를 별도로 확보하지 못합니다. 법정 접속기록·보안조치 충족 여부는 실제 운영 환경을 기준으로 추가 점검해야 합니다.</div>`;
       const last=bw24Timings.slice(-15),avg=last.length?Math.round(last.reduce((n,x)=>n+x.ms,0)/last.length):0;
+      const perf=bw25Accel?.metrics();
       $('pageBody').insertAdjacentHTML('beforeend',panel('화면 응답 속도 확인','이 브라우저에서 발생한 최근 업무 요청의 처리 시간을 표시합니다. 실제 체감 속도는 네트워크·Google 처리량에 따라 달라질 수 있습니다.',
-        `<div class="row"><span class="pill">최근 ${last.length}건</span><strong>평균 ${avg}ms</strong></div>`+
+        `<div class="row"><span class="pill">최근 ${last.length}건</span><strong>평균 ${avg}ms</strong>${perf?`<span class="pill">중복 조회 ${perf.coalesced}건 방지</span><span class="pill">캐시 ${perf.cacheHits}건 사용</span><span class="pill">95% ${perf.p95Ms}ms</span>`:''}</div>`+
         (last.length?'<div class="table-scroll spaced"><table class="data-table"><thead><tr><th>요청</th><th>소요시간</th></tr></thead><tbody>'+last.slice().reverse().map(x=>`<tr><td>${h(x.name)}</td><td>${h(x.ms)}ms</td></tr>`).join('')+'</tbody></table></div>':'<p class="help">먼저 몇 가지 메뉴를 열어 보면 소요 시간이 표시됩니다.</p>')));
       $('backupNow').onclick=async()=>{if(!confirm('현재 스프레드시트의 비공개 사본을 만들까요?'))return;const b=$('backupNow');b.disabled=true;try{const r=await call('staffBackupNow',state.token);toast('백업 완료: '+r.filename);}catch(e){toast(e.message,true);}finally{b.disabled=false;}};
     }
