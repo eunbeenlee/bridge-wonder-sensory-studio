@@ -1,4 +1,73 @@
 <!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow,noarchive"><title>직원 전용 | Bridge Wonder</title><link rel="icon" href="../assets/img/favicon.png"><link rel="stylesheet" href="../assets/css/site.css"><style>body{min-height:100vh;display:grid;place-items:center;padding:30px;background:#fbf8f2}.staff-entry{width:min(100%,520px);background:#fffefa;border:1px solid #e6dac8;border-radius:26px;padding:40px;text-align:center;box-shadow:0 18px 45px #273e2910}.staff-entry img{width:220px;margin:0 auto 22px}.staff-entry h1{font-size:26px;color:#40543a;margin:0 0 10px}.staff-entry p{font-size:14px;color:#707c6a;line-height:1.9}.staff-entry .btn{margin:18px auto 6px}.staff-entry small{display:block;font-size:11px;color:#7f8977;margin-top:14px}.staff-entry a.back{display:inline-block;margin-top:24px;font-size:12px;color:#586952;text-decoration:underline}@media(max-width:480px){.staff-entry{padding:28px 20px}}</style></head>
-<body><main class="staff-entry"><img alt="Bridge Wonder" src="../assets/img/bridge-wonder-logo.png"><h1>직원 관리 시스템</h1><p>원장과 선생님이 사용하는 전용 관리 페이지입니다.<br>등록된 이메일 계정으로 인증 후 이용할 수 있습니다.</p><a id="staffEnter" class="btn btn-dark" href="#" aria-disabled="true" style="pointer-events:none;opacity:.55">관리자 로그인 열기</a><p id="staffMessage" role="status" style="font-size:12px;color:#946143">관리자 웹 앱 주소가 아직 연결되지 않았습니다.</p><small>상담 및 등록정보는 비공개로 관리됩니다.</small><a class="back" href="../sensory-studio/">브릿지 원더 홈페이지로 돌아가기</a></main>
-<script src="../assets/js/staff-config.js"></script><script>(function(){var u=String(window.BW_STAFF_ADMIN_URL||'');if(/^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec(?:\?.*)?$/.test(u)){var a=document.getElementById('staffEnter');a.href=u;a.target='_blank';a.rel='noopener noreferrer';a.style.pointerEvents='auto';a.style.opacity='1';a.removeAttribute('aria-disabled');document.getElementById('staffMessage').textContent='안전한 직원 로그인 페이지로 이동합니다.';document.getElementById('staffMessage').style.color='#58764d';}})();</script></body></html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#FBF8F2">
+  <title>직원 관리자 접속 | Bridge Wonder</title>
+  <link rel="icon" href="../assets/img/favicon.png">
+  <link rel="stylesheet" href="../assets/css/site.css">
+  <style>
+    body.staff-gateway{min-height:100vh;min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:24px;background:var(--cream,#fbf8f2);color:var(--ink,#364536)}
+    .staff-gateway-card{width:min(100%,480px);margin:auto;background:var(--paper,#fffdf8);border:1px solid var(--line,#e6dac8);border-radius:28px;padding:clamp(25px,5vw,44px);text-align:center;box-shadow:0 16px 52px rgba(46,68,46,.07)}
+    .staff-gateway-logo{display:block;width:190px;max-width:70%;height:auto;margin:0 auto 27px}
+    .staff-gateway-eyebrow{font-size:11px;font-weight:750;letter-spacing:.19em;color:var(--orange,#d1693b);margin:0 0 10px;font-family:var(--sans,sans-serif)}
+    .staff-gateway-card h1{font-size:clamp(24px,5vw,29px);color:var(--forest,#40543a);margin:0 0 13px;letter-spacing:-.045em}
+    .staff-gateway-card p{font-size:14px;color:var(--muted,#74796e);line-height:1.8;margin:0}
+    .staff-gateway-loader{display:block;width:28px;height:28px;border:2px solid #d7dfd0;border-top-color:var(--forest,#40543a);border-radius:50%;margin:24px auto 16px;animation:staff-gateway-spin .9s linear infinite}
+    @keyframes staff-gateway-spin{to{transform:rotate(360deg)}}
+    @media (prefers-reduced-motion:reduce){.staff-gateway-loader{animation:none;border-color:var(--forest,#40543a)}}
+    .staff-gateway-action{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 25px;border-radius:999px;background:var(--forest,#40543a);color:#fff;text-decoration:none;font-weight:700;font-size:13px;margin:23px 0 11px}
+    .staff-gateway-action:focus-visible{outline:3px solid var(--orange,#d1693b);outline-offset:3px}
+    .staff-gateway-status{font-size:12px!important;color:var(--olive,#52654c)!important}
+    .staff-gateway-foot{display:block;margin-top:28px;font-size:12px;color:var(--muted,#74796e)}
+    .staff-gateway-foot a{text-decoration:underline;text-underline-offset:3px}
+  </style>
+</head>
+<body class="staff-gateway">
+  <main class="staff-gateway-card">
+    <img class="staff-gateway-logo" src="../assets/img/bridge-wonder-logo.png" alt="Bridge Wonder Sensory Play Studio">
+    <p class="staff-gateway-eyebrow">STAFF ADMINISTRATION</p>
+    <h1>직원 관리자 로그인</h1>
+    <p>원장·선생님 전용 페이지로 연결하고 있습니다.</p>
+    <span class="staff-gateway-loader" aria-hidden="true"></span>
+    <p class="staff-gateway-status" id="staffStatus" role="status">잠시 후 기존 이메일 인증 로그인 화면이 열립니다.</p>
+    <a id="staffEnter" class="staff-gateway-action" href="#" hidden>관리자 로그인으로 이동</a>
+    <small class="staff-gateway-foot"><a href="../sensory-studio/">홈페이지로 돌아가기</a></small>
+  </main>
+  <script src="../assets/js/staff-config.js"></script>
+  <script>
+    (function () {
+      'use strict';
+      const link = document.getElementById('staffEnter');
+      const status = document.getElementById('staffStatus');
+      const raw = typeof window.BW_STAFF_ADMIN_URL === 'string' ? window.BW_STAFF_ADMIN_URL.trim() : '';
+      let target;
+      try {
+        target = new URL(raw);
+        // Only the authorized Google Apps Script deployment, not a user-supplied URL.
+        if (target.protocol !== 'https:' || target.hostname !== 'script.google.com' ||
+            !/^\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(target.pathname) ||
+            target.search || target.hash || target.username || target.password) throw Error('invalid destination');
+      } catch (_) {
+        status.textContent = '관리자 연결 정보가 올바르지 않습니다. 사이트 담당자에게 문의해 주세요.';
+        document.querySelector('.staff-gateway-loader').hidden = true;
+        return;
+      }
+      link.href = target.href;
+      link.hidden = false;
+      // Site URL is a memorable entry point, but secure Apps Script /exec remains the backend UI.
+      // Same-tab redirect avoids a second browser window and keeps OTP/API logic unchanged.
+      // No iframe: embedded Apps Script may be blocked by browsers/Google security headers.
+      if (new URL(location.href).searchParams.get('preview') === '1') {
+        status.textContent = '미리보기: 실제 접속 시에는 로그인 페이지로 자동 이동합니다.';
+        document.querySelector('.staff-gateway-loader').hidden = true;
+        return;
+      }
+      window.location.replace(target.href);
+    })();
+  </script>
+</body>
+</html>
