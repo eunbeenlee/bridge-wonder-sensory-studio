@@ -68,7 +68,7 @@
         activate(idx);
         result.classList.remove('is-error');
         const stageName = ['감각 중심 상호작용', '시범과 반복', '선택과 모방', '분류와 탐색', '이야기 확장'][idx];
-        result.textContent = `${month}개월 아이에게 적용하는 ‘${stageName}’ 티칭 예시입니다. 월간 테마는 다른 연령과 공유합니다.`;
+        result.textContent = `${month}개월 아이를 위한 ‘${stageName}’ 수업 예시입니다. 같은 월간 주제를 아이의 발달에 맞춰 경험합니다.`;
         tabs[idx].focus({ preventScroll: true });
       });
     }
@@ -136,10 +136,10 @@
       <p class="bw-open-kicker">OPENING NOTICE</p>
       <p class="bw-open-date">JANUARY · 2027</p>
       <h2 id="bw-open-title" class="bw-open-title">2027년 1월<br><em>오픈 예정</em></h2>
-      <p id="bw-open-desc" class="bw-open-description">작은 호기심이 특별한 발견으로 이어지는 곳.<br><strong>7~48개월을 위한 영어 오감놀이 스튜디오</strong><br>브릿지 원더가 부산 명지에서 첫 만남을 준비합니다.</p>
-      <p class="bw-open-subline">1월 체험수업 예정 · 정규 프로그램은 3월 시작 예정</p>
+      <p id="bw-open-desc" class="bw-open-description">작은 호기심이 특별한 발견으로 이어지는 곳.<br><strong>7~48개월 아이를 위한 영어 오감놀이 스튜디오</strong><br>브릿지 원더가 부산 명지에서 첫 만남을 준비합니다.</p>
+      <p class="bw-open-subline">1월 체험수업 예정 · 정규 수업은 3월 시작 예정</p>
       <div class="bw-open-actions">
-        <a class="btn btn-dark" href="/sensory-studio/visit/#online-inquiry" data-bw-link>오픈 안내 · 상담 문의 <span aria-hidden="true">↗</span></a>
+        <a class="btn btn-dark" href="/sensory-studio/visit/#online-inquiry" data-bw-link>체험수업 상담 신청 <span aria-hidden="true">↗</span></a>
         <a class="btn btn-outline" href="/sensory-studio/programs/" data-bw-link>프로그램 살펴보기</a>
       </div>
       <div class="bw-open-foot">

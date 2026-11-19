@@ -37,7 +37,14 @@
    const p=document.createElement('div');p.textContent=message;
    node.append(h,p);
  }
- function busySet(value){busy=value;submitButton.disabled=value||Boolean(receipt);submitButton.setAttribute('aria-busy',String(value));submitButton.textContent=value?'등록 기록과 문서를 저장하고 있습니다…':'등록정보 확인 후 제출하기 →';}
+ function busySet(value){
+   busy=value;
+   // Once sent, resolve this request instead of issuing a second contract submission.
+   const locked=value||Boolean(requestId)||Boolean(receipt);
+   submitButton.disabled=locked;submitButton.setAttribute('aria-busy',String(value));
+   submitButton.textContent=value?'등록 신청서를 저장하고 있습니다…':receipt?'등록 신청 접수 완료':requestId?'접수 상태를 확인해 주세요':'등록정보 확인 후 제출하기 →';
+   if(locked)[daySelect,timeSelect,codeField,loadButton].forEach(control=>{if(control)control.disabled=true;});
+ }
  function secureId(){
    if(crypto.randomUUID)return crypto.randomUUID().replaceAll('-','');
    const out=new Uint8Array(16);crypto.getRandomValues(out);
@@ -63,7 +70,7 @@
  function displayTerms(t){
    const grid=$('#bw11-terms-grid');grid.replaceChildren();
    line('교습기관',t.operator);line('등록번호',t.registrationNo);line('과정명',t.course);
-   line('수업 시작일',t.starts);line('교습기간',t.period);line('수업요일·시간',t.schedule);
+   line('수업 시작일',t.starts);line('교습기간',t.period);line('수업 요일·시간',t.schedule);
    line('교습비',asWon(t.fee));line('기타경비',asWon(t.extras));line('수업 장소',t.venue);line('결석·보강 기준',t.absence);line('보호자 동반',t.accompany);line('재료·준비물',t.materials);line('안전·사고 대응',t.safety);line('개인정보 보유기간',t.retention);
    $('#bw11-refund-text').textContent=t.refund;
    const clausesList=$('#bw12-terms-list');clausesList.replaceChildren();
@@ -93,6 +100,7 @@
  }
  function resetPublicTerms(){terms=null;publicOptionId='';termsPanel.hidden=true;consentPanel.hidden=true;}
  function updateDay(){
+   if(busy||requestId)return;
    resetPublicTerms();
    const byTime=new Map();
    catalogOptions.filter(o=>o._day===daySelect.value).forEach(o=>{
@@ -105,10 +113,11 @@
    populate(timeSelect,uniqueSlots.map(([time,rows])=>({value:rows[0].id,label:time})),
      !daySelect.value?'요일을 먼저 선택해 주세요':uniqueSlots.length?'수업 시간을 선택해 주세요':'선택 가능한 수업 시간이 없습니다');
    if(Array.from(byTime.values()).some(rows=>rows.length>1)){
-     show(catalogMsg,'uncertain','중복된 수업 일정이 있습니다.','운영자가 같은 요일·시간에 여러 반을 공개해 해당 시간은 일시적으로 숨겼습니다. 담당자에게 확인해 주세요.');
+     show(catalogMsg,'uncertain','중복된 수업 일정이 있습니다.','해당 시간대의 수강반을 확인 중입니다. 담당자에게 참여 가능한 시간을 문의해 주세요.');
    } else catalogMsg.hidden=true;
  }
  function updateTime(){
+   if(busy||requestId)return;
    resetPublicTerms();
    const choice=catalogOptions.find(o=>o.id===timeSelect.value&&o._day===daySelect.value);
    if(!choice)return;
@@ -133,13 +142,13 @@
      const courses=distinct(catalogOptions.map(o=>String(o.course).trim()));
      if(courses.length>1){
        populate(daySelect,[],'수업 설정 확인 중');populate(timeSelect,[],'요일을 먼저 선택해 주세요');
-       show(catalogMsg,'error','수강 과정 설정을 확인해 주세요.','현재 공개된 수강반에 서로 다른 과정이 설정되어 있습니다. 운영자가 하나의 수강 과정으로 정리한 후 등록할 수 있습니다.');
+       show(catalogMsg,'error','수강 과정 설정을 확인해 주세요.','공개된 수강 과정 정보를 확인 중입니다. 잠시 후 다시 시도하거나 담당자에게 문의해 주세요.');
        return;
      }
      const days=BW_DAY_ORDER.filter(d=>catalogOptions.some(o=>o._day===d));
      populate(daySelect,days.map(d=>({value:d,label:d})),days.length?'수업 요일을 선택해 주세요':'현재 신청 가능한 수업이 없습니다');
      populate(timeSelect,[],'요일을 먼저 선택해 주세요');
-     if(!days.length)show(catalogMsg,'uncertain','수업 일정을 준비 중입니다.','운영자가 공개·검토완료로 설정한 시간표만 표시됩니다. 담당자에게 일정을 확인해 주세요.');
+     if(!days.length)show(catalogMsg,'uncertain','수업 일정을 준비 중입니다.','신청 가능한 수업이 아직 표시되지 않습니다. 담당자에게 일정을 문의해 주세요.');
      else catalogMsg.hidden=true;
    }catch(err){show(catalogMsg,'error','수업 시간표를 불러오지 못했습니다.','네트워크 연결을 확인한 뒤 새로고침해 주세요. 문제가 계속되면 담당자에게 연락해 주세요.');}
  }
@@ -160,10 +169,11 @@
  let preview=null;
  window.__BW_ENROLLMENT_OFFER=data=>{preview=data;};
  async function loadOffer(){
+   if(busy||requestId)return;
    if(!endpoint){show(offerMsg,'error','연결 설정을 확인해 주세요.','온라인 등록 연결을 확인하고 있습니다. 담당자에게 문의해 주세요.');return;}
    const raw=codeField.value.trim().replace(/[\s-]/g,'');
    const candidate=/^[0-9a-f]{40}$/i.test(raw)?raw.toLowerCase():raw.toUpperCase();
-   if(!(/^[0-9a-f]{40}$/.test(candidate)||/^[023456789ABCDEFGHJKMNPQRSTUVWXYZ]{10}$/.test(candidate))){show(offerMsg,'error','등록 코드를 확인해 주세요.','카카오톡 링크를 누르거나 10자리 코드를 입력해 주세요.');return;}
+   if(!(/^[0-9a-f]{40}$/.test(candidate)||/^[023456789ABCDEFGHJKMNPQRSTUVWXYZ]{10}$/.test(candidate))){show(offerMsg,'error','등록 코드를 확인해 주세요.','안내받으신 등록 링크를 열거나 10자리 코드를 입력해 주세요.');return;}
    code=candidate;terms=null;preview=null;loadButton.disabled=true;
    show(offerMsg,'pending','수강 조건을 확인하고 있습니다.','상담 담당자가 등록한 내용을 불러오고 있습니다.');
    try{
@@ -174,8 +184,8 @@
       }
       terms=preview.terms;displayTerms(terms);
       show(offerMsg,'success','수강 조건을 불러왔습니다.','내용이 맞는지 확인하신 후 아래의 등록정보와 서명란을 작성해 주세요.');
-   }catch(err){show(offerMsg,'error','등록 안내를 확인해 주세요.',String(err?.message||'').includes('동의 정보 저장 버전')?'기관의 등록 시스템 업데이트가 필요합니다. 담당자에게 알려 주세요.':'네트워크 상태를 확인한 후 다시 시도하거나 담당자에게 문의해 주세요.');}
-   finally{loadButton.disabled=false;}
+   }catch(err){terms=null;termsPanel.hidden=true;consentPanel.hidden=true;show(offerMsg,'error','등록 안내를 확인해 주세요.',String(err?.message||'').includes('동의 정보 저장 버전')?'등록 동의 내용을 확인 중입니다. 담당자에게 문의해 주세요.':'네트워크 상태를 확인한 후 다시 시도하거나 담당자에게 문의해 주세요.');}
+   finally{loadButton.disabled=busy||Boolean(requestId)||Boolean(receipt);}
  }
  loadButton.addEventListener('click',loadOffer);
  codeField.addEventListener('keydown',ev=>{if(ev.key==='Enter'){ev.preventDefault();loadOffer();}});
@@ -225,7 +235,7 @@
    if(!data||data.requestId!==requestId||data.state!=='saved'||!/^BWR-[A-Z0-9]{12}$/.test(String(data.receipt||'')))return;
    receipt=String(data.receipt);archiveState=String(data.documentState||'');
    if(archiveState==='ready'){
-      show(saveMsg,'success','등록 신청정보를 접수했습니다.','접수번호 '+receipt+' · 서명 PDF가 운영자의 비공개 문서함에 보관되었습니다. 보호자 이메일로 전달한 확인 안내에 회신해 주세요.');
+      show(saveMsg,'success','등록 신청이 접수되었습니다.','접수번호 '+receipt+' · 서명하신 신청서를 비공개로 보관했습니다. 보호자 이메일로 받은 확인 안내에 회신해 주세요.');
       printBtn.disabled=false;recheck.hidden=true;busySet(false);
    }else{
       show(saveMsg,'uncertain','등록정보는 저장되었으며 별도 문서 백업을 확인 중입니다.','접수번호 '+receipt+' · 다시 제출하지 마시고 운영자에게 접수번호를 알려 주세요.');
@@ -242,23 +252,23 @@
         if(i<14)await sleep(1600);
       }
       if(requestId===id && archiveState!=='ready'){
-        if(receipt)show(saveMsg,'uncertain','등록 접수는 확인되었습니다.','접수번호 '+receipt+' · 별도 백업 상태는 운영자가 추가로 확인하겠습니다. 같은 정보를 다시 제출하지 마세요.');
+        if(receipt)show(saveMsg,'uncertain','등록 접수는 확인되었습니다.','접수번호 '+receipt+' · 별도 백업 상태는 운영자가 추가로 확인하겠습니다. 같은 정보를 다시 제출하지 말아 주세요.');
         else show(saveMsg,'uncertain','등록 접수 상태를 확인하지 못했습니다.','같은 내용을 다시 보내지 말고 상태를 다시 확인하거나 010-2693-2471로 문의해 주세요.');
         recheck.hidden=false;busySet(false);
       }
    }finally{checking=false;}
  }
  form.addEventListener('submit',async ev=>{
-   ev.preventDefault();if(busy||receipt)return;
+   ev.preventDefault();if(busy||requestId||receipt)return;
    if(!terms||(isPublicMode?!publicOptionId:!code)){show(isPublicMode?catalogMsg:offerMsg,'error','수강반을 먼저 선택해 주세요.','상담에서 안내받은 수업 요일과 시간을 선택해 주세요.');return;}
    if(!form.reportValidity())return;
    const v=collect();if(!v.valid){show(saveMsg,'error','입력 내용을 확인해 주세요.','아이 생년월(7~48개월), 연락처, 필수 동의와 서명을 다시 확인해 주세요.');return;}
    let signaturePng='';if(v.selected==='draw')signaturePng=canvas.toDataURL('image/png');
-   if(signaturePng.length>150000){show(saveMsg,'error','서명을 간단히 다시 작성해 주세요.','서명 이미지를 처리하기 어려울 만큼 크게 작성하셨습니다.');return;}
+   if(signaturePng.length>150000){show(saveMsg,'error','서명을 간단히 다시 작성해 주세요.','서명 파일의 용량이 큽니다. 서명란을 지운 뒤 다시 작성해 주세요.');return;}
    try{requestId=secureId();}catch(_){show(saveMsg,'error','보안 연결이 필요합니다.','HTTPS로 접속해 주세요.');return;}
    savedSnapshot=null;receipt='';archiveState='';busySet(true);recheck.hidden=true;printBtn.disabled=true;
-   show(saveMsg,'pending','수강 등록정보와 서명 문서를 보관하고 있습니다.','전송과 PDF 저장 여부를 확인한 뒤 접수번호를 안내드립니다.');
-   savedSnapshot={...v, consentStates:{
+   show(saveMsg,'pending','등록 신청서와 서명을 저장하고 있습니다.','전송과 PDF 저장 여부를 확인한 뒤 접수번호를 안내드립니다.');
+   savedSnapshot={...v, terms:JSON.parse(JSON.stringify(terms)), consentStates:{
       promoSms:v.d.has('promoSms'),promoEmail:v.d.has('promoEmail'),classRecord:v.d.has('classRecord'),
       photoPublic:v.d.has('photoPublic'),videoPublic:v.d.has('videoPublic')},signaturePng:signaturePng};
    const payload=new URLSearchParams({source:isPublicMode?'bridgewonder-v16-public-enroll':'bridgewonder-v11-contract',rid:requestId,offerCode:isPublicMode?'':code,publicOptionId:isPublicMode?publicOptionId:'',termsVersion:terms.version,
@@ -276,8 +286,8 @@
  recheck.addEventListener('click',()=>{if(checking||!requestId)return;show(saveMsg,'pending','접수 상태를 다시 확인합니다.','기존 접수번호를 조회하므로 중복 등록되지 않습니다.');verifyReceipt(requestId);});
  const escape=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  printBtn.addEventListener('click',()=>{
-   if(!receipt||!terms)return;
-   const v=savedSnapshot;if(!v)return;const out=window.open('','_blank','width=850,height=900');
+   if(!receipt||!savedSnapshot||!savedSnapshot.terms)return;
+   const v=savedSnapshot,terms=v.terms;const out=window.open('','_blank','width=850,height=900');
    if(!out){show(saveMsg,'error','PDF 저장 창을 열 수 없습니다.','팝업 차단을 해제한 후 다시 시도해 주세요.');return;}
    try{out.opener=null;}catch(_){ }
    const consentRows=[

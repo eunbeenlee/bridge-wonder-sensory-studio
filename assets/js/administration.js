@@ -1,9 +1,9 @@
-/* Bridge Wonder V25 · GitHub staff app · no secrets */
+/* Bridge Wonder V26 · GitHub staff app · no secrets */
 'use strict';
     const $=id=>document.getElementById(id), h=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const ROLE_NAMES={owner:'원장',director:'관리자',teacher:'선생님',frontdesk:'상담 담당자'};
-    const MENU=[['home','⌂','오늘의 업무',['owner','director','teacher','frontdesk']],['classes','▦','수업 시간표',['owner','director','teacher','frontdesk']],['roster','♧','우리 반 아이들',['owner','director','teacher']],['attendance','✓','출석 체크',['owner','director','teacher']],['makeups','▤','결석·보강 관리',['owner','director','teacher']],['safety','♧','수업 준비·안전',['owner','director','teacher']],['handoff','✓','보호자 인계 기록',['owner','director','teacher']],['themes','♧','이달의 수업 주제',['owner','director','teacher','frontdesk']],['capacity','▣','반별 정원',['owner','director','teacher','frontdesk']],['inquiries','◷','상담 접수',['owner','director','frontdesk']],['waitlist','◷','대기 상담',['owner','director','frontdesk']],['registrations','▤','수강 신청 확인',['owner','director']],['tuition','₩','수납·환불 기록',['owner','director']],['documents','▣','안내문·확인서',['owner','director','teacher','frontdesk']],['operations','☷','개원·운영 체크리스트',['owner','director']],['courseSettings','◈','학원 운영정보',['owner','director']],['staffCompliance','◈','선생님 준수 사항',['owner']],['users','♙','선생님 계정·권한',['owner']],['security','⌘','이용 기록·백업',['owner']]];
-    const BW24_CAPS={"home":{"label":"오늘의 업무","read":["owner","director","teacher","frontdesk"],"write":[]},"inquiries":{"label":"상담 접수","read":["owner","director","frontdesk"],"write":["owner","director","frontdesk"]},"registrations":{"label":"수강 신청 확인","read":["owner","director"],"write":[]},"classes":{"label":"수업 시간표","read":["owner","director","teacher","frontdesk"],"write":["owner","director"]},"courseSettings":{"label":"학원 운영정보","read":["owner","director"],"write":["owner","director"]},"roster":{"label":"우리 반 아이들","read":["owner","director","teacher"],"write":[]},"attendance":{"label":"출석 체크","read":["owner","director","teacher"],"write":["owner","director","teacher"]},"operations":{"label":"개원·운영 체크리스트","read":["owner","director"],"write":["owner","director"]},"tuition":{"label":"수납·환불 기록","read":["owner","director"],"write":["owner","director"]},"safety":{"label":"수업 준비·안전","read":["owner","director","teacher"],"write":["owner","director","teacher"]},"handoff":{"label":"보호자 인계 기록","read":["owner","director","teacher"],"write":["owner","director","teacher"]},"staffCompliance":{"label":"선생님 준수 사항","read":["owner"],"write":["owner"]},"users":{"label":"선생님 계정·권한","read":["owner"],"write":["owner"]},"documents":{"label":"안내문·확인서","read":["owner","director","teacher","frontdesk"],"write":["owner","director","teacher","frontdesk"]},"capacity":{"label":"반별 정원","read":["owner","director","teacher","frontdesk"],"write":["owner","director"]},"waitlist":{"label":"대기 상담","read":["owner","director","frontdesk"],"write":["owner","director","frontdesk"]},"makeups":{"label":"결석·보강 관리","read":["owner","director","teacher"],"write":["owner","director","teacher"]},"themes":{"label":"이달의 수업 주제","read":["owner","director","teacher","frontdesk"],"write":["owner","director"]},"security":{"label":"이용 기록·백업","read":["owner"],"write":["owner"]}};
+    const MENU=[['home','⌂','오늘의 업무',['owner','director','teacher','frontdesk']],['classes','▦','수업 시간표',['owner','director','teacher','frontdesk']],['roster','♧','우리 반 아이들',['owner','director','teacher']],['attendance','✓','출석 체크',['owner','director','teacher']],['makeups','▤','결석·보강 관리',['owner','director','teacher']],['safety','♧','수업 준비·안전',['owner','director','teacher']],['handoff','✓','보호자 인계 기록',['owner','director','teacher']],['themes','♧','이달의 수업 주제',['owner','director','teacher','frontdesk']],['capacity','▣','반별 정원',['owner','director','teacher','frontdesk']],['inquiries','◷','상담 접수',['owner','director','frontdesk']],['waitlist','◷','대기 상담',['owner','director','frontdesk']],['registrations','▤','수강 신청 확인',['owner','director']],['tuition','₩','수납·환불 기록',['owner','director']],['documents','▣','안내문·확인서',['owner','director','teacher','frontdesk']],['operations','☷','개원·운영 체크리스트',['owner','director']],['courseSettings','◈','학원 운영정보',['owner','director']],['staffCompliance','◈','선생님 준수 사항',['owner']],['users','♙','선생님 계정·권한',['owner']],['payroll','₩','직원 급여관리',['owner']],['security','⌘','이용 기록·백업',['owner']]];
+    const BW24_CAPS={"home":{"label":"오늘의 업무","read":["owner","director","teacher","frontdesk"],"write":[]},"inquiries":{"label":"상담 접수","read":["owner","director","frontdesk"],"write":["owner","director","frontdesk"]},"registrations":{"label":"수강 신청 확인","read":["owner","director"],"write":[]},"classes":{"label":"수업 시간표","read":["owner","director","teacher","frontdesk"],"write":["owner","director"]},"courseSettings":{"label":"학원 운영정보","read":["owner","director"],"write":["owner","director"]},"roster":{"label":"우리 반 아이들","read":["owner","director","teacher"],"write":[]},"attendance":{"label":"출석 체크","read":["owner","director","teacher"],"write":["owner","director","teacher"]},"operations":{"label":"개원·운영 체크리스트","read":["owner","director"],"write":["owner","director"]},"tuition":{"label":"수납·환불 기록","read":["owner","director"],"write":["owner","director"]},"safety":{"label":"수업 준비·안전","read":["owner","director","teacher"],"write":["owner","director","teacher"]},"handoff":{"label":"보호자 인계 기록","read":["owner","director","teacher"],"write":["owner","director","teacher"]},"staffCompliance":{"label":"선생님 준수 사항","read":["owner"],"write":["owner"]},"users":{"label":"선생님 계정·권한","read":["owner"],"write":["owner"]},"documents":{"label":"안내문·확인서","read":["owner","director","teacher","frontdesk"],"write":["owner","director","teacher","frontdesk"]},"capacity":{"label":"반별 정원","read":["owner","director","teacher","frontdesk"],"write":["owner","director"]},"waitlist":{"label":"대기 상담","read":["owner","director","frontdesk"],"write":["owner","director","frontdesk"]},"makeups":{"label":"결석·보강 관리","read":["owner","director","teacher"],"write":["owner","director","teacher"]},"themes":{"label":"이달의 수업 주제","read":["owner","director","teacher","frontdesk"],"write":["owner","director"]},"security":{"label":"이용 기록·백업","read":["owner"],"write":["owner"]},"payroll":{"label":"직원 급여관리","read":["owner"],"write":["owner"]}};
     function bw24Can(page,mode='read'){
       if(!state.user||!BW24_CAPS[page])return false;
       if(!BW24_CAPS[page][mode==='write'?'write':'read'].includes(state.user.role))return false;
@@ -12,7 +12,7 @@
     }
     const state={token:'',user:null,page:'home',classes:[],templates:[],inquiries:[],registrations:[],roster:[],staff:[],attendance:[],busy:false,navigationSeq:0};
     let toastTimer;
-    const toast=(message,error=false)=>{const el=$('toast');el.textContent=message;el.style.background=error?'#92513e':'#354f33';el.style.display='block';clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.style.display='none',3900);};
+    const toast=(message,error=false)=>{if(message==='BW24_STALE_VIEW')return;const el=$('toast');el.textContent=message;el.style.background=error?'#92513e':'#354f33';el.style.display='block';clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.style.display='none',3900);};
     // V25.1: requests are optimized in the separate GitHub acceleration module.
     const bw24Timings=[];
     const bw25Accel=window.BW25Acceleration?.create({
@@ -25,11 +25,12 @@
     });
     function bw24ClearCache(){bw25Accel?.invalidate();}
     function call(name,...args){
-      if(bw25Accel)return bw25Accel.request(name,args,{session:state.token,nav:state.navigationSeq});
-      // Safe fallback: no caching and no automatic retry when accelerator is unavailable.
-      return new Promise((resolve,reject)=>{try{
-        google.script.run.withSuccessHandler(resolve).withFailureHandler(e=>reject(new Error(e?.message||String(e))))[name](...args);
-      }catch(e){reject(e);}});
+      const token=state.token,nav=state.navigationSeq;
+      const result=bw25Accel?bw25Accel.request(name,args,{session:token,nav}):
+        new Promise((resolve,reject)=>{try{
+          google.script.run.withSuccessHandler(resolve).withFailureHandler(e=>reject(new Error(e?.message||String(e))))[name](...args);
+        }catch(e){reject(e);}});
+      return result.then(value=>{if(token!==state.token||nav!==state.navigationSeq)throw Error('BW24_STALE_VIEW');return value;});
     }
     const bw25DisabledSnapshot=new WeakMap();
     function setBusy(form,busy){
@@ -84,20 +85,20 @@
     });
     $('otpForm').addEventListener('submit',async e=>{
       e.preventDefault();const form=e.currentTarget;setBusy(form,true);
-      $('loginFeedback').textContent='인증번호와 비밀번호를 확인하고 있습니다.';
+      $('loginFeedback').textContent='인증번호와 새 비밀번호를 확인하고 있습니다.';
       try{
         const pw=$('bw23NewPass').value;
         if(pw!==$('bw23ConfirmPass').value)throw Error('새 비밀번호가 일치하지 않습니다.');
         const r=await call('staff23PasswordCompleteEnrollment',{email:$('loginEmail').value.trim(),code:$('loginOtp').value.trim(),password:pw,mode:bw23EnrollMode});
         $('passwordEmail').value=$('loginEmail').value.trim();
         $('loginOtp').value='';$('bw23NewPass').value='';$('bw23ConfirmPass').value='';
-        bw23ShowPassword(r.message||'설정이 완료되었습니다. 비밀번호로 로그인하세요.');
+        bw23ShowPassword(r.message||'비밀번호를 설정했습니다. 새 비밀번호로 로그인해 주세요.');
         $('passwordInput').focus();
       }catch(err){loginError(err);}finally{setBusy(form,false);}
     });
     $('backToEmail').addEventListener('click',()=>bw23ShowPassword(''));
     async function logout(){
-      const token=state.token;state.token='';state.user=null;
+      const token=state.token;state.token='';state.user=null;state.navigationSeq++;bw25Accel?.clear();window.BWPayroll?.dispose();$('pageBody').replaceChildren();for(const key of ['classes','templates','inquiries','registrations','roster','staff','attendance'])state[key]=[];
       try{sessionStorage.removeItem('bw17_staff_session');}catch(_){}
       $('workspace').hidden=true;$('loginScreen').hidden=false;
       $('passwordInput').value='';bw23ShowPassword('로그아웃했습니다.');
@@ -111,7 +112,7 @@
       if(bw24Can(page,'write')||!bw24Can(page,'read')||['home','registrations','roster','security'].includes(page))return;
       const root=$('pageBody');if(!root)return;
       if(root.querySelector('.bw24-viewonly'))return;
-      root.insertAdjacentHTML('afterbegin','<div class="bw24-viewonly" role="note">이 화면은 조회 전용으로 설정되어 있어요. 수정이 필요하면 원장님께 권한을 요청해 주세요.</div>');
+      root.insertAdjacentHTML('afterbegin','<div class="bw24-viewonly" role="note">조회 전용 화면입니다. 입력·수정이 필요하면 원장에게 권한을 요청해 주세요.</div>');
       root.querySelectorAll('form button[type="submit"], [data-save-att], [data-op-save]').forEach(b=>b.disabled=true);
       root.querySelectorAll('button').forEach(b=>{
         if(/저장|신규 발급|PDF 생성|이메일 보내기|수정|승인|계정 추가|반영/.test(b.textContent||''))b.disabled=true;
@@ -121,11 +122,11 @@
     function panel(title,description,inner){return `<section class="panel"><h3>${title}</h3>${description?`<p class="panel-desc">${description}</p>`:''}${inner}</section>`;}
     function table(columns,rows){if(!rows.length)return `<div class="empty">표시할 기록이 없습니다.</div>`;return `<div class="table-scroll"><table class="data-table"><thead><tr>${columns.map(x=>`<th scope="col">${x}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div>`;}
     function tag(s){return `<span class="tag ${/실패|중지|결석/.test(s)?'off':/대기|신규|확인전/.test(s)?'waiting':''}">${h(s||'미확인')}</span>`;}
-    function loading(){return `<div class="panel bw24-loading"><span class="bw24-pulse" aria-hidden="true"></span><p class="muted" role="status">자료를 불러오는 중입니다. 화면 이동은 계속할 수 있어요.</p></div>`;}
-    async function showPage(page){if(!state.user||!bw24Can(page))return;state.page=page;const seq=++state.navigationSeq;bw25Accel?.setNavigation(seq);renderNav();const m=MENU.find(x=>x[0]===page);$('topTitle').textContent=m[2];$('pageBody').innerHTML=loading();try{document.scrollingElement?.scrollTo({top:0,behavior:'auto'});if(page==='home')await renderHome();if(page==='inquiries')await renderInquiries();if(page==='registrations')await renderRegistrations();if(page==='classes')await renderClasses();if(page==='courseSettings')await renderCourseSettings();if(page==='roster')await renderRoster();if(page==='attendance')await renderAttendance();if(page==='operations')await renderOperations();if(page==='tuition')await renderTuition();if(page==='safety')await renderSafety();if(page==='handoff')await renderHandoff();if(page==='staffCompliance')await renderStaffCompliance();if(page==='users')await renderUsers();if(page==='security')await renderSecurity();if(page==='documents')await renderDocuments();if(page==='capacity')await renderCapacity();if(page==='waitlist')await renderWaitlist();if(page==='makeups')await renderMakeups();if(page==='themes')await renderThemes();if(seq===state.navigationSeq)bw24ApplyReadonly(page);}catch(e){if(seq!==state.navigationSeq||e.message==='BW24_STALE_VIEW')return;if(/로그인이 필요|접속 시간이 만료|사용 권한이 중지/.test(e.message)){await logout();toast('로그인 상태를 다시 확인해 주세요.',true);}else $('pageBody').innerHTML=head(m[2],'')+panel('자료를 불러오지 못했습니다.','',`<p class="danger">${h(e.message)}</p><button id="retryPage" class="btn btn-outline spaced">다시 시도</button>`),$('retryPage').onclick=()=>showPage(page);}}
+    function loading(){return `<div class="panel bw24-loading"><span class="bw24-pulse" aria-hidden="true"></span><p class="muted" role="status">자료를 불러오는 중입니다. 다른 업무 화면으로 이동할 수 있습니다.</p></div>`;}
+    async function showPage(page){if(!state.user||!bw24Can(page))return;if(state.page==='payroll'&&window.BWPayroll?.beforeLeave()===false)return;window.BWPayroll?.dispose();state.page=page;const seq=++state.navigationSeq;bw25Accel?.setNavigation(seq);renderNav();const m=MENU.find(x=>x[0]===page);$('topTitle').textContent=m[2];$('pageBody').innerHTML=loading();try{document.scrollingElement?.scrollTo({top:0,behavior:'auto'});if(page==='home')await renderHome();if(page==='inquiries')await renderInquiries();if(page==='registrations')await renderRegistrations();if(page==='classes')await renderClasses();if(page==='courseSettings')await renderCourseSettings();if(page==='roster')await renderRoster();if(page==='attendance')await renderAttendance();if(page==='operations')await renderOperations();if(page==='tuition')await renderTuition();if(page==='safety')await renderSafety();if(page==='handoff')await renderHandoff();if(page==='staffCompliance')await renderStaffCompliance();if(page==='users')await renderUsers();if(page==='security')await renderSecurity();if(page==='documents')await renderDocuments();if(page==='capacity')await renderCapacity();if(page==='waitlist')await renderWaitlist();if(page==='makeups')await renderMakeups();if(page==='themes')await renderThemes();if(page==='payroll')await renderPayroll();if(seq===state.navigationSeq)bw24ApplyReadonly(page);}catch(e){if(seq!==state.navigationSeq||e.message==='BW24_STALE_VIEW')return;if(/로그인이 필요|접속 시간이 만료|사용 권한이 중지/.test(e.message)){await logout();toast('로그인 상태를 다시 확인해 주세요.',true);}else $('pageBody').innerHTML=head(m[2],'')+panel('자료를 불러오지 못했습니다.','',`<p class="danger">${h(e.message)}</p><button id="retryPage" class="btn btn-outline spaced">다시 시도</button>`),$('retryPage').onclick=()=>showPage(page);}}
     async function renderHome(){const r=await call('staffDashboard',state.token);if(state.page!=='home')return;
       $('pageBody').innerHTML=head('오늘의 업무','필요한 일부터 빠르게 확인하고 바로 처리하세요.')+`<div class="metric-grid"><article class="metric"><div class="metric-name">${r.role==='teacher'?'내 담당 반':'운영 중인 수강반'}</div><div class="metric-value">${h(r.classCount)}</div></article>${r.newInquiries===null?'':`<article class="metric"><div class="metric-name">새로운 상담 문의</div><div class="metric-value">${h(r.newInquiries)}</div></article>`}${r.pendingEnrollments===null?'':`<article class="metric"><div class="metric-name">확인 필요한 등록</div><div class="metric-value">${h(r.pendingEnrollments)}</div></article>`}</div>`+
-      panel('업무 바로가기','계정에 부여된 권한에 따라 필요한 화면만 표시됩니다.',`<div class="cards-list">${MENU.filter(x=>x[3].includes(state.user.role)&&!['home','security'].includes(x[0])).map(x=>`<button data-goto="${x[0]}" class="btn btn-outline">${h(x[2])}</button>`).join('')}</div>`)+
+      panel('업무 바로가기','계정에 부여된 권한에 따라 필요한 화면만 표시됩니다.',`<div class="cards-list">${MENU.filter(x=>bw24Can(x[0])&&!['home','security'].includes(x[0])).map(x=>`<button data-goto="${x[0]}" class="btn btn-outline">${h(x[2])}</button>`).join('')}</div>`)+
       panel('운영 안내','',`<div class="alert">보호자 상담·수강 등록 원본은 기존 Google Sheets에 유지됩니다. 이 운영공간에서 업무를 처리할 수 있으며, 변경 내용은 사용자 계정별로 기록됩니다.</div><p class="footnote">마지막 조회: ${h(r.updatedAt)} · 접속 유지 시간은 약 60분입니다.</p>`);
       $('pageBody').querySelectorAll('[data-goto]').forEach(b=>b.onclick=()=>showPage(b.dataset.goto));
     }
@@ -421,7 +422,16 @@
       panel('처리 내역 추가','이 화면은 거래내역 확인용입니다. 결제 처리나 법정 영수증 발급을 대신하지 않습니다.',`<form id="tuitionForm" class="stack"><div class="fields"><div class="form-item"><label for="payReceipt">수강등록 접수번호</label><select id="payReceipt" required><option value="">접수번호를 선택해 주세요</option>${d.students.map(x=>`<option value="${h(x.receipt)}">${h(x.name)} · ${h(x.receipt)}</option>`).join('')}</select></div><div class="form-item"><label for="payKind">기록할 업무</label><select id="payKind">${kinds.map(x=>`<option>${x}</option>`).join('')}</select></div><div class="form-item"><label for="payAmount">금액 (원)</label><input id="payAmount" type="number" min="0" max="100000000" step="1" inputmode="numeric" value="0" required></div><div class="form-item"><label for="payReference">영수증·결제·환불 증빙번호</label><input id="payReference" maxlength="85" placeholder="민감한 결제정보는 입력하지 마세요"></div></div><div class="form-item"><label for="payNote">간단한 운영 메모</label><textarea id="payNote" maxlength="120" placeholder="예: 카드 매출전표 발급 확인. 카드번호나 계좌번호는 적지 않습니다."></textarea></div><div class="row"><button type="submit" class="btn btn-primary">처리 이력 추가</button><small>한 번 저장된 항목은 자동 삭제하거나 수정하지 않습니다.</small></div></form>`)+
       panel('최근 수납 기록',`최근 ${d.records.length}건을 표시합니다.`,table(['기록시각','등록 접수번호','처리 종류','금액(원)','증빙참조','담당자'],d.records.map(x=>`<tr><td>${h(x.at)}</td><td>${h(x.receipt)}</td><td>${tag(x.kind)}</td><td>${h(x.amount)}</td><td>${h(x.reference)}</td><td>${h(x.operator)}</td></tr>`)))+
       `<div class="warning">환불액은 운영자가 실제 반환처리 후에만 ‘환불완료’로 기록하세요. 법정 반환 기준 계산과 지급은 별도 확인이 필요합니다.</div>`;
-      $('tuitionForm').onsubmit=async e=>{e.preventDefault();const f=e.currentTarget;setBusy(f,true);try{await call('staffAppendTuition',state.token,{receipt:$('payReceipt').value,kind:$('payKind').value,amount:Number($('payAmount').value),reference:$('payReference').value,note:$('payNote').value});toast('수납 관리 기록을 추가했습니다.');await renderTuition();}catch(err){toast(err.message,true);}finally{setBusy(f,false);}};
+      let pendingTuition=null;
+      $('tuitionForm').onsubmit=async e=>{e.preventDefault();const f=e.currentTarget;
+        const payload={receipt:$('payReceipt').value,kind:$('payKind').value,amount:Number($('payAmount').value),reference:$('payReference').value,note:$('payNote').value};
+        const fingerprint=JSON.stringify(payload);
+        if(pendingTuition&&pendingTuition.fingerprint!==fingerprint){toast('이전 요청의 저장 결과를 먼저 조회해 주세요. 같은 내용으로 재시도하면 중복 저장을 방지합니다.',true);return;}
+        if(!pendingTuition){const bytes=new Uint8Array(16);crypto.getRandomValues(bytes);pendingTuition={fingerprint,operationId:Array.from(bytes,x=>x.toString(16).padStart(2,'0')).join('')};}
+        payload.operationId=pendingTuition.operationId;setBusy(f,true);
+        try{const result=await call('staffAppendTuition',state.token,payload);pendingTuition=null;toast(result.auditWarning?'수납 기록을 저장했습니다. 감사 이력은 별도로 확인해 주세요.':result.replayed?'이미 저장된 수납 기록을 확인했습니다.':'수납 관리 기록을 추가했습니다.');if(state.page==='tuition')await renderTuition();}
+        catch(err){toast(err.message,true);}finally{setBusy(f,false);}
+      };
     }
     async function renderSafety(){
       const cls=await getClasses();const d=await call('staffListDailyChecks',state.token,{});if(state.page!=='safety')return;
@@ -583,3 +593,39 @@ renderHome=async function(){await bw20PreviousRenderHome();if(state.page!=='home
 
 const bw20OldRenderNav=renderNav;
 renderNav=function(){bw20OldRenderNav();const el=$('bw20PageSelect');if(!el)return;const allowed=MENU.filter(m=>bw24Can(m[0]));el.innerHTML=allowed.map(m=>`<option value="${h(m[0])}">${h(m[2])}</option>`).join('');el.value=state.page;el.onchange=()=>showPage(el.value);};
+
+// Payroll assets are loaded only when the owner opens the module.
+let bw26PayrollAssets=null;
+const bw26PayrollLoads={};
+function bw26LoadPayroll(){
+  if(bw26PayrollAssets)return bw26PayrollAssets;
+  const base='https://bridgewonder.bridgeacademy.co.kr/assets/';
+  function asset(id,tag,url,label){
+    if(tag==='script'&&window.BWPayroll)return Promise.resolve();
+    if(bw26PayrollLoads[id])return bw26PayrollLoads[id];
+    const existing=document.getElementById(id);
+    if(existing?.dataset.bw26Ready==='true')return Promise.resolve();
+    bw26PayrollLoads[id]=new Promise((resolve,reject)=>{
+      const element=existing||document.createElement(tag);element.id=id;
+      let settled=false;
+      const finish=error=>{if(settled)return;settled=true;clearTimeout(timer);element.onload=null;element.onerror=null;if(error){element.remove();reject(error);}else{element.dataset.bw26Ready='true';resolve();}};
+      const timer=setTimeout(()=>finish(Error(label+'을 불러오는 시간이 길어지고 있습니다. 다시 시도해 주세요.')),20000);
+      element.onload=()=>finish(tag==='script'&&!window.BWPayroll?Error('급여 화면 초기화에 실패했습니다. 다시 시도해 주세요.'):null);
+      element.onerror=()=>finish(Error(label+'을 불러오지 못했습니다. 다시 시도해 주세요.'));
+      if(!existing){if(tag==='link'){element.rel='stylesheet';element.href=url;document.head.append(element);}else{element.src=url;document.body.append(element);}}
+    }).catch(error=>{delete bw26PayrollLoads[id];throw error;});
+    return bw26PayrollLoads[id];
+  }
+  bw26PayrollAssets=Promise.all([
+    asset('bw26PayrollCSS','link',base+'css/administration-payroll.css?v=26.0.0','급여 화면 스타일'),
+    asset('bw26PayrollJS','script',base+'js/administration-payroll.js?v=26.0.0','급여 화면')
+  ]).catch(e=>{bw26PayrollAssets=null;throw e;});
+  return bw26PayrollAssets;
+}
+async function renderPayroll(){
+  const nav=state.navigationSeq,token=state.token,user=state.user;
+  if(user?.role!=='owner')throw Error('급여관리는 원장 계정에서만 이용할 수 있습니다.');
+  await bw26LoadPayroll();
+  if(nav!==state.navigationSeq||token!==state.token||state.page!=='payroll')return;
+  await window.BWPayroll.mount($('pageBody'),{token,user,call,isCurrent:()=>nav===state.navigationSeq&&token===state.token&&state.page==='payroll'&&state.user?.role==='owner'});
+}
