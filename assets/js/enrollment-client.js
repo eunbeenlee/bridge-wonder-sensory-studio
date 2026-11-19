@@ -12,7 +12,7 @@
  const offerMsg=$('#bw11-offer-feedback'),saveMsg=$('#bw11-save-feedback'),loadButton=$('#bw11-load'),submitButton=$('#bw11-submit'),recheck=$('#bw11-check'),printBtn=$('#bw11-print');
  const consentPanel=$('#bw11-form-panel'),termsPanel=$('#bw11-terms-panel');
  const publicPanel=$('#bw16-public-panel'),legacyPanel=$('#bw11-invite-panel');
- const courseSelect=$('#bw16-course'),startSelect=$('#bw16-start'),slotSelect=$('#bw16-slot'),catalogMsg=$('#bw16-catalog-feedback');
+ const daySelect=$('#bw16-day'),timeSelect=$('#bw16-time'),catalogMsg=$('#bw16-catalog-feedback');
  const yearSelect=$('#bw16-birth-year'),monthSelect=$('#bw16-birth-month'),birthHidden=$('#bw11-birth');
  const canvas=$('#bw11-sign'),ctx=canvas.getContext('2d');
  const BW13_CONSENT_VERSION='BW-CONSENT-2026-11-18-V13';
@@ -75,7 +75,9 @@
    termsPanel.hidden=false;consentPanel.hidden=false;syncConsentControls();
    termsPanel.scrollIntoView({behavior:'smooth',block:'start'});
  }
- // Public class catalog: course, start date and time are drawn only from operator-approved Sheets rows.
+ // The program is SINGLE-CURRICULUM. Only operator-approved weekday/time slots are selectable.
+ // The backend still supplies start date, tuition, legal terms and an immutable class ID.
+ const BW_DAY_ORDER=['월요일','화요일','수요일','목요일','금요일','토요일','일요일'];
  let catalogResult=null;
  window.__BW_PUBLIC_CATALOG=data=>{catalogResult=data;};
  function populate(select,items,placeholder){
@@ -85,44 +87,61 @@
    select.disabled=!items.length;
  }
  function distinct(arr){return Array.from(new Set(arr));}
+ function parseSlot(schedule){
+   const match=/^(월요일|화요일|수요일|목요일|금요일|토요일|일요일)\s*·\s*(.+)$/.exec(String(schedule||''));
+   return match&&match[2].trim()?{day:match[1],time:match[2].trim()}:null;
+ }
  function resetPublicTerms(){terms=null;publicOptionId='';termsPanel.hidden=true;consentPanel.hidden=true;}
- function updateCourse(){
+ function updateDay(){
    resetPublicTerms();
-   const rows=catalogOptions.filter(o=>o.course===courseSelect.value);
-   populate(startSelect,distinct(rows.map(o=>o.starts)).sort().map(v=>({value:v,label:v})),courseSelect.value?'시작일을 선택해 주세요':'과정을 먼저 선택해 주세요');
-   populate(slotSelect,[], '시작일을 먼저 선택해 주세요');
+   const byTime=new Map();
+   catalogOptions.filter(o=>o._day===daySelect.value).forEach(o=>{
+     const group=byTime.get(o._time)||[];group.push(o);byTime.set(o._time,group);
+   });
+   // Never choose among multiple active offerings of the SAME day/time silently:
+   // different dates or prices could create an incorrect registration contract.
+   const uniqueSlots=Array.from(byTime.entries()).filter(([,rows])=>rows.length===1)
+     .sort((a,b)=>a[0].localeCompare(b[0],'ko',{numeric:true}));
+   populate(timeSelect,uniqueSlots.map(([time,rows])=>({value:rows[0].id,label:time})),
+     !daySelect.value?'요일을 먼저 선택해 주세요':uniqueSlots.length?'수업 시간을 선택해 주세요':'선택 가능한 수업 시간이 없습니다');
+   if(Array.from(byTime.values()).some(rows=>rows.length>1)){
+     show(catalogMsg,'uncertain','중복된 수업 일정이 있습니다.','운영자가 같은 요일·시간에 여러 반을 공개해 해당 시간은 일시적으로 숨겼습니다. 담당자에게 확인해 주세요.');
+   } else catalogMsg.hidden=true;
  }
- function updateStart(){
+ function updateTime(){
    resetPublicTerms();
-   const rows=catalogOptions.filter(o=>o.course===courseSelect.value&&o.starts===startSelect.value);
-   populate(slotSelect,rows.map(o=>({value:o.id,label:o.schedule+' · '+o.period})),startSelect.value?'요일·시간을 선택해 주세요':'시작일을 먼저 선택해 주세요');
- }
- function updateSlot(){
-   resetPublicTerms();
-   const choice=catalogOptions.find(o=>o.id===slotSelect.value);
+   const choice=catalogOptions.find(o=>o.id===timeSelect.value&&o._day===daySelect.value);
    if(!choice)return;
    try{
      publicOptionId=choice.id;terms=choice.terms;
      displayTerms(terms);
-     show(catalogMsg,'success','수강 조건을 불러왔습니다.','상담에서 안내받은 내용과 같은지 확인한 뒤 등록정보를 작성해 주세요.');
+     show(catalogMsg,'success','수강 조건을 불러왔습니다.','선택한 요일·시간과 자동 표시된 시작일·교습비를 확인해 주세요.');
    }catch(err){resetPublicTerms();show(catalogMsg,'error','수강 조건을 표시하지 못했습니다.','등록 조건 버전이 일치하지 않습니다. 담당자에게 문의해 주세요.');}
  }
- courseSelect.addEventListener('change',updateCourse);
- startSelect.addEventListener('change',updateStart);
- slotSelect.addEventListener('change',updateSlot);
+ daySelect.addEventListener('change',updateDay);
+ timeSelect.addEventListener('change',updateTime);
  async function loadPublicCatalog(){
-   if(!endpoint){show(catalogMsg,'error','온라인 등록 연결을 확인 중입니다.','현재 수강반을 불러올 수 없습니다. 전화 또는 방문·문의 페이지를 이용해 주세요.');return;}
+   if(!endpoint){show(catalogMsg,'error','온라인 등록 연결을 확인 중입니다.','현재 수업 시간을 불러올 수 없습니다. 전화 또는 방문·문의 페이지를 이용해 주세요.');return;}
    catalogResult=null;
    try{
      await jsonp({action:'catalogV16'},14000);
      const result=catalogResult;
      if(!result||result.version!=='BW-PUBLIC-ENROLL-V16'||!Array.isArray(result.options))throw Error('catalog version');
-     catalogOptions=result.options.filter(o=>/^[A-Z0-9_-]{3,32}$/.test(o.id)&&o.terms&&o.course&&o.starts&&o.schedule);
-     const items=distinct(catalogOptions.map(o=>o.course)).sort().map(v=>({value:v,label:v}));
-     populate(courseSelect,items,items.length?'과정을 선택해 주세요':'현재 신청 가능한 수강반이 없습니다');
-     if(!items.length)show(catalogMsg,'uncertain','수강반 안내를 준비 중입니다.','현장 상담을 마친 보호자께서는 담당자에게 등록 가능한 수업 일정을 확인해 주세요.');
+     catalogOptions=result.options.filter(o=>/^[A-Z0-9_-]{3,32}$/.test(o.id)&&o.terms&&o.course&&o.starts&&o.schedule)
+       .map(o=>({...o,_slot:parseSlot(o.schedule)})).filter(o=>o._slot)
+       .map(o=>({...o,_day:o._slot.day,_time:o._slot.time}));
+     const courses=distinct(catalogOptions.map(o=>String(o.course).trim()));
+     if(courses.length>1){
+       populate(daySelect,[],'수업 설정 확인 중');populate(timeSelect,[],'요일을 먼저 선택해 주세요');
+       show(catalogMsg,'error','수강 과정 설정을 확인해 주세요.','현재 공개된 수강반에 서로 다른 과정이 설정되어 있습니다. 운영자가 하나의 수강 과정으로 정리한 후 등록할 수 있습니다.');
+       return;
+     }
+     const days=BW_DAY_ORDER.filter(d=>catalogOptions.some(o=>o._day===d));
+     populate(daySelect,days.map(d=>({value:d,label:d})),days.length?'수업 요일을 선택해 주세요':'현재 신청 가능한 수업이 없습니다');
+     populate(timeSelect,[],'요일을 먼저 선택해 주세요');
+     if(!days.length)show(catalogMsg,'uncertain','수업 일정을 준비 중입니다.','운영자가 공개·검토완료로 설정한 시간표만 표시됩니다. 담당자에게 일정을 확인해 주세요.');
      else catalogMsg.hidden=true;
-   }catch(err){show(catalogMsg,'error','수강반 목록을 불러오지 못했습니다.','네트워크 연결을 확인한 뒤 새로고침해 주세요. 문제가 계속되면 담당자에게 연락해 주세요.');}
+   }catch(err){show(catalogMsg,'error','수업 시간표를 불러오지 못했습니다.','네트워크 연결을 확인한 뒤 새로고침해 주세요. 문제가 계속되면 담당자에게 연락해 주세요.');}
  }
  function updateBirthYears(){
    const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit'}).formatToParts(new Date());
@@ -231,7 +250,7 @@
  }
  form.addEventListener('submit',async ev=>{
    ev.preventDefault();if(busy||receipt)return;
-   if(!terms||(isPublicMode?!publicOptionId:!code)){show(isPublicMode?catalogMsg:offerMsg,'error','수강반을 먼저 선택해 주세요.','상담받으신 과정과 수업 시작일, 요일·시간을 선택해 주세요.');return;}
+   if(!terms||(isPublicMode?!publicOptionId:!code)){show(isPublicMode?catalogMsg:offerMsg,'error','수강반을 먼저 선택해 주세요.','상담에서 안내받은 수업 요일과 시간을 선택해 주세요.');return;}
    if(!form.reportValidity())return;
    const v=collect();if(!v.valid){show(saveMsg,'error','입력 내용을 확인해 주세요.','아이 생년월(7~48개월), 연락처, 필수 동의와 서명을 다시 확인해 주세요.');return;}
    let signaturePng='';if(v.selected==='draw')signaturePng=canvas.toDataURL('image/png');
