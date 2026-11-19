@@ -59,7 +59,7 @@
   const a=document.createElement('a');a.className='btn btn-primary';a.href='./';a.textContent='직원 운영공간 열기';
   card.append(h,p,a);box.append(card);document.body.append(box);
  }else{
-  const s=document.createElement('script');s.src='../assets/js/administration.js';document.body.append(s);
+  const e=document.createElement('script');e.src='../assets/js/administration-accelerator.js';e.onload=()=>{const s=document.createElement('script');s.src='../assets/js/administration.js';document.body.append(s);};e.onerror=()=>{const s=document.createElement('script');s.src='../assets/js/administration.js';document.body.append(s);};document.body.append(e);
  }
 })();
 </script></body></html>
