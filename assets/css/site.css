@@ -951,3 +951,48 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid #b7
 
 /* Secondary link to online registration (not to be confused with consultation) */
 .bw16-nav-enroll{font-weight:650!important;color:#71806b!important;white-space:nowrap}
+
+/* Bridge Wonder · JANUARY 2027 | opening notice
+   Brand matched to the live-site source tokens: forest, cream, paper, orange, sage.
+   This block is intentionally scoped to .bw-open-* to preserve existing UI. */
+html.bw-open-locked,html.bw-open-locked body{overflow:hidden}
+.bw-open-layer{position:fixed;inset:0;z-index:1800;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(28,45,29,.59);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);animation:bw-open-fade .26s ease-out both}
+.bw-open-card{width:min(100%,510px);max-height:min(94dvh,800px);overflow-y:auto;overscroll-behavior:contain;position:relative;background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:0 24px 90px rgba(25,38,27,.26);text-align:center;padding:39px 43px 20px;animation:bw-open-rise .3s ease-out both}
+.bw-open-card:before{content:'';position:absolute;top:0;left:33%;right:33%;height:4px;background:linear-gradient(90deg,var(--sage),var(--gold),var(--orange));border-radius:0 0 4px 4px}
+.bw-open-close-icon{position:absolute;right:19px;top:18px;display:grid;place-items:center;width:36px;height:36px;background:transparent;border:1px solid var(--line);border-radius:999px;color:var(--forest);padding:0;transition:background .2s}
+.bw-open-close-icon:hover{background:var(--sage-pale)}
+.bw-open-close-icon svg{width:17px;height:17px}
+.bw-open-logo{display:block;width:163px;max-width:60%;height:auto;margin:0 auto 18px;mix-blend-mode:multiply}
+.bw-open-kicker{display:flex;align-items:center;justify-content:center;gap:11px;margin:0 0 14px;color:var(--olive);font-size:10px;font-weight:800;letter-spacing:.19em;line-height:1.5}
+.bw-open-kicker:before,.bw-open-kicker:after{content:'';width:20px;height:1.5px;background:var(--orange)}
+.bw-open-date{margin:0;color:var(--orange);font-size:11px;letter-spacing:.21em;font-weight:800;line-height:1.4}
+.bw-open-title{font-size:clamp(31px,4vw,39px);font-weight:800;letter-spacing:-.065em;color:var(--forest);line-height:1.35;margin:15px 0 13px}
+.bw-open-title em{font-style:normal;color:var(--orange)}
+.bw-open-description{margin:0 auto 10px;color:#62715e;font-size:13px;letter-spacing:-.025em;line-height:2;max-width:365px}
+.bw-open-description strong{font-weight:700;color:var(--forest)}
+.bw-open-subline{font-size:11px;color:var(--muted);margin:0 auto 25px;line-height:1.85}
+.bw-open-actions{display:flex;justify-content:center;gap:9px;flex-wrap:wrap}
+.bw-open-actions .btn{flex:1 1 170px;min-height:48px;padding:11px 15px;font-size:12px;gap:8px}
+.bw-open-actions .btn:focus-visible,.bw-open-close-icon:focus-visible,.bw-open-foot button:focus-visible{outline:3px solid var(--orange);outline-offset:3px}
+.bw-open-actions .btn-outline{background:var(--paper)}
+.bw-open-foot{margin-top:22px;padding-top:13px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:18px}
+.bw-open-foot button{border:0;background:transparent;color:var(--muted);font-size:11px;line-height:1.5;padding:5px 0;text-decoration:none}
+.bw-open-foot button:hover{color:var(--forest);text-decoration:underline;text-underline-offset:3px}
+@keyframes bw-open-fade{from{opacity:0}to{opacity:1}}
+@keyframes bw-open-rise{from{opacity:0;transform:translateY(13px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:560px){
+ .bw-open-layer{padding:12px}
+ .bw-open-card{border-radius:26px;padding:29px 22px 13px;max-height:calc(100dvh - 24px)}
+ .bw-open-close-icon{right:13px;top:13px;width:32px;height:32px}
+ .bw-open-logo{width:142px;margin-bottom:13px}
+ .bw-open-kicker{font-size:9px;margin-bottom:12px}
+ .bw-open-title{font-size:32px;margin:10px 0}
+ .bw-open-description{font-size:12px;line-height:1.85}
+ .bw-open-description br{display:block;content:"";margin-top:2px}
+ .bw-open-subline{font-size:10px;margin-bottom:17px}
+ .bw-open-actions{flex-direction:column;gap:8px}
+ .bw-open-actions .btn{width:100%;flex:0 0 auto;min-height:44px}
+ .bw-open-foot{margin-top:15px;padding-top:9px}
+}
+@media(max-height:560px){.bw-open-layer{overflow-y:auto;align-items:flex-start}.bw-open-card{max-height:none;margin:auto 0}}
+@media(prefers-reduced-motion:reduce){.bw-open-layer,.bw-open-card{animation:none}}

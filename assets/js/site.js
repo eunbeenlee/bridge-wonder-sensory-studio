@@ -99,3 +99,79 @@
     }
   }));
 })();
+
+/* Bridge Wonder opening notice · brand-matched, zero changes to existing APIs */
+(function () {
+  'use strict';
+  const pathname = location.pathname.replace(/\/index\.html$/i,'/').replace(/\/*$/, '/');
+  if (!(pathname === '/' || pathname.startsWith('/sensory-studio/'))) return;
+  if (/^\/sensory-studio\/(enroll|privacy)\//.test(pathname)) return;
+  if (Date.now() >= Date.parse('2027-02-01T00:00:00+09:00')) return;
+
+  const SESSION_KEY='bw-open-2027-seen-brand-v2';
+  const DAY_KEY='bw-open-2027-hidden-today-brand-v2';
+  const sessionStore=(()=>{try{return window.sessionStorage;}catch(_){return null;}})();
+  const localStore=(()=>{try{return window.localStorage;}catch(_){return null;}})();
+  const storeRead=(store,key)=>{try{return store ? store.getItem(key) : null;}catch(_){return null;}};
+  const storeWrite=(store,key,value)=>{try{if(store)store.setItem(key,value);}catch(_){}};
+  if (storeRead(sessionStore,SESSION_KEY)==='yes') return;
+  const hideUntil=Number(storeRead(localStore,DAY_KEY)||0);
+  if (hideUntil && Date.now()<hideUntil) return;
+
+  const modal=document.createElement('div');
+  modal.className='bw-open-layer';
+  modal.id='bw-open-2027';
+  modal.innerHTML=`
+    <section class="bw-open-card" role="dialog" aria-modal="true" aria-labelledby="bw-open-title" aria-describedby="bw-open-desc">
+      <button class="bw-open-close-icon" type="button" data-bw-close aria-label="팝업 닫기">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+      <img class="bw-open-logo" src="/assets/img/bridge-wonder-logo.png" width="170" height="81" alt="Bridge Wonder Sensory Play Studio">
+      <p class="bw-open-kicker">OPENING NOTICE</p>
+      <p class="bw-open-date">JANUARY · 2027</p>
+      <h2 id="bw-open-title" class="bw-open-title">2027년 1월<br><em>오픈 예정</em></h2>
+      <p id="bw-open-desc" class="bw-open-description">작은 호기심이 특별한 발견으로 이어지는 곳.<br><strong>7~48개월을 위한 영어 오감놀이 스튜디오</strong><br>브릿지 원더가 부산 명지에서 첫 만남을 준비합니다.</p>
+      <p class="bw-open-subline">1월 체험수업 예정 · 정규 프로그램은 3월 시작 예정</p>
+      <div class="bw-open-actions">
+        <a class="btn btn-dark" href="/sensory-studio/visit/#online-inquiry" data-bw-link>오픈 안내 · 상담 문의 <span aria-hidden="true">↗</span></a>
+        <a class="btn btn-outline" href="/sensory-studio/programs/" data-bw-link>프로그램 살펴보기</a>
+      </div>
+      <div class="bw-open-foot">
+        <button type="button" data-bw-today>오늘 하루 보지 않기</button>
+        <button type="button" data-bw-close>닫기</button>
+      </div>
+    </section>`;
+  const priorFocus=document.activeElement;
+  document.body.appendChild(modal);
+  document.documentElement.classList.add('bw-open-locked');
+  const first=modal.querySelector('.bw-open-close-icon');
+  const close=(today)=>{
+    if(today){
+      const now=new Date();
+      const midnight=new Date(now.getFullYear(),now.getMonth(),now.getDate()+1).getTime();
+      storeWrite(localStore,DAY_KEY,String(midnight));
+    }
+    storeWrite(sessionStore,SESSION_KEY,'yes');
+    document.documentElement.classList.remove('bw-open-locked');
+    document.removeEventListener('keydown',keyHandler);
+    modal.remove();
+    if(priorFocus&&priorFocus.isConnected&&typeof priorFocus.focus==='function'){
+      try{priorFocus.focus({preventScroll:true});}catch(_){priorFocus.focus();}
+    }
+  };
+  function keyHandler(event){
+    if(event.key==='Escape'){event.preventDefault();close(false);return;}
+    if(event.key!=='Tab') return;
+    const controls=[...modal.querySelectorAll('button:not([disabled]),a[href]')];
+    if(!controls.length) return;
+    const firstControl=controls[0],lastControl=controls[controls.length-1];
+    if(event.shiftKey&&document.activeElement===firstControl){event.preventDefault();lastControl.focus();}
+    else if(!event.shiftKey&&document.activeElement===lastControl){event.preventDefault();firstControl.focus();}
+  }
+  document.addEventListener('keydown',keyHandler);
+  modal.querySelectorAll('[data-bw-close]').forEach(b=>b.addEventListener('click',()=>close(false)));
+  modal.querySelector('[data-bw-today]').addEventListener('click',()=>close(true));
+  modal.querySelectorAll('[data-bw-link]').forEach(link=>link.addEventListener('click',()=>storeWrite(sessionStore,SESSION_KEY,'yes')));
+  modal.addEventListener('click',event=>{if(event.target===modal)close(false);});
+  first.focus({preventScroll:true});
+})();
