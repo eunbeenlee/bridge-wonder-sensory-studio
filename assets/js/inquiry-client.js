@@ -65,7 +65,7 @@
     inFlight=busy;
     btn.disabled=busy;
     btn.setAttribute('aria-busy',String(busy));
-    btn.textContent=busy?'접수 정보를 확인하고 있어요…':'상담 신청 접수하기 →';
+    btn.textContent=busy?'접수 상태를 확인하고 있습니다…':'상담 신청하기 →';
   }
   function makeRequestId(){
     if(window.crypto && window.crypto.randomUUID) return window.crypto.randomUUID().replace(/-/g,'');
@@ -78,7 +78,7 @@
   function verified(data){
     if(!data || data.requestId!==activeId || data.state!=='saved' || !/^BW-[A-Z0-9]{12}$/.test(String(data.receipt||'')))return;
     confirmed=true;
-    render('success','상담 신청이 정상 접수되었습니다.', '접수번호 '+data.receipt+' · 담당자가 확인 후 연락드립니다. 신청만으로 예약이 확정되는 것은 아닙니다.');
+    render('success','상담 신청이 접수되었습니다.', '접수번호 '+data.receipt+' · 담당자가 확인 후 연락드립니다. 신청만으로 예약이 확정되는 것은 아닙니다.');
     setBusy(false);
     recheck.hidden=true;
     form.reset();
@@ -116,7 +116,7 @@
         if(attempt<6) await sleep(1200+attempt*150);
       }
       if(activeId===id&&!confirmed){
-        render('uncertain','접수 여부를 아직 확인하지 못했습니다.', '전송이 완료되었을 수도 있습니다. 같은 내용을 바로 다시 보내지 마시고, 아래의 ‘접수 상태 다시 확인하기’를 누르거나 전화·Instagram으로 문의해 주세요.');
+        render('uncertain','접수 여부를 아직 확인하지 못했습니다.', '전송이 완료되었을 수도 있습니다. 같은 내용을 다시 보내지 마시고 ‘마지막 접수 상태 다시 확인하기’를 누르거나 전화·인스타그램으로 문의해 주세요.');
         recheck.hidden=false;
         setBusy(false);
       }
@@ -144,10 +144,10 @@
   form.addEventListener('submit',async(event)=>{
     event.preventDefault();
     if(inFlight)return;
-    if(!validEndpoint){render('error','상담 접수가 아직 연결되지 않았습니다.','전화 010-2693-2471 또는 Instagram DM으로 문의해 주세요.');return;}
+    if(!validEndpoint){render('error','온라인 상담 접수를 준비 중입니다.','전화 010-2693-2471 또는 Instagram DM으로 문의해 주세요.');return;}
     if(!form.reportValidity())return;
     const input=payloadFromForm();
-    if(!input.valid){render('error','입력 내용을 다시 확인해 주세요.','아이 이름, 보호자 휴대전화(010-1234-5678), 아이 월령(7~48개월), 문의 종류와 개인정보 동의를 확인해 주세요.');return;}
+    if(!input.valid){render('error','입력 내용을 다시 확인해 주세요.','아이 이름, 보호자 휴대전화(010-1234-5678), 아이 월령(7~48개월), 문의 유형과 필수 동의 항목을 확인해 주세요.');return;}
     if(!window.fetch){render('error','이 브라우저에서는 온라인 신청을 지원하지 않습니다.','브라우저를 업데이트하거나 전화로 문의해 주세요.');return;}
     try {activeId=makeRequestId();} catch(err){render('error','안전한 접수를 시작할 수 없습니다.',err.message);return;}
     confirmed=false;
@@ -171,7 +171,7 @@
   });
   recheck.addEventListener('click',()=>{
     if(!activeId || polling) return;
-    render('pending','접수 상태를 다시 확인하고 있습니다.','스프레드시트 저장 여부를 확인합니다.');
+    render('pending','접수 상태를 다시 확인하고 있습니다.','보내주신 상담 신청이 접수되었는지 확인합니다.');
     setBusy(true);
     verifyStorage(activeId);
   });
@@ -179,6 +179,6 @@
   if(!validEndpoint){
     btn.disabled=true;
     btn.textContent='전화 또는 Instagram으로 문의해 주세요';
-    render('error','온라인 신청서 연결을 확인하고 있습니다.','현재 접수 주소가 설정되지 않았습니다. 전화 또는 Instagram DM으로 문의해 주세요.');
+    render('error','온라인 신청서 연결을 확인하고 있습니다.','온라인 접수가 준비되는 동안 전화 또는 인스타그램 DM으로 문의해 주세요.');
   }
 })();
