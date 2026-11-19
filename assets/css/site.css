@@ -936,3 +936,18 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid #b7
  .enroll-consents .wonder-consent-label strong{font-size:12px}
  .enroll-consents .wonder-consent-label small{font-size:11px}
 }
+
+/* V16: common-link registration / V12 illustration and brand colors unchanged */
+.bw16-public-selects{margin:22px 0 20px}
+.bw16-public-selects select{appearance:auto;cursor:pointer}
+.bw16-public-selects select:disabled{background:#f3f4ef;color:#8b9287;cursor:not-allowed}
+.bw16-public-note{font-size:12px!important;color:#6c7866!important;margin:5px 0 0!important}
+.bw16-public-note a{color:#466746;font-weight:750;text-decoration:underline;text-underline-offset:3px}
+.bw16-after-consult{display:flex;align-items:center;justify-content:space-between;gap:28px;margin:12px 0 65px;padding:32px 34px;background:#f5f6ef;border:1px solid #dce4d8;border-radius:21px}
+.bw16-after-consult h2{font-size:clamp(22px,3vw,29px);line-height:1.3;color:#38513c;margin:9px 0}
+.bw16-after-consult p{font-size:13px;line-height:1.85;color:#667565;margin:0}
+.bw16-after-consult .btn{flex:none}
+@media(max-width:680px){.bw16-after-consult{display:block;padding:24px 19px;margin-bottom:80px}.bw16-after-consult .btn{display:flex;justify-content:center;margin-top:18px;width:100%}}
+
+/* Secondary link to online registration (not to be confused with consultation) */
+.bw16-nav-enroll{font-weight:650!important;color:#71806b!important;white-space:nowrap}

@@ -1,4 +1,4 @@
-/* Bridge Wonder V12 · verified enrollment and redundant document archive
+/* Bridge Wonder V16 · consultation-first, public dropdown enrollment
  * Registration UI lives on GitHub Pages; Apps Script stores final terms,
  * guardian declarations, signature and private PDF. No iframe or client secrets.
  */
@@ -11,6 +11,9 @@
  const endpoint=/^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(api);
  const offerMsg=$('#bw11-offer-feedback'),saveMsg=$('#bw11-save-feedback'),loadButton=$('#bw11-load'),submitButton=$('#bw11-submit'),recheck=$('#bw11-check'),printBtn=$('#bw11-print');
  const consentPanel=$('#bw11-form-panel'),termsPanel=$('#bw11-terms-panel');
+ const publicPanel=$('#bw16-public-panel'),legacyPanel=$('#bw11-invite-panel');
+ const courseSelect=$('#bw16-course'),startSelect=$('#bw16-start'),slotSelect=$('#bw16-slot'),catalogMsg=$('#bw16-catalog-feedback');
+ const yearSelect=$('#bw16-birth-year'),monthSelect=$('#bw16-birth-month'),birthHidden=$('#bw11-birth');
  const canvas=$('#bw11-sign'),ctx=canvas.getContext('2d');
  const BW13_CONSENT_VERSION='BW-CONSENT-2026-11-18-V13';
  const agreementControls=Array.from(form.querySelectorAll('input[data-bw13-consent]'));
@@ -26,7 +29,7 @@
  requiredOnly.addEventListener('click',()=>{agreementControls.forEach(x=>{x.checked=x.dataset.consentType==='required';});syncConsentControls();});
  agreementControls.forEach(x=>x.addEventListener('change',syncConsentControls));
  syncConsentControls();
- let code='',terms=null,requestId='',receipt='',archiveState='',drawn=false,busy=false,checking=false,lastStatus=null,savedSnapshot=null;
+ let code='',publicOptionId='',isPublicMode=true,catalogOptions=[],terms=null,requestId='',receipt='',archiveState='',drawn=false,busy=false,checking=false,lastStatus=null,savedSnapshot=null;
  const sleep=ms=>new Promise(r=>setTimeout(r,ms));
  function show(node,type,title,message){
    node.hidden=false;node.dataset.state=type;node.replaceChildren();
@@ -72,12 +75,76 @@
    termsPanel.hidden=false;consentPanel.hidden=false;syncConsentControls();
    termsPanel.scrollIntoView({behavior:'smooth',block:'start'});
  }
+ // Public class catalog: course, start date and time are drawn only from operator-approved Sheets rows.
+ let catalogResult=null;
+ window.__BW_PUBLIC_CATALOG=data=>{catalogResult=data;};
+ function populate(select,items,placeholder){
+   select.replaceChildren();
+   const first=document.createElement('option');first.value='';first.textContent=placeholder;select.append(first);
+   items.forEach(item=>{const o=document.createElement('option');o.value=item.value;o.textContent=item.label;select.append(o);});
+   select.disabled=!items.length;
+ }
+ function distinct(arr){return Array.from(new Set(arr));}
+ function resetPublicTerms(){terms=null;publicOptionId='';termsPanel.hidden=true;consentPanel.hidden=true;}
+ function updateCourse(){
+   resetPublicTerms();
+   const rows=catalogOptions.filter(o=>o.course===courseSelect.value);
+   populate(startSelect,distinct(rows.map(o=>o.starts)).sort().map(v=>({value:v,label:v})),courseSelect.value?'시작일을 선택해 주세요':'과정을 먼저 선택해 주세요');
+   populate(slotSelect,[], '시작일을 먼저 선택해 주세요');
+ }
+ function updateStart(){
+   resetPublicTerms();
+   const rows=catalogOptions.filter(o=>o.course===courseSelect.value&&o.starts===startSelect.value);
+   populate(slotSelect,rows.map(o=>({value:o.id,label:o.schedule+' · '+o.period})),startSelect.value?'요일·시간을 선택해 주세요':'시작일을 먼저 선택해 주세요');
+ }
+ function updateSlot(){
+   resetPublicTerms();
+   const choice=catalogOptions.find(o=>o.id===slotSelect.value);
+   if(!choice)return;
+   try{
+     publicOptionId=choice.id;terms=choice.terms;
+     displayTerms(terms);
+     show(catalogMsg,'success','수강 조건을 불러왔습니다.','상담에서 안내받은 내용과 같은지 확인한 뒤 등록정보를 작성해 주세요.');
+   }catch(err){resetPublicTerms();show(catalogMsg,'error','수강 조건을 표시하지 못했습니다.','등록 조건 버전이 일치하지 않습니다. 담당자에게 문의해 주세요.');}
+ }
+ courseSelect.addEventListener('change',updateCourse);
+ startSelect.addEventListener('change',updateStart);
+ slotSelect.addEventListener('change',updateSlot);
+ async function loadPublicCatalog(){
+   if(!endpoint){show(catalogMsg,'error','온라인 등록 연결을 확인 중입니다.','현재 수강반을 불러올 수 없습니다. 전화 또는 방문·문의 페이지를 이용해 주세요.');return;}
+   catalogResult=null;
+   try{
+     await jsonp({action:'catalogV16'},14000);
+     const result=catalogResult;
+     if(!result||result.version!=='BW-PUBLIC-ENROLL-V16'||!Array.isArray(result.options))throw Error('catalog version');
+     catalogOptions=result.options.filter(o=>/^[A-Z0-9_-]{3,32}$/.test(o.id)&&o.terms&&o.course&&o.starts&&o.schedule);
+     const items=distinct(catalogOptions.map(o=>o.course)).sort().map(v=>({value:v,label:v}));
+     populate(courseSelect,items,items.length?'과정을 선택해 주세요':'현재 신청 가능한 수강반이 없습니다');
+     if(!items.length)show(catalogMsg,'uncertain','수강반 안내를 준비 중입니다.','현장 상담을 마친 보호자께서는 담당자에게 등록 가능한 수업 일정을 확인해 주세요.');
+     else catalogMsg.hidden=true;
+   }catch(err){show(catalogMsg,'error','수강반 목록을 불러오지 못했습니다.','네트워크 연결을 확인한 뒤 새로고침해 주세요. 문제가 계속되면 담당자에게 연락해 주세요.');}
+ }
+ function updateBirthYears(){
+   const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit'}).formatToParts(new Date());
+   const year=Number(parts.find(v=>v.type==='year').value),month=Number(parts.find(v=>v.type==='month').value);
+   const birthDateFromAge=a=>{const idx=year*12+month-1-a;return {y:Math.floor(idx/12),m:idx%12+1};};
+   const oldest=birthDateFromAge(48),youngest=birthDateFromAge(7);
+   populate(yearSelect,Array.from({length:youngest.y-oldest.y+1},(_,i)=>{const y=oldest.y+i;return {value:String(y),label:y+'년'};}),'태어난 해 선택');
+   yearSelect.addEventListener('change',()=>{
+     const y=Number(yearSelect.value),ms=[];
+     for(let m=1;m<=12;m++){const age=(year-y)*12+month-m;if(age>=7&&age<=48)ms.push({value:String(m).padStart(2,'0'),label:m+'월'});}
+     populate(monthSelect,ms,'태어난 달 선택');birthHidden.value='';
+   });
+   monthSelect.addEventListener('change',()=>{birthHidden.value=yearSelect.value&&monthSelect.value?yearSelect.value+'-'+monthSelect.value:'';});
+ }
+ updateBirthYears();
  let preview=null;
  window.__BW_ENROLLMENT_OFFER=data=>{preview=data;};
  async function loadOffer(){
    if(!endpoint){show(offerMsg,'error','연결 설정을 확인해 주세요.','온라인 등록 연결을 확인하고 있습니다. 담당자에게 문의해 주세요.');return;}
-   const candidate=codeField.value.trim().toLowerCase();
-   if(!/^[0-9a-f]{40}$/.test(candidate)){show(offerMsg,'error','등록 코드를 확인해 주세요.','현장 상담 후 받은 등록 코드를 입력하시면 됩니다.');return;}
+   const raw=codeField.value.trim().replace(/[\s-]/g,'');
+   const candidate=/^[0-9a-f]{40}$/i.test(raw)?raw.toLowerCase():raw.toUpperCase();
+   if(!(/^[0-9a-f]{40}$/.test(candidate)||/^[023456789ABCDEFGHJKMNPQRSTUVWXYZ]{10}$/.test(candidate))){show(offerMsg,'error','등록 코드를 확인해 주세요.','카카오톡 링크를 누르거나 10자리 코드를 입력해 주세요.');return;}
    code=candidate;terms=null;preview=null;loadButton.disabled=true;
    show(offerMsg,'pending','수강 조건을 확인하고 있습니다.','상담 담당자가 등록한 내용을 불러오고 있습니다.');
    try{
@@ -95,8 +162,13 @@
  codeField.addEventListener('keydown',ev=>{if(ev.key==='Enter'){ev.preventDefault();loadOffer();}});
  // Remove invite token from the visible URL before any external resource loads.
  const params=new URLSearchParams(location.search),initial=params.get('code');
- if(initial){codeField.value=initial;try{history.replaceState(null,'',location.pathname+location.hash);}catch(_){}}
- if(initial && /^[0-9a-f]{40}$/.test(initial))setTimeout(loadOffer,0);
+ if(initial){
+   isPublicMode=false;publicPanel.hidden=true;legacyPanel.hidden=false;codeField.value=initial;
+   try{history.replaceState(null,'',location.pathname+location.hash);}catch(_){}
+   if(/^[0-9a-f]{40}$/i.test(initial.replace(/[\s-]/g,''))||/^[023456789ABCDEFGHJKMNPQRSTUVWXYZ]{10}$/i.test(initial.replace(/[\s-]/g,'')))setTimeout(loadOffer,0);
+ }else{
+   loadPublicCatalog();
+ }
 
  // Signature canvas: drawing and typed signature options.
  const modes=Array.from(form.querySelectorAll('input[name="signatureMode"]'));
@@ -159,7 +231,7 @@
  }
  form.addEventListener('submit',async ev=>{
    ev.preventDefault();if(busy||receipt)return;
-   if(!terms||!code){show(offerMsg,'error','등록 조건부터 확인해 주세요.','등록 코드를 확인하면 신청서를 작성하실 수 있습니다.');return;}
+   if(!terms||(isPublicMode?!publicOptionId:!code)){show(isPublicMode?catalogMsg:offerMsg,'error','수강반을 먼저 선택해 주세요.','상담받으신 과정과 수업 시작일, 요일·시간을 선택해 주세요.');return;}
    if(!form.reportValidity())return;
    const v=collect();if(!v.valid){show(saveMsg,'error','입력 내용을 확인해 주세요.','아이 생년월(7~48개월), 연락처, 필수 동의와 서명을 다시 확인해 주세요.');return;}
    let signaturePng='';if(v.selected==='draw')signaturePng=canvas.toDataURL('image/png');
@@ -170,7 +242,7 @@
    savedSnapshot={...v, consentStates:{
       promoSms:v.d.has('promoSms'),promoEmail:v.d.has('promoEmail'),classRecord:v.d.has('classRecord'),
       photoPublic:v.d.has('photoPublic'),videoPublic:v.d.has('videoPublic')},signaturePng:signaturePng};
-   const payload=new URLSearchParams({source:'bridgewonder-v11-contract',rid:requestId,offerCode:code,termsVersion:terms.version,
+   const payload=new URLSearchParams({source:isPublicMode?'bridgewonder-v16-public-enroll':'bridgewonder-v11-contract',rid:requestId,offerCode:isPublicMode?'':code,publicOptionId:isPublicMode?publicOptionId:'',termsVersion:terms.version,
      guardian:v.guardian,phone:v.phone,email:v.email,childName:v.child,birthMonth:v.birth,childAddress:v.childAddress,postcode:v.postcode,clausesVersion:'BW-ENROLLMENT-TERMS-2026-11-18-V12',
      relation:String(v.d.get('relation')),contactMethod:String(v.d.get('contactMethod')),
      processingConsent:'yes',guardianConsent:'yes',contractConsent:'yes',refundConsent:'yes',signatureConsent:'yes',
@@ -202,5 +274,5 @@
    const sign=v.selected==='draw'?'<img style="width:220px;max-height:85px;object-fit:contain" alt="전자서명" src="'+v.signaturePng+'">':'이름 확인: '+escape(v.typed);
    out.document.open();out.document.write('<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>Bridge Wonder · 수강 등록정보 사본</title><style>body{font:14px/1.7 sans-serif;margin:40px;color:#23342a}h1{font-size:24px}table{width:100%;border-collapse:collapse}td{border-bottom:1px solid #dfe5db;padding:10px}td:first-child{width:29%;font-weight:700}p{white-space:pre-wrap}.btn{border:1px solid #4b5b4b;padding:10px 18px;background:#fff;cursor:pointer}@media print{.btn{display:none}}</style></head><body><h1>BRIDGE WONDER · 온라인 수강 등록 확인서</h1><p>접수 시 확인한 정보를 보호자가 보관하기 위한 사본입니다. 운영자 보관 PDF·법정 영수증과는 구분됩니다.</p><table>'+rows.map(([k,val])=>'<tr><td>'+escape(k)+'</td><td>'+escape(val)+'</td></tr>').join('')+'</table><h2>교습비 반환 안내</h2><p>'+escape(terms.refund)+'</p><h2>전자서명</h2>'+sign+'<p>온라인 등록 접수번호 '+escape(receipt)+'</p><button class="btn" onclick="window.print()">PDF로 저장 / 인쇄</button></body></html>');out.document.close();out.focus();
  });
- if(!endpoint){loadButton.disabled=true;show(offerMsg,'error','온라인 등록 연결을 확인하고 있습니다.','담당자에게 문의해 주세요.');}
+ if(!endpoint){loadButton.disabled=true;show(catalogMsg,'error','온라인 등록 연결을 확인하고 있습니다.','담당자에게 문의해 주세요.');}
 })();
