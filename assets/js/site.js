@@ -100,7 +100,7 @@
   }));
 })();
 
-/* Bridge Wonder opening notice · brand-matched, zero changes to existing APIs */
+/* Bridge Wonder opening notice · theme-matched · v3: close does not suppress refresh */
 (function () {
   'use strict';
   const pathname = location.pathname.replace(/\/index\.html$/i,'/').replace(/\/*$/, '/');
@@ -108,13 +108,19 @@
   if (/^\/sensory-studio\/(enroll|privacy)\//.test(pathname)) return;
   if (Date.now() >= Date.parse('2027-02-01T00:00:00+09:00')) return;
 
-  const SESSION_KEY='bw-open-2027-seen-brand-v2';
+  const NAV_SKIP_KEY='bw-open-2027-skip-next-route-v3';
   const DAY_KEY='bw-open-2027-hidden-today-brand-v2';
   const sessionStore=(()=>{try{return window.sessionStorage;}catch(_){return null;}})();
   const localStore=(()=>{try{return window.localStorage;}catch(_){return null;}})();
   const storeRead=(store,key)=>{try{return store ? store.getItem(key) : null;}catch(_){return null;}};
   const storeWrite=(store,key,value)=>{try{if(store)store.setItem(key,value);}catch(_){}};
-  if (storeRead(sessionStore,SESSION_KEY)==='yes') return;
+  // Only suppress the popup once immediately after its CTA navigates to a new page.
+  // Normal close/X/Escape/backdrop must NEVER persist a hidden flag.
+  const navSkipPath=storeRead(sessionStore,NAV_SKIP_KEY);
+  if (navSkipPath === pathname) {
+    try { if (sessionStore) sessionStore.removeItem(NAV_SKIP_KEY); } catch (_) {}
+    return;
+  }
   const hideUntil=Number(storeRead(localStore,DAY_KEY)||0);
   if (hideUntil && Date.now()<hideUntil) return;
 
@@ -151,7 +157,6 @@
       const midnight=new Date(now.getFullYear(),now.getMonth(),now.getDate()+1).getTime();
       storeWrite(localStore,DAY_KEY,String(midnight));
     }
-    storeWrite(sessionStore,SESSION_KEY,'yes');
     document.documentElement.classList.remove('bw-open-locked');
     document.removeEventListener('keydown',keyHandler);
     modal.remove();
@@ -171,7 +176,16 @@
   document.addEventListener('keydown',keyHandler);
   modal.querySelectorAll('[data-bw-close]').forEach(b=>b.addEventListener('click',()=>close(false)));
   modal.querySelector('[data-bw-today]').addEventListener('click',()=>close(true));
-  modal.querySelectorAll('[data-bw-link]').forEach(link=>link.addEventListener('click',()=>storeWrite(sessionStore,SESSION_KEY,'yes')));
+  modal.querySelectorAll('[data-bw-link]').forEach(link=>link.addEventListener('click',()=>{
+    // Prevent a second popup immediately on the CTA destination, but let its next refresh show it.
+    try {
+      const next=new URL(link.href,location.href);
+      if (next.origin===location.origin) {
+        const nextPath=next.pathname.replace(/\/index\.html$/i,'/').replace(/\/*$/, '/');
+        storeWrite(sessionStore,NAV_SKIP_KEY,nextPath);
+      }
+    } catch (_) {}
+  }));
   modal.addEventListener('click',event=>{if(event.target===modal)close(false);});
   first.focus({preventScroll:true});
 })();
