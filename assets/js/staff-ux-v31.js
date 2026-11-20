@@ -5,13 +5,15 @@
 (function(global){
   'use strict';
   const GROUPS=[
-    {key:'daily',title:'수업·출결',items:['home','classes','roster','attendance','handoff','safety','makeups','capacity','themes']},
-    {key:'family',title:'상담·등록',items:['inquiries','waitlist','registrations','tuition','documents']},
-    {key:'admin',title:'운영·직원 관리',items:['operations','courseSettings','staffCompliance','users','payroll','security']}
+    {key:'daily',title:'수업·출결',items:['home','classes','roster','attendance','handoff','safety','makeups','capacity','themes','experiences']},
+    {key:'family',title:'상담·등록',items:['inquiries','waitlist','registrations','students','tuition','documents']},
+    {key:'admin',title:'운영·직원 관리',items:['operations','compliance','courseSettings','staffCompliance','users','payroll','security']}
   ];
   const HELP={
     home:['오늘의 업무','확인이 필요한 업무부터 살펴보고, 상단 메뉴에서 원하는 업무로 이동하세요.'],
     classes:['수업반 등록','요일과 시간을 정하고 시작일과 교습 기간을 입력한 뒤 저장하세요. 홈페이지 공개 여부는 검토 후 변경할 수 있습니다.'],
+    students:['학생 인적사항 등록','기본정보만 먼저 등록하고 상담 후 주간 수업 횟수와 실제 수업반을 정하세요.'],
+    experiences:['홈페이지 체험 테마','적용할 달과 체험 세 가지를 작성한 뒤 공개 상태를 선택하면 홈페이지에 반영됩니다.'],
     roster:['수강생 명단 확인','담당 반의 학생을 확인할 수 있습니다. 보호자 연락처는 권한이 있는 직원에게만 표시됩니다.'],
     attendance:['출결 기록','수업반과 날짜를 선택하고 명단 불러오기를 누른 뒤 학생별 출결 상태를 저장하세요.'],
     handoff:['보호자 인계 확인','반과 날짜를 선택해 명단을 불러오고, 보호자 동반 여부와 수업 종료 후 인계 상태를 기록하세요.'],
@@ -25,6 +27,7 @@
     tuition:['수납·환불 기록','등록 접수번호를 선택하고 실제 처리한 금액과 증빙을 확인한 후 기록을 저장하세요.'],
     documents:['학부모 서류 발급','서류 종류와 대상 기록을 선택하고 미리보기로 내용을 확인하세요. PDF를 발급한 뒤 다운로드하거나 이메일로 보낼 수 있습니다.'],
     operations:['운영 점검','분야와 진행 상태로 항목을 찾고, 담당자·기한·증빙을 확인한 후 저장하세요.'],
+    compliance:['학원 법정·행정 점검','교습비·장부·안전·개인정보 기록을 확인하고 관련 증빙을 정리하세요. 필요한 자료는 현장점검 준비 PDF로 내려받을 수 있습니다.'],
     courseSettings:['학원 기본 정보','과정명과 교습비, 등록 정보를 확인하고 변경할 항목만 수정한 뒤 저장하세요.'],
     staffCompliance:['직원 필수 확인','직원을 선택해 필요한 조회·교육의 완료 여부를 기록하세요. 실제 확인이 끝난 항목만 완료로 표시합니다.'],
     users:['직원 계정 관리','직원 이메일과 역할을 등록한 뒤 임시 비밀번호를 발급하세요. 직원은 첫 로그인 후 비밀번호를 직접 변경합니다.'],

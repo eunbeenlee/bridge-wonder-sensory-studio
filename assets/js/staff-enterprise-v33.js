@@ -7,13 +7,13 @@
   'use strict';
   const NAV=Object.freeze([
     {id:'classes',label:'교육·수업',sections:[
-      {name:'수업 기획',pages:['classes','themes','capacity']},
+      {name:'수업 기획',pages:['classes','themes','experiences','capacity']},
       {name:'학생·출결',pages:['roster','attendance','makeups']},
       {name:'안전·인계',pages:['safety','handoff']}
     ]},
     {id:'parents',label:'학부모·등록',sections:[
       {name:'상담 관리',pages:['inquiries','waitlist']},
-      {name:'수강 등록',pages:['registrations']},
+      {name:'수강 등록',pages:['students','registrations']},
       {name:'요청 서류·PDF',pages:['documents']}
     ]},
     {id:'finance',label:'수납·정산',sections:[
@@ -48,6 +48,8 @@
     compliance:'법정 교육청 실사 현장점검 보험 허가',
     operations:'운영 점검 준비 마감 인허가',
     payroll:'급여 월급 명세서 직원',
+    students:'학생 인적사항 학생등록 상담접수 반배정 주2회 기본정보',
+    experiences:'체험 테마 월간 관리 홈페이지 공개',
     users:'직원 계정 권한 비밀번호 발급'
   });
   const esc=v=>String(v??'').replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]));

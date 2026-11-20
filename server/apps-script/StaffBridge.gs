@@ -36,6 +36,11 @@ const BW27_METHODS_ = Object.freeze({
   staffListAudit: staffListAudit,
   staffBackupNow: staffBackupNow,
   staffListOperations: staffListOperations,
+  staff32ListCompliance: staff32ListCompliance,
+  staff32SaveCompliance: staff32SaveCompliance,
+  staff32ListRefunds: staff32ListRefunds,
+  staff32SaveRefund: staff32SaveRefund,
+  staff32DownloadInspectionPdf: staff32DownloadInspectionPdf,
   staffSaveOperation: staffSaveOperation,
   staffListTuition: staffListTuition,
   staffAppendTuition: staffAppendTuition,
@@ -60,6 +65,10 @@ const BW27_METHODS_ = Object.freeze({
   staff20SaveMakeup: staff20SaveMakeup,
   staff20Themes: staff20Themes,
   staff20SaveTheme: staff20SaveTheme,
+  staff37ListStudents: staff37ListStudents,
+  staff37SaveStudent: staff37SaveStudent,
+  staff37ListExperiences: staff37ListExperiences,
+  staff37SaveExperience: staff37SaveExperience,
   staff20ActionCenter: staff20ActionCenter,
   payrollCommand: payrollCommand
 });

@@ -17,7 +17,9 @@ const BW17 = Object.freeze({
   SESSION_SECONDS: 3600, OTP_SECONDS: 600, MAX_LOGIN_PER_DAY: 12, MAX_ATTEMPTS: 5,
   CLASS_HEADERS: ['등록반 코드','수강조건 코드','수업 시작일','수업 요일','수업 시간','교습 기간','공개 상태','운영자 검토']
 });
-function doGet() {
+function doGet(e) {
+  // Read-only public themes — intentionally contains no child/guardian data.
+  if(e&&e.parameter&&e.parameter.view==='experience')return bw37PublicExperienceScript_();
   return HtmlService.createHtmlOutputFromFile('Admin').setTitle('Bridge Wonder · 직원 관리').addMetaTag('viewport','width=device-width,initial-scale=1').setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 // --- Private server utilities. Keep trailing underscore: hidden from google.script.run ---
@@ -235,6 +237,10 @@ function bw17Roster_(user) {
     if(!classId || (user.role==='teacher'&&!user.classes.includes(classId)))continue;
     arr.push({receipt:bw17Field_(d.headers,r,'접수번호'),child:bw17Field_(d.headers,r,'아동 이름'),birth:bw17Field_(d.headers,r,'아동 생년월'),classId:classId,course:bw17Field_(d.headers,r,'과정명'),guardian:(user.role==='teacher'&&!user.canContact)?'':bw17Field_(d.headers,r,'보호자 성함'),phone:(user.role==='teacher'&&!user.canContact)?'':bw17Field_(d.headers,r,'연락처')});
   }
+  // Merge explicitly verified manual enrollments without changing signed contracts.
+  const signed=new Set(arr.map(r=>r.receipt));
+  const manual=bw37ManualRoster_(user);
+  for(const student of manual)if(!signed.has(student.receipt))arr.push(student);
   return arr;
 }
 function staffListRoster(token) {
@@ -357,6 +363,12 @@ function bw18Date_(value,allowBlank) {
   return s;
 }
 function bw18Reg_(receipt) {
+  // Accounting can refer to a manually verified student without fabricating
+  // a guardian-signed online contract or altering the original registration sheet.
+  if(/^BW-S-[A-F0-9]{12}$/.test(String(receipt||''))){
+    const s=bw37ManualStudent_(receipt);
+    return {name:s.child,classId:'공통등록:'+s.classId,status:'등록확정'};
+  }
   const s=bw17Book_().getSheetByName(BW17.REGISTRATIONS);
   if(!s||s.getLastRow()<2)throw Error('먼저 수강등록 기록을 확인해 주세요.');
   const headers=bw17Headers_(s),idx=headers.indexOf('접수번호');
@@ -396,6 +408,11 @@ function staffListTuition(token) {
   const records=d.rows.slice().reverse().map(r=>({at:r[0],receipt:r[1],kind:r[2],amount:r[3],reference:r[4],note:r[5],operator:r[6]}));
   const regs=bw17Read_(bw17Book_().getSheetByName(BW17.REGISTRATIONS),250);
   const students=regs.rows.slice().reverse().map(r=>({receipt:bw17Field_(regs.headers,r,'접수번호'),name:bw17Field_(regs.headers,r,'아동 이름'),classId:bw17Field_(regs.headers,r,'등록코드')})).filter(x=>x.receipt);
+  // Manually verified students also appear in the accounting selection list.
+  const registered=new Set(students.map(x=>x.receipt));
+  for(const student of bw37ManualActive_({role:'owner',classes:[],canContact:true})){
+    if(!registered.has(student.id))students.push({receipt:student.id,name:student.child,classId:student.classIds.join(',')});
+  }
   bw17Audit_(u,'수납 기록 조회',BW18.PAYMENTS,'성공',records.length+'건');
   return {records:records,students:students};
 }
@@ -879,6 +896,10 @@ function bw20Counts_(){
     const code=bw17Field_(d.headers,r,'등록코드');if(!code.startsWith('공통등록:')){legacy++;continue;}
     const id=code.slice('공통등록:'.length).toUpperCase();counts[id]=(counts[id]||0)+1;
   }
+  // Direct registrations count toward real class capacity only after verified activation.
+  for(const student of bw37ManualActive_({role:'owner',classes:[],canContact:true})){
+    for(const id of student.classIds)counts[id]=(counts[id]||0)+1;
+  }
   return {counts:counts,legacy:legacy};
 }
 function bw20Caps_(){const d=bw17Read_(bw20Tab_('CAPS',false),5000),out={};for(const r of d.rows){const key=String(r[0]||'').toUpperCase();if(key)out[key]=Number(r[1])||0;}return out;}
@@ -922,7 +943,9 @@ function staff20SaveWaitlist(token,p){
    bw17Audit_(u,'대기자 '+(id?'변경':'등록'),key,'성공',status+' / '+classId);return {ok:true,id:key};
  }finally{lock.releaseLock();}
 }
-function bw20Student_(receipt){const d=bw17Read_(bw17Book_().getSheetByName(BW17.REGISTRATIONS),15000);
+function bw20Student_(receipt,originalDate){
+  if(/^BW-S-[A-F0-9]{12}$/.test(String(receipt||'')))return bw37ManualStudent_(receipt,originalDate);
+  const d=bw17Read_(bw17Book_().getSheetByName(BW17.REGISTRATIONS),15000);
  const r=d.rows.slice().reverse().find(x=>bw17Field_(d.headers,x,'접수번호')===receipt);
  if(!r||bw17Field_(d.headers,r,'운영자 최종 등록 상태')!=='등록확정')throw Error('확정된 수강등록 번호를 확인해 주세요.');
  const code=bw17Field_(d.headers,r,'등록코드');if(!code.startsWith('공통등록:'))throw Error('수업반 배정을 먼저 확인해 주세요.');
@@ -945,8 +968,8 @@ function bw20TargetOK_(klass,date,ignoreId){
  return c.id;
 }
 function staff20SaveMakeup(token,p){
- const u=bw24Authorized_(token,'makeups','write',['owner','director','teacher']);const id=String(p&&p.id||'').trim(),receipt=String(p&&p.receipt||'').trim(),student=bw20Student_(receipt);
- const klass=bw17RequireClass_(u,student.classId),date=bw20Date_(p&&p.date,false),reason=String(p&&p.reason||''),status=String(p&&p.status||'접수'),
+ const u=bw24Authorized_(token,'makeups','write',['owner','director','teacher']);const id=String(p&&p.id||'').trim(),receipt=String(p&&p.receipt||'').trim(),date=bw20Date_(p&&p.date,false),student=bw20Student_(receipt,date);
+ const klass=bw17RequireClass_(u,student.classId),reason=String(p&&p.reason||''),status=String(p&&p.status||'접수'),
   targetClass=String(p&&p.targetClass||'').toUpperCase(),targetDate=bw20Date_(p&&p.targetDate,true),note=bw17Safe_(p&&p.note,180);
  if(!['결석','일정변경','기타'].includes(reason)||!BW20.MAKEUP_STATUSES.includes(status))throw Error('요청 구분이나 처리 상태를 확인해 주세요.');
  const original=bw20Class_(klass);if(BW20.DAYS[new Date(date+'T12:00:00+09:00').getUTCDay()]!==original.day)throw Error('원래 수업일은 해당 반의 수업 요일에 맞아야 합니다.');
@@ -1292,7 +1315,7 @@ function staff23PasswordLogin(p) {
   return result;
 }
 
-const BW24_ACCESS_ = Object.freeze({"home":{"label":"오늘의 업무","read":["owner","director","teacher","frontdesk"],"write":[]},"inquiries":{"label":"상담 접수","read":["owner","director","frontdesk"],"write":["owner","director","frontdesk"]},"registrations":{"label":"수강 신청 확인","read":["owner","director"],"write":[]},"classes":{"label":"수업 시간표","read":["owner","director","teacher","frontdesk"],"write":["owner","director"]},"courseSettings":{"label":"학원 운영정보","read":["owner","director"],"write":["owner","director"]},"roster":{"label":"우리 반 아이들","read":["owner","director","teacher"],"write":[]},"attendance":{"label":"출석 체크","read":["owner","director","teacher"],"write":["owner","director","teacher"]},"operations":{"label":"개원·운영 체크리스트","read":["owner","director"],"write":["owner","director"]},"tuition":{"label":"수납·환불 기록","read":["owner","director"],"write":["owner","director"]},"safety":{"label":"수업 준비·안전","read":["owner","director","teacher"],"write":["owner","director","teacher"]},"handoff":{"label":"보호자 인계 기록","read":["owner","director","teacher"],"write":["owner","director","teacher"]},"staffCompliance":{"label":"선생님 준수 사항","read":["owner"],"write":["owner"]},"users":{"label":"선생님 계정·권한","read":["owner"],"write":["owner"]},"documents":{"label":"안내문·확인서","read":["owner","director","teacher","frontdesk"],"write":["owner","director","teacher","frontdesk"]},"capacity":{"label":"반별 정원","read":["owner","director","teacher","frontdesk"],"write":["owner","director"]},"waitlist":{"label":"대기 상담","read":["owner","director","frontdesk"],"write":["owner","director","frontdesk"]},"makeups":{"label":"결석·보강 관리","read":["owner","director","teacher"],"write":["owner","director","teacher"]},"themes":{"label":"이달의 수업 주제","read":["owner","director","teacher","frontdesk"],"write":["owner","director"]},"security":{"label":"이용 기록·백업","read":["owner"],"write":["owner"]},"payroll":{"label":"직원 급여관리","read":["owner"],"write":["owner"]}});
+const BW24_ACCESS_ = Object.freeze({"home":{"label":"오늘의 업무","read":["owner","director","teacher","frontdesk"],"write":[]},"inquiries":{"label":"상담 접수","read":["owner","director","frontdesk"],"write":["owner","director","frontdesk"]},"registrations":{"label":"수강 신청 확인","read":["owner","director"],"write":[]},"classes":{"label":"수업 시간표","read":["owner","director","teacher","frontdesk"],"write":["owner","director"]},"courseSettings":{"label":"학원 운영정보","read":["owner","director"],"write":["owner","director"]},"roster":{"label":"우리 반 아이들","read":["owner","director","teacher"],"write":[]},"attendance":{"label":"출석 체크","read":["owner","director","teacher"],"write":["owner","director","teacher"]},"operations":{"label":"개원·운영 체크리스트","read":["owner","director"],"write":["owner","director"]},"compliance":{"label":"법정·행정 관리","read":["owner","director"],"write":["owner","director"]},"tuition":{"label":"수납·환불 기록","read":["owner","director"],"write":["owner","director"]},"safety":{"label":"수업 준비·안전","read":["owner","director","teacher"],"write":["owner","director","teacher"]},"handoff":{"label":"보호자 인계 기록","read":["owner","director","teacher"],"write":["owner","director","teacher"]},"staffCompliance":{"label":"선생님 준수 사항","read":["owner"],"write":["owner"]},"users":{"label":"선생님 계정·권한","read":["owner"],"write":["owner"]},"documents":{"label":"안내문·확인서","read":["owner","director","teacher","frontdesk"],"write":["owner","director","teacher","frontdesk"]},"capacity":{"label":"반별 정원","read":["owner","director","teacher","frontdesk"],"write":["owner","director"]},"waitlist":{"label":"대기 상담","read":["owner","director","frontdesk"],"write":["owner","director","frontdesk"]},"makeups":{"label":"결석·보강 관리","read":["owner","director","teacher"],"write":["owner","director","teacher"]},"themes":{"label":"이달의 수업 주제","read":["owner","director","teacher","frontdesk"],"write":["owner","director"]},"experiences":{"label":"홈페이지 체험 테마","read":["owner","director"],"write":["owner","director"]},"students":{"label":"학생 기본정보 관리","read":["owner","director"],"write":["owner","director"]},"security":{"label":"이용 기록·백업","read":["owner"],"write":["owner"]},"payroll":{"label":"직원 급여관리","read":["owner"],"write":["owner"]}});
 function bw24UserCacheKey_(email) {return 'bw24_user_' + bw17Hash_(String(email||'').toLowerCase()).slice(0,38);}
 function bw24PolicyKey_(email) {return 'BW24_POLICY_' + bw17Hash_(String(email||'').toLowerCase()).slice(0,40);}
 function bw24Base_(user){

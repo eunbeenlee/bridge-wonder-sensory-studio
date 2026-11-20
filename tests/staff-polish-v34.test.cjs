@@ -53,11 +53,11 @@ test('plain-language guidance preserves critical contract/receipt distinction',(
 });
 test('polish stylesheet and fresh cache versions load in all staff entrypoints',()=>{
   const staticPages=files.map(read);
-  for(const html of staticPages)assert.match(html,/staff-polish-v34\.css\?v=34\.0\.0/);
+  for(const html of staticPages)assert.match(html,/staff-polish-v34\.css\?v=38\.0\.0/);
   const index=staticPages[0];
   for(const script of ['staff-google-bridge.js','administration-accelerator.js','staff-native-kdf.js','staff-account-management.js','staff-ux-v31.js','staff-enterprise-v33.js','administration.js']){
-    assert.ok(index.includes(script+'?v=34.0.0'),script);
+    assert.ok(index.includes(script+'?v=38.0.0'),script);
   }
-  assert.match(admin,/administration-payroll\.js\?v=34\.0\.0/);
+  assert.match(admin,/administration-payroll\.js\?v=38\.0\.0/);
 });
 console.log(JSON.stringify({suite:'V34 staff text and overlap prevention',passed}));
