@@ -115,7 +115,7 @@
     });
     $('backToEmail').addEventListener('click',()=>bw23ShowPassword(''));
     async function logout(){
-      const token=state.token;state.token='';state.user=null;state.navigationSeq++;bw25Accel?.clear();window.BWPayroll?.dispose();$('pageBody').replaceChildren();for(const key of ['classes','templates','inquiries','registrations','roster','staff','attendance'])state[key]=[];
+      const token=state.token;state.token='';state.user=null;bw37QueuedInquiry='';state.navigationSeq++;bw25Accel?.clear();window.BWPayroll?.dispose();$('pageBody').replaceChildren();for(const key of ['classes','templates','inquiries','registrations','roster','staff','attendance'])state[key]=[];
       try{sessionStorage.removeItem('bw17_staff_session');}catch(_){}
       $('workspace').hidden=true;$('loginScreen').hidden=false;
       $('passwordInput').value='';bw23ShowPassword('로그아웃했습니다.');
