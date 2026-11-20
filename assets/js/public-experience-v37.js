@@ -90,6 +90,15 @@
         if(title)title.textContent=t.heading||month+'월, 원더의 새로운 놀이';
         if(subtitle)subtitle.textContent=t.intro;
         if(eyebrow)eyebrow.textContent=t.month+' · BRIDGE WONDER';
+        // The illustrated hero must match the three published cards. Do not
+        // overwrite price or promotion terms (those are managed separately).
+        ['.scene-welcome img','.scene-snow img','.scene-colors img'].forEach((selector,i)=>{
+          const picture=hero.querySelector(selector);
+          if(picture){
+            picture.src='../../assets/img/'+ART[t.cards[i].image];
+            picture.alt=t.cards[i].title+' 체험 테마 일러스트';
+          }
+        });
       }
       document.title=year+'년 '+month+'월 체험 테마 | 브릿지 원더';
     }
