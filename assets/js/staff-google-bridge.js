@@ -23,7 +23,9 @@
     throw Error('직원용 Google 배포 주소가 올바르지 않습니다.');
   }
   let count = 0;
+  let bridgeVerified = false;
   async function request(name, args) {
+    if (name !== 'bridgeHealth' && !bridgeVerified) throw Error('Google 서버 연결 검사를 먼저 실행해 주세요. 서버 연결 전에는 계정 정보가 전송되지 않습니다.');
     if (!Array.isArray(args)) throw Error('요청 형식 오류');
     const body = JSON.stringify({protocol:PROTOCOL,method:name,args});
     if (body.length > 350000) throw Error('요청이 너무 큽니다. 입력 데이터를 확인해 주세요.');
@@ -45,6 +47,10 @@
         throw Error('Google 서버가 JSON 대신 다른 페이지를 반환했습니다. 배포 주소와 Google 접근 설정을 확인해 주세요.');
       }
       if (!data || data.ok !== true) throw Error(String(data && data.message || 'Google 서버 요청이 실패했습니다.'));
+      if (name === 'bridgeHealth') {
+        if (!data.value || data.value.transport !== 'google-apps-script' || data.value.version !== '27.0.0') throw Error('Google 직원 서버의 연결 버전이 일치하지 않습니다. 새 배포를 확인해 주세요.');
+        bridgeVerified = true;
+      }
       if (count === 1) msg('Google 직원 서버와 통신되었습니다.', false);
       return data.value;
     } catch (err) {
