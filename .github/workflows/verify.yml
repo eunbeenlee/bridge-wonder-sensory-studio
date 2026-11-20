@@ -80,3 +80,14 @@ jobs:
       - name: unified V32 compliance and inspection readiness PDF tests
         if: always()
         run: node tests/compliance-v32.test.cjs
+      - name: Create staff Apps Script V38 installer ZIP
+        if: success()
+        run: python3 tools/build-gas-install-package.py
+      - name: Upload staff Apps Script installer
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: BridgeWonder-V38-Staff-AppsScript-Install
+          path: dist/Bridge_Wonder_V38_Staff_AppsScript_Install.zip
+          if-no-files-found: error
+          retention-days: 30
