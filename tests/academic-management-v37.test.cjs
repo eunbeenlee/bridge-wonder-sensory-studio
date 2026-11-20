@@ -128,7 +128,7 @@ check('save basic profile without a scheduled day or birth date, not enrolled ye
   assert.equal(ctx.bw37ManualRoster_({role:'owner',classes:[],canContact:true}).length,0);
 });
 check('no duplicate consultations and no premature 2x weekly enrollment',()=>{
-  assert.throws(()=>ctx.staff37SaveStudent('owner',{...common,revision:0}),/이미 학생|이미.*등록/);
+  assert.throws(()=>ctx.staff37SaveStudent('owner',{...common,revision:0}),/같은 이름|이미.*등록/);
   assert.throws(()=>ctx.staff37SaveStudent('owner',{...common,id,revision:1,
     status:'재원',birth:'2025-01-20',classIds:['BW-MON'],evidence:'private approved',
     verifiedAt:'2026-03-02'}),/두 수업반/);
