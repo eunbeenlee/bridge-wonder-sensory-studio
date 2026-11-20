@@ -62,3 +62,6 @@ jobs:
       - name: account issuance tests
         if: always()
         run: node tests/account-issuance.test.cjs
+      - name: staff UX V31 tests
+        if: always()
+        run: node tests/staff-ux-v31.test.cjs
