@@ -48,7 +48,7 @@ function clientContext(fetchMock){
  });
  await test('server exposes only minimal health result',()=>{
    const r=serverContext().run('bridgeHealth',[]);
-   assert.equal(r.ok,true);assert.equal(r.transport,'google-apps-script');assert.equal(r.value,undefined);
+   assert.equal(r.ok,true);assert.equal(r.value.transport,'google-apps-script');assert.equal(r.value.version,'27.0.0');
  });
  await test('GitHub client sends JSON over Google HTTPS and omits cookies',async()=>{
    let captured;
