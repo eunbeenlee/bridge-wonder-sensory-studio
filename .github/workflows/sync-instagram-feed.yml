@@ -1,0 +1,44 @@
+name: Sync Bridge Wonder Instagram Feed
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 */12 * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bridge-wonder-instagram-feed
+  cancel-in-progress: false
+
+jobs:
+  instagram:
+    if: github.repository == 'eunbeenlee/bridge-wonder-sensory-studio'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout public site
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: main
+          fetch-depth: 1
+      - name: Install image conversion library
+        run: python3 -m pip install --quiet --disable-pip-version-check Pillow>=11.0.0
+      - name: Update image feed from official Instagram API
+        env:
+          BW_INSTAGRAM_ACCESS_TOKEN: ${{ secrets.BW_INSTAGRAM_ACCESS_TOKEN }}
+          BW_INSTAGRAM_USER_ID: ${{ vars.BW_INSTAGRAM_USER_ID }}
+        run: python3 tools/sync-instagram-feed.py
+      - name: Publish new public image snapshot only when it changed
+        run: |
+          git add -A -- assets/data/instagram-feed.json
+          if test -d assets/img/instagram; then git add -A -- assets/img/instagram; fi
+          if git diff --cached --quiet; then
+            echo "Instagram feed already up to date."
+            exit 0
+          fi
+          git config user.name "bridge-wonder-feed-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "content: refresh verified Bridge Wonder Instagram feed"
+          git push origin HEAD:main
