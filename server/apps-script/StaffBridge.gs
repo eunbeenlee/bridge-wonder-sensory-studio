@@ -68,7 +68,7 @@ function doPost(e) {
     if (typeof body !== 'string' || body.length > BW27_MAX_BODY_) throw Error('요청 크기가 허용 범위를 벗어났습니다.');
     const request = JSON.parse(body);
     if (!request || typeof request !== 'object' || Array.isArray(request) || request.protocol !== 'BW_STAFF_V27') throw Error('요청 형식이 올바르지 않습니다.');
-    if (request.method === 'bridgeHealth') return bw27Json_({ok:true,version:'27.0.0',transport:'google-apps-script'});
+    if (request.method === 'bridgeHealth') return bw27Json_({ok:true,value:{version:'27.0.0',transport:'google-apps-script'}});
     if (typeof request.method !== 'string' || !Object.prototype.hasOwnProperty.call(BW27_METHODS_,request.method))
       throw Error('허용되지 않은 업무 요청입니다.');
     if (!Array.isArray(request.args) || request.args.length > 8) throw Error('전달된 인수가 올바르지 않습니다.');
