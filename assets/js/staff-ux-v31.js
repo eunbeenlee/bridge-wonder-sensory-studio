@@ -142,13 +142,13 @@
   function advanced(elements,title,open){
     const available=elements.filter(Boolean);
     if(!available.length)return null;
-    const first=available[0],parent=first.parentElement,details=document.createElement('details');
+    const first=available[0],originalParents=[...new Set(available.map(item=>item.parentElement))],details=document.createElement('details');
     details.className='bw31-advanced';details.open=!!open;
     const summary=document.createElement('summary');summary.textContent=title;
     const body=document.createElement('div');body.className='bw31-advanced-grid';
     first.before(details);details.append(summary,body);
     available.forEach(item=>body.appendChild(item));
-    for(const element of [parent,...new Set(available.map(item=>item.parentElement))]){
+    for(const element of originalParents){
       if(element&&element!==body&&element.classList?.contains('bw241-grid')&&!element.querySelector('.form-item'))element.remove();
     }
     return details;
@@ -167,7 +167,8 @@
       '추가 설정 · 반 코드 / 과정 / 홈페이지 공개',false);
     if(advancedPanel){
       const needsSetup=()=>!$('classId').value||!$('classTemplate').value;
-      if(needsSetup())advancedPanel.open=true;
+      // A fresh class code is generated after choosing day/time; do not expose advanced options before then.
+      if(!$('classTemplate').value)advancedPanel.open=true;
       form.addEventListener('submit',()=>{if(needsSetup())advancedPanel.open=true;},true);
       $('pageBody').addEventListener('click',event=>{
         if(event.target.closest('[data-class],[data-bw241-clone]'))advancedPanel.open=true;
