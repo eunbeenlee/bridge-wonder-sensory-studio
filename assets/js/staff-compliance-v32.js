@@ -91,9 +91,9 @@
   }
   async function render(root,ctx) {
     if(!root||!ctx?.isCurrent?.())return;
-    root.innerHTML='<h2 class="page-title">법정·행정 관리</h2><p class="page-description">교육청 점검을 대비해 확인 상태와 비공개 증빙 위치를 관리합니다.</p>'+banner('법적 적합성은 실제 서류·시설·관할 교육지원청 확인이 필요합니다. 상태를 저장하거나 PDF를 받아도 법적 의무가 자동으로 충족되지는 않습니다.')+
+    root.innerHTML='<h2 class="page-title">운영 기준·법정 확인</h2><p class="page-description">스튜디오 운영에 필요한 서류와 안전·개인정보 확인 상태를 관리합니다.</p>'+banner('사업자등록 업종과 실제 운영 형태에 따라 적용 기준이 다를 수 있습니다. 필요한 신고·등록과 법정 요건은 관할기관에 확인하세요.')+
       '<div id="bw32Stats"></div>'+
-      '<section class="panel bw32-main"><div class="bw32-top"><div><h3>법정 서류·안전·개인정보 점검</h3><p>기존 운영 점검표는 유지합니다. 이 화면은 추가 관리 대장입니다.</p></div><div class="bw32-actions"><button type="button" id="bw32Pdf" class="btn btn-primary">현장점검 준비 PDF 다운로드</button><button type="button" id="bw32OpenLegacy" class="btn btn-outline">기존 운영 점검표</button></div></div>'+
+      '<section class="panel bw32-main"><div class="bw32-top"><div><h3>안전·개인정보·필요 서류 확인</h3><p>기존 점검 기록은 그대로 두고 필요한 항목을 별도로 확인합니다.</p></div><div class="bw32-actions"><button type="button" id="bw32Pdf" class="btn btn-primary">현장점검 준비 PDF 다운로드</button><button type="button" id="bw32OpenLegacy" class="btn btn-outline">기존 운영 점검표</button></div></div>'+
       '<div class="bw32-filters"><label>관리 분야<select id="bw32Category"><option value="">전체 분야</option></select></label><label>적용 여부<select id="bw32Applies"><option value="">전체</option></select></label><label>진행 상태<select id="bw32Status"><option value="">전체</option></select></label><label>검색<input type="search" id="bw32Search" placeholder="서류·보험·등록 검색"></label></div>'+
       '<p id="bw32Count" class="bw32-help" role="status"></p><div id="bw32Items">법정 점검 정보를 불러오는 중입니다…</div></section>'+
       '<section class="panel"><h3>교습비 반환·기한 관리</h3><p>환불 사유 발생일부터 5일 이내 반환 기준을 관리합니다. 실제 금액은 「학원법 시행령」 별표 4와 수강 조건을 검토해 입력해야 합니다.</p><button class="btn btn-outline" type="button" id="bw32Tuition">수납·환불 관리로 이동</button></section>';
