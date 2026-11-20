@@ -97,7 +97,7 @@ function bw37SignedKeys_(){
 function bw37ManualActive_(user,duplicates){
   const signed=duplicates||bw37SignedKeys_();
   const rows=bw37ManualStudents_().filter(s=>s.status==='재원'&&s.evidence&&s.verifiedAt&&s.birth&&s.classIds.length);
-  return rows.filter(s=>(user.role!=='teacher'||user.classes.includes(s.classId)) &&
+  return rows.filter(s=>(user.role!=='teacher'||s.classIds.some(id=>user.classes.includes(id))) &&
     !signed.has(bw37StudentKey_(s.child,s.birth,s.phone)));
 }
 function bw37ManualRoster_(user,duplicates){
@@ -118,7 +118,7 @@ function bw37ManualStudent_(id,originalDate) {
     throw Error('재원 상태와 보호자 확인 증빙을 먼저 확인해 주세요.');
   if(!found.classIds.length)throw Error('배정된 반을 찾을 수 없습니다.');
   let classId=found.classIds[0];
-  if(found.classIds.length>1){
+  if(found.classIds.length>1&&originalDate){
     const date=bw18Date_(originalDate,false),
       day=BW20.DAYS[new Date(date+'T12:00:00+09:00').getUTCDay()];
     const matched=bw20ClassData_().filter(c=>found.classIds.includes(c.id)&&c.day===day);
