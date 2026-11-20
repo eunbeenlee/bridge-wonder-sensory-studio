@@ -86,8 +86,8 @@
   function openChange(forced){
     if(!context?.state?.token||!context.state.user)return;
     const email=context.state.user.email;
-    const card=makeDialog(forced?'임시 비밀번호 변경 필수':'내 비밀번호 변경',
-      forced?'임시 비밀번호로 로그인했습니다. 다른 업무를 보기 전에 직접 설정한 비밀번호로 변경해 주세요.':'현재 비밀번호를 확인한 뒤 새 비밀번호를 설정합니다. 변경 후 모든 기기에서 다시 로그인해야 합니다.',!!forced);
+    const card=makeDialog(forced?'새 비밀번호 설정':'내 비밀번호 변경',
+      forced?'임시 비밀번호로 로그인했습니다. 사용할 비밀번호를 새로 설정해 주세요.':'현재 비밀번호를 입력하고 새 비밀번호를 설정하세요. 변경 후에는 다시 로그인해야 합니다.',!!forced);
     const f=document.createElement('form');f.autocomplete='off';
     const current=field(f,'현재 비밀번호','password','current-password',12);
     const next=field(f,'새 비밀번호 (12자 이상)','password','new-password',12);
@@ -98,7 +98,7 @@
     close.onclick=()=>{if(forced)context.logout();removeDialog();};
     f.appendChild(controls);
     f.onsubmit=async ev=>{
-      ev.preventDefault();save.disabled=true;status.textContent='비밀번호를 안전하게 변경하고 있습니다…';
+      ev.preventDefault();save.disabled=true;status.textContent='비밀번호를 변경하고 있습니다…';
       try{
         requireCrypto();
         if(next.value!==check.value)throw Error('새 비밀번호가 일치하지 않습니다.');
@@ -116,11 +116,11 @@
   }
   function showTemporary(email,password){
     const card=makeDialog('직원 임시 비밀번호 발급 완료',
-      '아래 비밀번호는 지금 한 번만 표시됩니다. 직원에게 안전한 방법으로 전달하세요. 직원은 첫 로그인 시 반드시 비밀번호를 변경해야 합니다.',true);
+      '임시 비밀번호는 이 화면에서 한 번만 확인할 수 있습니다. 직원에게 개별 전달하고 첫 로그인 시 변경하도록 안내해 주세요.',true);
     const id=document.createElement('p');id.textContent='로그인 이메일: '+email;card.appendChild(id);
     const secret=document.createElement('code');secret.className='bw30-secret';secret.textContent=password;card.appendChild(secret);
     const status=document.createElement('p');status.className='bw30-help';
-    status.textContent='이 비밀번호는 스프레드시트, GitHub, 브라우저 저장소에 저장되지 않습니다.';card.appendChild(status);
+    status.textContent='이 창을 닫으면 임시 비밀번호를 다시 볼 수 없습니다. 필요하면 새로 발급해 주세요.';card.appendChild(status);
     const controls=document.createElement('div');controls.className='bw30-actions';card.appendChild(controls);
     const copy=action('임시 비밀번호 복사',controls,'button');
     const done=action('확인하고 닫기',controls,'button');
@@ -156,7 +156,7 @@
     const form=$('userForm');
     if(form&&!$('bw30-user-note')){
       const note=document.createElement('p');note.id='bw30-user-note';note.className='help';
-      note.textContent='직원 계정을 저장한 뒤 상단 목록에서 임시 비밀번호를 발급하세요. 기존 직원은 재발급으로 비밀번호를 초기화할 수 있습니다.';
+      note.textContent='계정을 저장한 후 직원 목록에서 임시 비밀번호를 발급하세요. 기존 직원의 비밀번호도 재발급할 수 있습니다.';
       form.appendChild(note);
     }
   }
