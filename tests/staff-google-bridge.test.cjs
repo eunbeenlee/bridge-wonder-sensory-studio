@@ -52,16 +52,34 @@ function clientContext(fetchMock){
  });
  await test('GitHub client sends JSON over Google HTTPS and omits cookies',async()=>{
    let captured;
+   const methods=[];
    const h=clientContext(async (url,options)=>{
-     captured={url,options};const method=JSON.parse(options.body).method;return {ok:true,text:async()=>JSON.stringify({ok:true,value:method==='bridgeHealth'?{version:'27.0.0',transport:'google-apps-script'}:{role:'owner'}})};
+     captured={url,options};const method=JSON.parse(options.body).method;methods.push(method);
+     return {ok:true,text:async()=>JSON.stringify({ok:true,value:method==='bridgeHealth'?{version:'27.0.0',transport:'google-apps-script'}:{role:'owner'}})};
    });
-   await assert.rejects(h.window.BW27Bridge.request('staffCurrentUser',['test-token']),/연결 검사를 먼저/);
-   await h.window.BW27Bridge.request('bridgeHealth',[]);
+   // Anonymous health runs once on page load, and staff data waits for the same request.
    const data=await h.window.BW27Bridge.request('staffCurrentUser',['test-token']);
+   assert.deepEqual(methods,['bridgeHealth','staffCurrentUser']);
    assert.equal(data.role,'owner');assert.match(captured.url,/^https:\/\/script\.google\.com\/macros\/s\//);
    assert.equal(captured.options.method,'POST');assert.equal(captured.options.credentials,'omit');
    assert.equal(captured.options.headers['Content-Type'],'text/plain;charset=utf-8');
    assert.equal(JSON.parse(captured.options.body).args[0],'test-token');
+ });
+ await test('credentials wait for anonymous health, and concurrent login requests share one preflight',async()=>{
+   const seen=[];
+   let releaseHealth;
+   const h=clientContext(async(_url,options)=>{
+     const name=JSON.parse(options.body).method;seen.push(name);
+     if(name==='bridgeHealth')return new Promise(resolve=>{releaseHealth=()=>resolve({ok:true,text:async()=>JSON.stringify({ok:true,value:{version:'27.0.0',transport:'google-apps-script'}})});});
+     return {ok:true,text:async()=>JSON.stringify({ok:true,value:{token:'test-session'}})};
+   });
+   const a=h.window.BW27Bridge.request('staff23PasswordLogin',[{email:'teacher@example.test',password:'fixture-password'}]);
+   const b=h.window.BW27Bridge.request('staff23PasswordLogin',[{email:'teacher@example.test',password:'fixture-password'}]);
+   assert.deepEqual(seen,['bridgeHealth']);
+   releaseHealth();
+   await Promise.all([a,b]);
+   assert.deepEqual(seen,['bridgeHealth','staff23PasswordLogin','staff23PasswordLogin']);
+   assert.equal(h.window.BW27Bridge.metrics().verified,true);
  });
  await test('google.script.run-compatible success handlers operate',async()=>{
    let ok;const h=clientContext(async(_url,options)=>({ok:true,text:async()=>JSON.stringify({ok:true,value:JSON.parse(options.body).method==='bridgeHealth'?{version:'27.0.0',transport:'google-apps-script'}:{status:'ok'}})}));
@@ -74,5 +92,5 @@ function clientContext(fetchMock){
    await assert.rejects(h.window.BW27Bridge.request('bridgeHealth',[]),/통신이 차단/);
    assert.match(h.elements['bw27-server-status'].textContent,/Google 웹앱 통신이 차단/);
  });
- console.log(JSON.stringify({suite:'optional Shinjeon-style bridge offline',passed:tests.length,total:8}));
+ console.log(JSON.stringify({suite:'optional Shinjeon-style bridge offline',passed:tests.length,total:9}));
 })().catch(e=>{console.error(e);process.exitCode=1;});
