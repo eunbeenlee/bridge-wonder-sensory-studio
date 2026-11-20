@@ -1159,9 +1159,15 @@ function bw29ProofHash_(email,proof) {
   const msg=Utilities.newBlob('BW29-V2|'+String(email||'').trim().toLowerCase()+'|'+proof).getBytes();
   return bw23Hex_(Utilities.computeHmacSha256Signature(msg,key));
 }
-function bw29Credential_(email,proof) {
-  return {v:2,scheme:'BW29-WEBCRYPTO-PBKDF2-SHA256-PEPPER-HMAC',rounds:BW29_CLIENT_ROUNDS_,
+function bw29Credential_(email,proof,legacy) {
+  const c={v:2,scheme:'BW29-WEBCRYPTO-PBKDF2-SHA256-PEPPER-HMAC',rounds:BW29_CLIENT_ROUNDS_,
     hash:bw29ProofHash_(email,proof),updatedAt:new Date().toISOString()};
+  // Legacy Google HtmlService clients may still log in by their original password.
+  // Retain only the existing peppered v1 verifier; never store plaintext or browser proof.
+  if(legacy&&legacy.v===1&&legacy.salt&&legacy.hash&&Number.isInteger(legacy.rounds)){
+    c.legacy={salt:legacy.salt,hash:legacy.hash,rounds:legacy.rounds};
+  }
+  return c;
 }
 function bw23GetCred_(email){
   const raw=PropertiesService.getScriptProperties().getProperty(bw23CredentialKey_(email));
@@ -1252,7 +1258,11 @@ function staff23PasswordLogin(p) {
   const cache=CacheService.getScriptCache();
   let proofKey='',valid=false;
   if(isV2){
-    valid=hasProof&&bw23Equals_(bw29ProofHash_(email,proof),cred.hash);
+    if(hasProof)valid=bw23Equals_(bw29ProofHash_(email,proof),cred.hash);
+    else if(cred.legacy&&cred.legacy.salt&&cred.legacy.hash&&Number.isInteger(cred.legacy.rounds)){
+      // Older Google UI still works, but uses its original slow verifier.
+      valid=bw23Equals_(bw23Pbkdf2_(pwd,cred.legacy.salt,cred.legacy.rounds),cred.legacy.hash);
+    }
   }else{
     proofKey='bw24_ok_'+bw17Hash_(email+'|'+String(cred.updatedAt||'')+'|'+bw24FastProof_(pwd)).slice(0,42);
     valid=cache.get(proofKey)==='yes'||bw23Equals_(bw23Pbkdf2_(pwd,cred.salt,cred.rounds),cred.hash);
@@ -1264,7 +1274,7 @@ function staff23PasswordLogin(p) {
         // Never silently overwrite another session's concurrent password reset.
         const current=bw23GetCred_(email);
         if(current&&current.v===1&&current.hash===cred.hash){
-          props.setProperty(bw23CredentialKey_(email),JSON.stringify(bw29Credential_(email,proof)));
+          props.setProperty(bw23CredentialKey_(email),JSON.stringify(bw29Credential_(email,proof,cred)));
         }else if(!current||current.v!==2||!bw23Equals_(bw29ProofHash_(email,proof),current.hash)){
           throw Error('로그인 정보가 갱신되었습니다. 다시 로그인해 주세요.');
         }
