@@ -1,0 +1,279 @@
+/* Bridge Wonder V34 — visual collision fixes and readable, natural staff hints.
+ * Scoped to the authenticated staff workspace. Does not change business logic.
+ * The brand header scrolls normally; the work navigation alone stays sticky.
+ */
+#workspace.bw33-ready .topbar {
+  position: relative;
+  top: auto;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: minmax(0,1fr) auto;
+  align-items: center;
+  gap: 12px 20px;
+  height: auto;
+  min-height: 72px;
+  overflow: visible;
+}
+#workspace.bw33-ready .bw21-topbar-lockup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+#workspace.bw33-ready .bw21-topbar-mark {
+  display: block;
+  width: 44px;
+  height: 36px;
+  max-width: 44px;
+  max-height: 36px;
+  flex: 0 0 44px;
+  object-fit: contain;
+  object-position: center;
+}
+#workspace.bw33-ready .bw21-topbar-lockup > div {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 100%;
+}
+#workspace.bw33-ready #topTitle,
+#workspace.bw33-ready #topSubtitle {
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#workspace.bw33-ready .topbar > .row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  justify-self: end;
+  gap: 8px;
+  flex: 0 1 auto;
+  flex-wrap: wrap;
+  min-width: 0;
+  max-width: 100%;
+  margin: 0;
+}
+#workspace.bw33-ready .topbar .row .btn,
+#workspace.bw33-ready .topbar .row .tag {
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+#workspace.bw33-ready .topbar .row .bw30-account-btn {
+  margin: 0;
+}
+#workspace.bw33-ready .bw33-navigation {
+  position: sticky;
+  top: 0;
+  z-index: 25;
+}
+#workspace.bw33-ready .bw33-primary {
+  max-width: 100%;
+  min-width: 0;
+}
+#workspace.bw33-ready .bw33-primary-groups {
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  overscroll-behavior-x: contain;
+}
+#workspace.bw33-ready .bw33-primary-groups > .bw33-group {
+  flex: 0 0 auto;
+}
+#workspace.bw33-ready .bw33-primary-actions {
+  min-width: 0;
+  flex-shrink: 0;
+}
+#workspace.bw33-ready .bw33-popovers {
+  max-width: 100%;
+}
+#workspace.bw33-ready .bw33-popover {
+  max-width: calc(100% - 24px);
+}
+#workspace.bw33-ready .bw33-menu-panel {
+  max-width: min(900px, calc(100% - 24px));
+}
+#workspace.bw33-ready .bw33-panel-columns > *,
+#workspace.bw33-ready .bw33-doc-template-list > *,
+#workspace.bw33-ready .bw33-doc-shortcuts > * {
+  min-width: 0;
+}
+#workspace.bw33-ready .bw33-doc-choice,
+#workspace.bw33-ready .bw33-doc-shortcuts button {
+  overflow-wrap: break-word;
+  word-break: keep-all;
+}
+#workspace.bw33-ready .bw33-doc-hub-head > * {
+  min-width: 0;
+}
+#workspace.bw33-ready .doc-preview,
+#workspace.bw33-ready .doc-preview-brand {
+  max-width: 100%;
+  min-width: 0;
+}
+#workspace.bw33-ready .doc-preview-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 22px;
+}
+#workspace.bw33-ready .doc-preview-brand .bw21-doc-preview-logo {
+  display: block;
+  width: min(186px, 100%);
+  height: auto;
+  max-height: 112px;
+  margin: 0;
+  object-fit: contain;
+  object-position: left center;
+}
+#workspace.bw33-ready .doc-preview-brand small {
+  display: block;
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: normal;
+  color: #536b56;
+  font-family: inherit;
+  line-height: 1.5;
+}
+#workspace.bw33-ready .panel img,
+#workspace.bw33-ready .doc-preview img {
+  max-width: 100%;
+  object-fit: contain;
+}
+#workspace.bw33-ready .doc-preview .table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+#workspace.bw33-ready .doc-preview table {
+  width: 100%;
+  table-layout: auto;
+  white-space: normal;
+}
+#workspace.bw33-ready .doc-preview table td,
+#workspace.bw33-ready .doc-preview table th {
+  overflow-wrap: anywhere;
+  word-break: keep-all;
+}
+#workspace.bw33-ready .footnote,
+#workspace.bw33-ready .bw241-help,
+#workspace.bw33-ready .panel-desc,
+#workspace.bw33-ready .bw31-guide p {
+  font-size: 12.5px;
+  line-height: 1.75;
+  color: #576a58;
+  letter-spacing: normal;
+  word-break: keep-all;
+}
+#workspace.bw33-ready .footnote {
+  margin-top: 16px;
+  max-width: 80ch;
+  color: #4e6352;
+}
+#workspace.bw33-ready .subtle,
+#workspace.bw33-ready .warning,
+#workspace.bw33-ready .alert {
+  font-size: 12.5px;
+  line-height: 1.75;
+}
+#workspace.bw33-ready .bw33-document-hint,
+#workspace.bw33-ready .bw33-doc-panel > p {
+  font-size: 12px;
+  line-height: 1.7;
+  color: #546b58;
+}
+#workspace.bw33-ready .bw33-document-hub p,
+#workspace.bw33-ready .bw33-doc-shortcuts small,
+#workspace.bw33-ready .bw33-doc-choice small {
+  font-size: 12px;
+  line-height: 1.6;
+}
+#workspace.bw33-ready .bw33-eyebrow {
+  font-size: 11px;
+  letter-spacing: .03em;
+}
+#workspace.bw33-ready .bw31-guide {
+  background: transparent;
+  border-color: #dae4d9;
+}
+#workspace.bw33-ready .bw31-guide summary {
+  color: #3a5940;
+}
+@media (max-width: 850px) {
+  #workspace.bw33-ready .topbar {
+    grid-template-columns: minmax(0,1fr) auto;
+    gap: 10px;
+    padding: 11px 16px;
+  }
+  #workspace.bw33-ready .bw33-navigation {
+    top: 0;
+  }
+  #workspace.bw33-ready .bw21-topbar-mark {
+    width: 38px;
+    height: 33px;
+    flex-basis: 38px;
+  }
+  #workspace.bw33-ready .topbar .row {
+    gap: 6px;
+  }
+  #workspace.bw33-ready .bw33-primary-groups {
+    max-width: 100%;
+  }
+}
+@media (max-width: 600px) {
+  #workspace.bw33-ready .topbar {
+    grid-template-columns: minmax(0,1fr);
+    grid-template-rows: auto auto;
+    gap: 8px;
+    padding: 10px 14px;
+  }
+  #workspace.bw33-ready .bw21-topbar-lockup {
+    width: 100%;
+    gap: 8px;
+  }
+  #workspace.bw33-ready .bw21-topbar-mark {
+    width: 32px;
+    height: 29px;
+    flex-basis: 32px;
+  }
+  #workspace.bw33-ready .topbar > .row {
+    justify-self: stretch;
+    justify-content: flex-end;
+    gap: 7px;
+  }
+  #workspace.bw33-ready .topbar > .row .btn {
+    min-height: 34px;
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+  #workspace.bw33-ready #topTitle {
+    font-size: 16px;
+  }
+  #workspace.bw33-ready .bw33-primary {
+    align-content: start;
+  }
+  #workspace.bw33-ready .bw33-primary-actions {
+    max-width: 100%;
+  }
+  #workspace.bw33-ready .bw33-document-hub {
+    padding: 15px;
+  }
+  #workspace.bw33-ready .doc-preview {
+    padding: 14px 12px;
+  }
+}
+@media (max-width: 375px) {
+  #workspace.bw33-ready .topbar > .row {
+    justify-content: flex-start;
+  }
+  #workspace.bw33-ready .bw33-primary-actions {
+    gap: 5px;
+  }
+  #workspace.bw33-ready .bw33-pdf-trigger {
+    padding-inline: 8px;
+  }
+}
