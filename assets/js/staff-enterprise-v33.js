@@ -5,28 +5,30 @@
  */
 (function(global){
   'use strict';
+  // Operational navigation does not determine the business's legal classification.
+  // IDs, server permissions and original contractual records are unchanged.
   const NAV=Object.freeze([
-    {id:'classes',label:'교육·수업',sections:[
-      {name:'수업 기획',pages:['classes','themes','experiences','capacity']},
-      {name:'학생·출결',pages:['roster','attendance','makeups']},
-      {name:'안전·인계',pages:['safety','handoff']}
+    {id:'consult',label:'상담·등록',sections:[
+      {name:'문의와 대기',pages:['inquiries','waitlist']},
+      {name:'아이 기본정보·계약',pages:['students','registrations']}
     ]},
-    {id:'parents',label:'학부모·등록',sections:[
-      {name:'상담 관리',pages:['inquiries','waitlist']},
-      {name:'수강 등록',pages:['students','registrations']},
-      {name:'요청 서류·PDF',pages:['documents']}
+    {id:'class',label:'클래스 운영',sections:[
+      {name:'일정과 정원',pages:['classes','capacity']},
+      {name:'아이·출결·보강',pages:['roster','attendance','makeups']},
+      {name:'보호자 인계',pages:['handoff']}
     ]},
-    {id:'finance',label:'수납·정산',sections:[
-      {name:'교습비·환불',pages:['tuition']},
-      {name:'급여 관리',pages:['payroll']}
+    {id:'sensory',label:'오감놀이 준비',sections:[
+      {name:'테마·놀이 콘텐츠',pages:['experiences','themes']},
+      {name:'재료·안전 점검',pages:['safety']}
     ]},
-    {id:'admin',label:'학원·행정',sections:[
-      {name:'등록·운영 점검',pages:['operations','compliance','courseSettings']},
-      {name:'교직원 준수사항',pages:['staffCompliance']}
+    {id:'service',label:'이용료·문서',sections:[
+      {name:'수납·환불',pages:['tuition']},
+      {name:'보호자 요청 서류',pages:['documents']}
     ]},
-    {id:'people',label:'직원·보안',sections:[
-      {name:'직원·계정',pages:['users']},
-      {name:'접속 기록·백업',pages:['security']}
+    {id:'admin',label:'스튜디오 관리',sections:[
+      {name:'운영정보·시설',pages:['operations','courseSettings']},
+      {name:'적용 기준·직원 확인',pages:['compliance','staffCompliance']},
+      {name:'직원·급여·보안',pages:['users','payroll','security']}
     ]}
   ]);
   const DOCUMENT_TYPES=Object.freeze([
@@ -38,18 +40,18 @@
     {type:'notice',label:'일반 안내문',note:'내용을 작성해 발급'}
   ]);
   const KEYWORDS=Object.freeze({
-    documents:'pdf 발급 서류 증명서 계약서 등록확인서 납부 안내문 다운로드 학부모 부모 요청',
+    documents:'pdf 발급 서류 증명서 계약서 등록확인서 납부 안내문 다운로드 보호자 아이 가족 요청',
     attendance:'출결 출석 결석 체크',
-    classes:'시간표 수업 일정 반 배정',
-    inquiries:'상담 문의 전화 신청',
+    classes:'센서리 스튜디오 클래스 일정 시간표 수업 반 배정',
+    inquiries:'체험 상담 예약 문의 보호자 신청 전화',
     registrations:'등록 계약 신청 학부모',
-    tuition:'교습비 수납 환불 영수증 결제 내역',
+    tuition:'클래스 수업비 이용료 교습비 수납 환불 영수증 결제 내역',
     makeups:'보강 결석 일정 변경',
     compliance:'법정 교육청 실사 현장점검 보험 허가',
-    operations:'운영 점검 준비 마감 인허가',
+    operations:'스튜디오 개원 시설 운영 점검 준비 인허가',
     payroll:'급여 월급 명세서 직원',
-    students:'학생 인적사항 학생등록 상담접수 반배정 주2회 기본정보',
-    experiences:'체험 테마 월간 관리 홈페이지 공개',
+    students:'아이 기본정보 학생 인적사항 센서리 체험 상담 등록 반배정 주2회',
+    experiences:'센서리 오감놀이 월간 체험 테마 재료 주제 홈페이지 공개',
     users:'직원 계정 권한 비밀번호 발급'
   });
   const esc=v=>String(v??'').replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]));
@@ -72,11 +74,11 @@
       const bar=document.createElement('section');bar.id='bw33Navigation';bar.className='bw33-navigation';
       bar.setAttribute('aria-label','직원 운영 업무 메뉴');
       bar.innerHTML='<nav class="bw33-primary" aria-label="상단 업무 메뉴">'+
-        '<button type="button" class="bw33-home" data-bw33home>운영 홈</button>'+
+        '<button type="button" class="bw33-home" data-bw33home>스튜디오 홈</button>'+
         '<div class="bw33-primary-groups" id="bw33NavGroups"></div>'+
         '<div class="bw33-primary-actions">'+
           '<button type="button" class="bw33-search-trigger" id="bw33SearchToggle" aria-expanded="false" aria-controls="bw33SearchPanel">업무 검색 <small>Ctrl + K</small></button>'+
-          '<button type="button" class="bw33-pdf-trigger" id="bw33PdfToggle" aria-expanded="false" aria-controls="bw33PdfPanel">학부모 서류 PDF</button>'+
+          '<button type="button" class="bw33-pdf-trigger" id="bw33PdfToggle" aria-expanded="false" aria-controls="bw33PdfPanel">보호자 서류 PDF</button>'+
         '</div></nav>'+
         '<div class="bw33-popovers">'+
           '<div id="bw33MenuPanels"></div>'+
@@ -84,8 +86,8 @@
             '<label for="bw33SearchInput">업무 검색</label><input type="search" id="bw33SearchInput" autocomplete="off" placeholder="예: 출결, 상담, 수납, PDF 발급">'+
             '<div id="bw33SearchResults" class="bw33-search-results"></div>'+
           '</section>'+
-          '<section id="bw33PdfPanel" class="bw33-popover bw33-doc-panel" aria-label="학부모 서류 유형 선택" hidden>'+
-            '<div class="bw33-doc-head"><strong>학부모 요청 서류</strong><small>등록된 수업·수납·계약 기록에서 발급합니다.</small></div>'+
+          '<section id="bw33PdfPanel" class="bw33-popover bw33-doc-panel" aria-label="보호자 요청 서류 선택" hidden>'+
+            '<div class="bw33-doc-head"><strong>보호자 요청 서류</strong><small>등록된 수업·수납·계약 기록에서 발급합니다.</small></div>'+
             '<div id="bw33DocShortcuts" class="bw33-doc-shortcuts"></div>'+
             '<p>발급할 학생과 내용을 확인한 후 PDF를 만드세요. 납부 내역 안내서는 교습비 영수증과 구분해 발급합니다.</p>'+
           '</section>'+
@@ -208,9 +210,9 @@
     });
     shell.querySelector('[data-bw33home]')?.classList.toggle('is-active',page==='home');
     const m=menu.find(x=>x[0]===page);
-    const label=m?.[2]||'운영 홈';
+    const label=m?.[2]||'스튜디오 홈';
     $('bw33Breadcrumb').innerHTML='<span>Bridge Wonder</span><span aria-hidden="true">/</span>'+
-      '<span>'+esc(group?.label||'운영 홈')+'</span><span aria-hidden="true">/</span><strong>'+esc(label)+'</strong>';
+      '<span>'+esc(group?.label||'스튜디오 홈')+'</span><span aria-hidden="true">/</span><strong>'+esc(label)+'</strong>';
     if(activePanel&&activePanel!=='search'&&activePanel!=='pdf')closePanels();
   }
   function applyDocType(){
@@ -237,7 +239,7 @@
       const hub=document.createElement('section');
       hub.id='bw33DocumentHub';hub.className='bw33-document-hub';
       hub.innerHTML='<div class="bw33-doc-hub-head"><div><span class="bw33-eyebrow">빠른 문서 발급</span>'+
-        '<h3>학부모 요청 서류 발급</h3><p>서류 종류와 대상 기록을 선택하고 내용을 확인한 뒤 PDF를 발급하세요.</p></div>'+
+        '<h3>보호자 요청 서류 발급</h3><p>서류 종류와 대상 기록을 선택하고 내용을 확인한 뒤 PDF를 발급하세요.</p></div>'+
         '<button type="button" class="btn btn-outline btn-small" id="bw33HistoryOpen">이전 발급 문서 보기</button></div>'+
         '<div id="bw33DocumentChoices" class="bw33-doc-template-list"></div>'+
         '<div class="bw33-document-hint">계약서 사본은 보관된 서명 원본을 기준으로 발급합니다. 납부 내역 안내서는 교습비 영수증과 다릅니다.</div>';
