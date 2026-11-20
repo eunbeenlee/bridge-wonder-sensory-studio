@@ -5,13 +5,15 @@
 (function(global){
   'use strict';
   const GROUPS=[
-    {key:'daily',title:'수업·출결',items:['home','classes','roster','attendance','handoff','safety','makeups','capacity','themes']},
+    {key:'daily',title:'수업·출결',items:['home','classes','students','roster','attendance','handoff','safety','makeups','capacity','themes','experiences']},
     {key:'family',title:'상담·등록',items:['inquiries','waitlist','registrations','tuition','documents']},
     {key:'admin',title:'운영·직원 관리',items:['operations','courseSettings','staffCompliance','users','payroll','security']}
   ];
   const HELP={
     home:['오늘의 업무','확인이 필요한 업무부터 살펴보고, 상단 메뉴에서 원하는 업무로 이동하세요.'],
     classes:['수업반 등록','요일과 시간을 정하고 시작일과 교습 기간을 입력한 뒤 저장하세요. 홈페이지 공개 여부는 검토 후 변경할 수 있습니다.'],
+    students:['학생 인적사항 등록','기본정보만 먼저 등록하고 상담 후 주간 수업 횟수와 실제 수업반을 정하세요.'],
+    experiences:['홈페이지 체험 테마','적용할 달과 체험 세 가지를 작성한 뒤 공개 상태를 선택하면 홈페이지에 반영됩니다.'],
     roster:['수강생 명단 확인','담당 반의 학생을 확인할 수 있습니다. 보호자 연락처는 권한이 있는 직원에게만 표시됩니다.'],
     attendance:['출결 기록','수업반과 날짜를 선택하고 명단 불러오기를 누른 뒤 학생별 출결 상태를 저장하세요.'],
     handoff:['보호자 인계 확인','반과 날짜를 선택해 명단을 불러오고, 보호자 동반 여부와 수업 종료 후 인계 상태를 기록하세요.'],
