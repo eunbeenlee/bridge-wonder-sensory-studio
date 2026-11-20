@@ -53,8 +53,10 @@ function clientContext(fetchMock){
  await test('GitHub client sends JSON over Google HTTPS and omits cookies',async()=>{
    let captured;
    const h=clientContext(async (url,options)=>{
-     captured={url,options};return {ok:true,text:async()=>JSON.stringify({ok:true,value:{role:'owner'}})};
+     captured={url,options};const method=JSON.parse(options.body).method;return {ok:true,text:async()=>JSON.stringify({ok:true,value:method==='bridgeHealth'?{version:'27.0.0',transport:'google-apps-script'}:{role:'owner'}})};
    });
+   await assert.rejects(h.window.BW27Bridge.request('staffCurrentUser',['test-token']),/연결 검사를 먼저/);
+   await h.window.BW27Bridge.request('bridgeHealth',[]);
    const data=await h.window.BW27Bridge.request('staffCurrentUser',['test-token']);
    assert.equal(data.role,'owner');assert.match(captured.url,/^https:\/\/script\.google\.com\/macros\/s\//);
    assert.equal(captured.options.method,'POST');assert.equal(captured.options.credentials,'omit');
@@ -62,13 +64,14 @@ function clientContext(fetchMock){
    assert.equal(JSON.parse(captured.options.body).args[0],'test-token');
  });
  await test('google.script.run-compatible success handlers operate',async()=>{
-   let ok;const h=clientContext(async()=>({ok:true,text:async()=>JSON.stringify({ok:true,value:{status:'ok'}})}));
+   let ok;const h=clientContext(async(_url,options)=>({ok:true,text:async()=>JSON.stringify({ok:true,value:JSON.parse(options.body).method==='bridgeHealth'?{version:'27.0.0',transport:'google-apps-script'}:{status:'ok'}})}));
+   await h.window.BW27Bridge.request('bridgeHealth',[]);
    await new Promise((resolve,reject)=>h.window.google.script.run.withSuccessHandler(v=>{ok=v;resolve();}).withFailureHandler(reject).staffCurrentUser('token'));
    assert.equal(ok.status,'ok');
  });
  await test('Google transport/CORS failure is shown without logging in',async()=>{
    const h=clientContext(async()=>{throw new TypeError('Failed to fetch');});
-   await assert.rejects(h.window.BW27Bridge.request('staffCurrentUser',['token']),/통신이 차단/);
+   await assert.rejects(h.window.BW27Bridge.request('bridgeHealth',[]),/통신이 차단/);
    assert.match(h.elements['bw27-server-status'].textContent,/Google 웹앱 통신이 차단/);
  });
  console.log(JSON.stringify({suite:'optional Shinjeon-style bridge offline',passed:tests.length,total:8}));
