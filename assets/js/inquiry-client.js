@@ -168,7 +168,7 @@
     const payload=new URLSearchParams({
       source:'bridgewonder-v21-child-consultation',rid:activeId,childName:input.childName,phone:input.phone,
       months:input.months,topic:input.topic,contactTime:input.contactTime,
-      guardianName:input.guardian,weeklyPreference:input.weekly,note:input.note,
+      note:input.note,
       consent:'yes',legalGuardian:input.legalGuardian?'yes':'no',marketing:input.marketing?'yes':'no',contactMethod:input.contactMethod,website:input.website
     });
     // A 'simple' POST avoids CORS preflight. Response is intentionally unreadable.
