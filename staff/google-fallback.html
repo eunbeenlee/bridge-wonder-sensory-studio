@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow,noarchive,nosnippet">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#fbf8f2">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; frame-src 'none'; connect-src 'none'; form-action 'none'; object-src 'none'; base-uri 'none'; upgrade-insecure-requests">
+  <title>Bridge Wonder | 선생님 운영공간</title>
+  <link rel="icon" type="image/png" href="../assets/img/favicon.png">
+  <style>
+    :root{color-scheme:light;--cream:#fbf8f2;--paper:#fffdf8;--forest:#40543a;--sub:#6e7c69;--line:#e8dcc8;--focus:#c66b44}
+    *{box-sizing:border-box}
+    html,body{min-height:100%;margin:0}
+    body{display:grid;place-items:center;background:var(--cream);color:var(--forest);font-family:system-ui,-apple-system,'Noto Sans KR','Malgun Gothic',sans-serif;-webkit-font-smoothing:antialiased}
+    main{width:min(100% - 32px,480px);padding:44px 0}
+    .card{padding:36px 38px;border:1px solid var(--line);border-radius:20px;background:var(--paper);box-shadow:0 14px 38px #40543a0b;text-align:center}
+    .logo{display:block;width:min(210px,70%);height:auto;margin:0 auto 24px}
+    .eyebrow{margin:0 0 5px;color:#899a82;font-size:11px;font-weight:700;letter-spacing:.15em}
+    h1{margin:0 0 16px;font-size:24px;line-height:1.35;letter-spacing:-.04em;font-weight:700}
+    .desc{margin:0 auto 22px;max-width:345px;font-size:14px;line-height:1.85;color:var(--sub)}
+    .state{margin:0 0 17px;font-size:12px;line-height:1.6;color:var(--forest)}
+    .indicator{display:inline-block;width:8px;height:8px;margin-right:8px;vertical-align:1px;border-radius:50%;background:#9faf96;animation:breathe 1.4s ease-in-out infinite}
+    @keyframes breathe{50%{opacity:.38}}
+    .button{display:flex;align-items:center;justify-content:center;width:100%;min-height:50px;padding:12px 18px;border:1px solid var(--forest);border-radius:10px;background:var(--forest);color:white;text-decoration:none;font-size:14px;font-weight:650}
+    .button:hover{background:#34472f}
+    .button:focus-visible,.switch:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+    .switch{display:inline-block;margin:16px 0 0;font-size:12px;color:var(--sub);text-underline-offset:3px}
+    .note{margin:22px auto 0;font-size:11px;line-height:1.8;color:#859080}
+    .foot{text-align:center;margin:18px 0 0;color:#859080;font-size:11px;line-height:1.7}
+    @media(max-width:480px){main{padding:24px 0}.card{padding:30px 22px;border-radius:16px}h1{font-size:21px}}
+    @media(prefers-reduced-motion:reduce){.indicator{animation:none}}
+  </style>
+</head>
+<body>
+  <main>
+    <section class="card" aria-labelledby="login-title">
+      <img class="logo" src="../assets/img/bridge-wonder-logo.png" alt="Bridge Wonder">
+      <p class="eyebrow">STAFF WORKSPACE</p>
+      <h1 id="login-title">선생님 운영공간</h1>
+      <p class="desc">더 안정적인 접속을 위해 Google 운영 서버의 로그인 화면으로 이동합니다. 직원별 접근 권한과 비밀번호 인증은 그대로 유지됩니다.</p>
+      <p class="state" id="connection-state" role="status" aria-live="polite"><span class="indicator" aria-hidden="true"></span><span id="connection-label">로그인 화면으로 연결하고 있습니다…</span></p>
+      <a class="button" id="open-staff-login" href="https://script.google.com/macros/s/AKfycbwQVKOruJFxxUHVrsrsDvIpv95jz-ag5SbozlJcJ9mDNrpdGFyYp-uIsT2y2_-3n-xa/exec" target="_self">로그인 화면 열기</a>
+      <a class="switch" id="manual-mode" href="?manual=1">자동 이동하지 않고 접속하기</a>
+      <p class="note">Google 로그인 또는 브라우저 계정 선택 화면이 표시될 수 있습니다.<br>접속이 되지 않으면 관리자에게 웹앱 배포 주소 확인을 요청하세요.</p>
+    </section>
+    <p class="foot">Bridge Wonder · Sensory Play Studio<br>승인된 직원만 이용할 수 있습니다.</p>
+  </main>
+  <script src="./portal.js" defer></script>
+</body>
+</html>
