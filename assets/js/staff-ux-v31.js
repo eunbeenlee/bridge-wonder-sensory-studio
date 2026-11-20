@@ -67,7 +67,7 @@
       const summary=document.createElement('summary');summary.textContent='비밀번호를 잊었거나 처음 사용하시나요?';
       links.before(details);details.append(summary,links);
       const note=document.querySelector('#loginStepPassword .bw23-legal');
-      if(note)note.textContent='원장이 발급한 임시 비밀번호가 있다면 바로 로그인하세요. 초기 설정·비밀번호 복구는 위 도움말을 이용할 수 있습니다.';
+      if(note)note.textContent='원장이 발급한 임시 비밀번호로 로그인할 수 있습니다. 비밀번호를 잊었다면 위 메뉴에서 다시 설정하세요.';
     }
   }
   function decorateNav(){
@@ -175,7 +175,7 @@
       },true);
     }
     const note=document.createElement('p');note.className='bw31-form-note';
-    note.textContent='반 코드와 수강 과정은 기본값을 자동으로 사용합니다. 홈페이지 공개는 검토 완료 후 변경하세요.';
+    note.textContent='반 코드는 자동으로 제안됩니다. 수강 과정을 확인하고 홈페이지 공개 여부는 검토 후 설정하세요.';
     form.querySelector('.bw241-form-intro')?.after(note);
   }
   function users(){
@@ -195,7 +195,7 @@
     const access=$('bw24Person')?.closest('.panel');
     if(access&&!access.closest('.bw31-permissions')){
       const wrap=document.createElement('details');wrap.className='bw31-permissions';
-      const heading=document.createElement('summary');heading.textContent='고급 설정 · 메뉴별 조회·수정 권한 변경';
+      const heading=document.createElement('summary');heading.textContent='메뉴별 조회·수정 권한 설정';
       access.before(wrap);wrap.append(heading,access);
     }
   }
@@ -263,7 +263,7 @@
     const history=$('docHistory')?.closest('.panel');
     if(!history)return;
     const details=document.createElement('details');details.className='bw31-history';
-    const summary=document.createElement('summary');summary.textContent='이전에 발급한 PDF 보기';
+    const summary=document.createElement('summary');summary.textContent='이전에 발급한 문서 보기';
     history.before(details);details.append(summary,history);
   }
   function onPageRendered(page){
