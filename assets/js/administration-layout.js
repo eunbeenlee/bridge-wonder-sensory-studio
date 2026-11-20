@@ -13,8 +13,12 @@ function loadApp(){
     s.onerror=()=>{const status=document.createElement('section');status.setAttribute('role','alert');status.style.cssText='padding:14px;background:#fff2ea;color:#7d3925';status.textContent='업무 화면을 불러오지 못했습니다. 새로고침하거나 관리 담당자에게 문의해 주세요.';document.body.prepend(status);};
     document.body.appendChild(s);
   }
-  const account=document.createElement('script');account.src=base+'staff-account-management.js?v=30.0.0';account.async=false;
-  account.onload=startMain;account.onerror=startMain;document.body.appendChild(account);
+  function loadAccount(){
+    const account=document.createElement('script');account.src=base+'staff-account-management.js?v=30.0.0';account.async=false;
+    account.onload=startMain;account.onerror=startMain;document.body.appendChild(account);
+  }
+  const ux=document.createElement('script');ux.src=base+'staff-ux-v31.js?v=30.0.0';ux.async=false;
+  ux.onload=loadAccount;ux.onerror=loadAccount;document.body.appendChild(ux);
 }
 const engine=document.createElement('script');engine.src=base+'administration-accelerator.js?v=30.0.0';engine.async=false;
 engineTimer=setTimeout(loadApp,8000);
