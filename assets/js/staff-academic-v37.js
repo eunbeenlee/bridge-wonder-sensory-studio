@@ -20,6 +20,7 @@
       '<form id="bw37StudentForm" class="stack" autocomplete="off">'+
       '<input type="hidden" id="bw37StudentId"><input type="hidden" id="bw37StudentRevision" value="0">'+
       '<input type="hidden" id="bw37InquiryReceipt">'+
+      '<p class="bw37-help" id="bw37InquiryConnection" hidden></p>'+
       '<div class="bw37-fields">'+
       '<label>아이 이름 <input id="bw37Child" maxlength="45" required placeholder="아이 이름"></label>'+
       '<label>생년월일 <span class="bw37-optional">재원 확정 시 필수</span><input id="bw37Birth" type="date"></label>'+
@@ -52,7 +53,7 @@
       return '<tr><td><strong>'+esc(s.child)+'</strong><small>'+esc(s.birth||'생년월일 확인 전')+'</small></td>'+
         '<td>'+esc(label)+'</td><td>'+esc(s.guardian||'—')+'</td>'+
         '<td>'+esc(s.phone||'—')+'</td>'+
-        '<td><span class="bw37-pill">'+esc(s.status)+'</span></td><td>'+
+        '<td><span class="bw37-pill">'+esc(s.status==='임시등록'?'기본정보 접수':s.status)+'</span></td><td>'+
         (s.source==='직접 등록'?'<button type="button" class="btn btn-outline btn-small" data-bw37-edit="'+esc(s.id)+'">수정</button>':
           '<span class="bw37-origin">온라인 계약 원본</span>')+'</td></tr>';
     }).join('');
@@ -91,7 +92,8 @@
     };
     function reset(){
       $('bw37StudentForm').reset();$('bw37StudentId').value='';$('bw37StudentRevision').value='0';
-      $('bw37InquiryReceipt').value='';$('bw37Joined').value=today();
+      $('bw37InquiryReceipt').value='';$('bw37InquiryConnection').hidden=true;
+      $('bw37InquiryConnection').textContent='';$('bw37Joined').value=today();
       $('bw37Status').value='임시등록';$('bw37Weekly').value='미정';$('bw37Relation').value='미확인';
       $('bw37Class1').value='';$('bw37Class2').value='';
       $('bw37StudentFeedback').textContent='';$('bw37StudentEditor').open=true;
@@ -106,6 +108,10 @@
       $('bw37Class1').value=assigned[0]||p.classId||'';
       $('bw37Class2').value=assigned[1]||'';
       if(assigned.length)$('bw37Class1').closest('details').open=true;
+      if(p.inquiryReceipt){
+        $('bw37InquiryConnection').hidden=false;
+        $('bw37InquiryConnection').textContent='연결된 상담 접수번호: '+p.inquiryReceipt;
+      }
       $('bw37StudentEditor').scrollIntoView({behavior:'smooth',block:'start'});
     }
     function list(){
@@ -136,6 +142,8 @@
         return context.toast('이미 학생 기본정보에 등록된 상담 접수입니다.',true);
       reset();
       $('bw37InquiryReceipt').value=receipt;
+      $('bw37InquiryConnection').hidden=false;
+      $('bw37InquiryConnection').textContent='연결된 상담 접수번호: '+receipt;
       $('bw37Child').value=source.child||'';
       $('bw37Guardian').value=source.guardian||'';
       $('bw37Phone').value=String(source.phone||'').replace(/[^0-9]/g,'');
