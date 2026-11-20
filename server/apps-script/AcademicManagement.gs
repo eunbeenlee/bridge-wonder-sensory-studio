@@ -118,6 +118,8 @@ function bw37ManualStudent_(id,originalDate) {
   const found=bw37ManualStudents_().find(s=>s.id===id);
   if(!found||found.status!=='재원'||!found.evidence||!found.verifiedAt)
     throw Error('재원 상태와 보호자 확인 증빙을 먼저 확인해 주세요.');
+  if(bw37SignedKeys_().has(bw37StudentKey_(found.child,found.birth,found.phone)))
+    throw Error('온라인 확정 등록과 중복된 학생입니다. 원본 수강등록 대장을 확인해 주세요.');
   if(!found.classIds.length)throw Error('배정된 반을 찾을 수 없습니다.');
   let classId=found.classIds[0];
   if(found.classIds.length>1&&originalDate){
