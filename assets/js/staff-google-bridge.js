@@ -1,103 +1,165 @@
 /**
- * Bridge Wonder V27 — experimental Shinjeon-style standalone UI bridge.
- * Google-only backend, no Cloudflare. Using HTTP requests means an API is used;
- * it is NOT identical to the prior "no API" google.script.run architecture.
- * This is a public JS file: never store private keys, owner email or Sheets IDs here.
+ * Bridge Wonder V27.2 · GitHub standalone / Google-only HTTP bridge
+ *
+ * The server remains the authority for authentication, per-user role access,
+ * payroll secrecy, validation, and all writes. No browser credentials, API
+ * secrets, spreadsheet IDs, or personal records are embedded in this file.
+ *
+ * Browser -> Google Apps Script /exec, POST text/plain JSON.
+ * A health check is performed only once per page load (or by explicit retry)
+ * and must succeed before ANY account credential or staff data is sent.
  */
 (function (global) {
   'use strict';
   const ENDPOINT = 'https://script.google.com/macros/s/AKfycbwQVKOruJFxxUHVrsrsDvIpv95jz-ag5SbozlJcJ9mDNrpdGFyYp-uIsT2y2_-3n-xa/exec';
   const PROTOCOL = 'BW_STAFF_V27';
-  const STATUS = () => document.getElementById('bw27-server-status');
-  const msg = (text, warning) => {
-    const node = STATUS();
-    if (node) {
-      node.textContent = text;
-      node.style.color = warning ? '#8c4428' : '#40543a';
-      node.style.borderColor = warning ? '#c66b44' : '#e8dcc8';
-    }
-  };
-  const u = new URL(ENDPOINT);
-  if (u.protocol !== 'https:' || u.hostname !== 'script.google.com' ||
-      !/^\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(u.pathname)) {
-    throw Error('직원용 Google 배포 주소가 올바르지 않습니다.');
+  const STATUS_ID = 'bw27-server-status';
+  const HEALTH_VERSION = '27.0.0'; // Matches deployed StaffBridge.gs, not the UI release.
+  const REQUEST_LIMIT = 350000;
+  const metrics = {sent:0,failed:0,healthChecks:0,healthVerified:false,lastMs:0};
+  let healthPromise = null;
+  let verified = false;
+
+  function notice(message, warning) {
+    const node = document.getElementById(STATUS_ID);
+    if (!node) return;
+    node.textContent = message;
+    node.style.color = warning ? '#8c4428' : '#6e7c69';
   }
-  let count = 0;
-  let bridgeVerified = false;
-  async function request(name, args) {
-    if (name !== 'bridgeHealth' && !bridgeVerified) throw Error('Google 서버 연결 검사를 먼저 실행해 주세요. 서버 연결 전에는 계정 정보가 전송되지 않습니다.');
-    if (!Array.isArray(args)) throw Error('요청 형식 오류');
-    const body = JSON.stringify({protocol:PROTOCOL,method:name,args});
-    if (body.length > 350000) throw Error('요청이 너무 큽니다. 입력 데이터를 확인해 주세요.');
+  function messageFromError(error, method) {
+    const m = String(error && error.message || error || '서버 통신 오류');
+    if (error && error.name === 'AbortError')
+      return method === 'bridgeHealth'
+        ? 'Google 서버의 연결 확인이 지연되고 있습니다. 다시 확인해 주세요.'
+        : '서버의 처리 결과를 확인하지 못했습니다. 중복 저장하지 말고 먼저 기록을 확인해 주세요.';
+    if (/Failed to fetch|NetworkError|CORS/i.test(m))
+      return 'Google 서버 통신이 차단되었습니다. 연결·배포 주소와 브라우저 네트워크 설정을 확인해 주세요.';
+    if (/^Google 응답: HTTP [45]\d\d/.test(m))
+      return m + ' · Google 웹앱 배포와 접근 설정을 확인해 주세요.';
+    return m.slice(0,240);
+  }
+  const url = new URL(ENDPOINT);
+  if (url.protocol !== 'https:' || url.hostname !== 'script.google.com' ||
+      !/^\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(url.pathname))
+    throw Error('설정된 Google 직원용 웹앱 주소가 올바르지 않습니다.');
+
+  // Fail closed when an unrelated site embeds the management portal in a frame.
+  if (global.top && global.self && global.top !== global.self) {
+    document.body.textContent = '선생님 운영공간은 별도 브라우저 탭에서 열어 주세요.';
+    return;
+  }
+
+  async function transport(method, args) {
+    if (!Array.isArray(args)) throw Error('요청 인수 형식이 올바르지 않습니다.');
+    const json = JSON.stringify({protocol:PROTOCOL,method,args});
+    if (json.length > REQUEST_LIMIT) throw Error('요청 데이터가 너무 큽니다. 입력 내용을 확인해 주세요.');
     const controller = new AbortController();
-    // Existing login verifier may require a longer server time than read-only requests.
-    const timeout = (name === 'bridgeHealth') ? 15000 : ((name === 'staff23PasswordLogin') ? 55000 : 46000);
-    const timer = setTimeout(() => controller.abort(), timeout);
-    count += 1;
+    const timeoutMs = method === 'bridgeHealth' ? 15000 : method === 'staff23PasswordLogin' ? 55000 : 45000;
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    const started = Date.now();
+    metrics.sent += 1;
     try {
       const response = await fetch(ENDPOINT, {
-        method:'POST', mode:'cors', credentials:'omit', redirect:'follow',
-        cache:'no-store', headers:{'Content-Type':'text/plain;charset=utf-8'},
-        body,signal:controller.signal
+        method:'POST', mode:'cors', credentials:'omit', redirect:'follow', cache:'no-store',
+        headers:{'Content-Type':'text/plain;charset=utf-8'}, body:json, signal:controller.signal
       });
-      if (!response.ok) throw Error('Google 서버 응답: HTTP ' + response.status);
-      const txt = await response.text();
-      let data;
-      try { data = JSON.parse(txt); } catch (_) {
-        throw Error('Google 서버가 JSON 대신 다른 페이지를 반환했습니다. 배포 주소와 Google 접근 설정을 확인해 주세요.');
+      if (!response.ok) throw Error('Google 응답: HTTP ' + response.status);
+      const text = await response.text();
+      let reply;
+      try { reply = JSON.parse(text); }
+      catch (_) {
+        throw Error('Google이 정상 JSON 대신 다른 페이지를 반환했습니다. 웹앱 배포·연결 설정을 확인해 주세요.');
       }
-      if (!data || data.ok !== true) throw Error(String(data && data.message || 'Google 서버 요청이 실패했습니다.'));
-      if (name === 'bridgeHealth') {
-        if (!data.value || data.value.transport !== 'google-apps-script' || data.value.version !== '27.0.0') throw Error('Google 직원 서버의 연결 버전이 일치하지 않습니다. 새 배포를 확인해 주세요.');
-        bridgeVerified = true;
+      if (!reply || reply.ok !== true) {
+        // A business/authorization error is not a network outage. App UI renders its own error.
+        const e = new Error(String(reply && reply.message || '요청 처리에 실패했습니다.').slice(0,240));
+        e.businessError = true;
+        throw e;
       }
-      if (count === 1) msg('Google 직원 서버와 통신되었습니다.', false);
-      return data.value;
-    } catch (err) {
-      const raw = err && err.message || '';
-      const detail = err && err.name === 'AbortError'
-        ? 'Google 서버 요청이 지연되었습니다. 저장 작업을 중복 실행하지 말고 결과를 확인해 주세요.'
-        : (/Failed to fetch|NetworkError|CORS/i.test(raw)
-          ? 'Google 웹앱 통신이 차단되었습니다. 배포 주소·접근 권한과 브라우저의 CORS 오류를 확인해 주세요.'
-          : String(raw || 'Google 서버 연결에 실패했습니다.'));
-      msg(detail, true);
-      throw new Error(detail);
+      if (method === 'bridgeHealth' &&
+          (!reply.value || reply.value.version !== HEALTH_VERSION || reply.value.transport !== 'google-apps-script'))
+        throw Error('Google 직원 서버의 연결 버전이 일치하지 않습니다. Apps Script 배포를 확인해 주세요.');
+      return reply.value;
+    } catch (error) {
+      metrics.failed += 1;
+      if (error && error.businessError) throw error;
+      const msg = messageFromError(error, method);
+      notice(msg, true);
+      throw Error(msg);
     } finally {
       clearTimeout(timer);
+      metrics.lastMs = Math.max(0, Date.now() - started);
     }
   }
-  // Mimic google.script.run's success/failure callback chain without importing Google UI.
-  // All business validation and ownership restrictions still occur on the server.
-  function runner(ok, fail, userObject) {
+
+  function ensureReady(force) {
+    if (verified && !force) return Promise.resolve({transport:'google-apps-script',version:HEALTH_VERSION});
+    if (healthPromise) return healthPromise;
+    metrics.healthChecks += 1;
+    notice('Google 업무 서버에 안전하게 연결하는 중입니다…', false);
+    const job = transport('bridgeHealth', [])
+      .then(value => {
+        verified = true;
+        metrics.healthVerified = true;
+        notice('업무 서버 연결 완료 · 이메일과 비밀번호로 로그인할 수 있습니다.', false);
+        return value;
+      })
+      .catch(error => {
+        verified = false;
+        metrics.healthVerified = false;
+        throw error;
+      })
+      .finally(() => { if (healthPromise === job) healthPromise = null; });
+    healthPromise = job;
+    return job;
+  }
+
+  async function request(method, args) {
+    if (method === 'bridgeHealth') return ensureReady(true);
+    // A single anonymous handshake is shared by concurrent login/restored-session calls.
+    await ensureReady(false);
+    return transport(method, args);
+  }
+
+  // Interface expected by existing V26 GitHub UI. It preserves failure callbacks
+  // and avoids injecting Google HtmlService or cross-origin iframes.
+  function runner(success, failure, userObject) {
     return new Proxy(Object.create(null), {
-      get(_, prop) {
-        if (prop === 'withSuccessHandler') return fn => runner(fn, fail, userObject);
-        if (prop === 'withFailureHandler') return fn => runner(ok, fn, userObject);
-        if (prop === 'withUserObject') return obj => runner(ok, fail, obj);
-        if (typeof prop === 'symbol' || prop === 'then') return undefined;
+      get(_, key) {
+        if (key === 'withSuccessHandler') return fn => runner(fn, failure, userObject);
+        if (key === 'withFailureHandler') return fn => runner(success, fn, userObject);
+        if (key === 'withUserObject') return obj => runner(success, failure, obj);
+        if (typeof key === 'symbol' || key === 'then') return undefined;
         return (...args) => {
-          request(String(prop), args).then(value => {
-            if (typeof ok === 'function') ok(value, userObject);
-          }, err => {
-            if (typeof fail === 'function') fail({message:err.message}, userObject);
-            else console.error('[Bridge Wonder] Google request failed:', err.message);
+          request(String(key), args).then(value => {
+            if (typeof success === 'function') success(value, userObject);
+          }, error => {
+            if (typeof failure === 'function') failure({message:error.message}, userObject);
+            else console.error('[Bridge Wonder] 요청 실패:', error.message);
           });
         };
       }
     });
   }
-  global.google = Object.assign(global.google || {}, {script:Object.assign((global.google||{}).script || {},{run:runner(null,null,null)})});
-  global.BW27Bridge = Object.freeze({request,version:'27.0.0',mode:'github-standalone-google-api'});
-  const check = document.getElementById('bw27-check-server');
-  if (check) check.addEventListener('click', async () => {
-    check.disabled=true;
-    msg('Google 서버 통신을 검사하고 있습니다…',false);
-    try {
-      const result=await request('bridgeHealth',[]);
-      if (result && result.transport==='google-apps-script') msg('Google 직원 서버 연결에 성공했습니다. 이제 계정 로그인과 업무 권한을 확인할 수 있습니다.',false);
-      else msg('Google 응답을 받았지만 예상 버전과 다릅니다. 배포 내용을 확인해 주세요.',true);
-    } catch (_) { /* request() already displays the actionable diagnostic. */ }
-    finally { check.disabled=false; }
+  global.google = Object.assign(global.google || {}, {
+    script:Object.assign((global.google || {}).script || {}, {run:runner(null,null,null)})
   });
-  msg('독립 관리자 화면이 준비되었습니다. Google 서버 연결 검사 버튼으로 상태를 확인할 수 있습니다.',false);
+
+  const retry = document.getElementById('bw27-check-server');
+  if (retry) retry.addEventListener('click', async () => {
+    retry.disabled = true;
+    try { await ensureReady(true); }
+    catch (_) { /* An actionable status is already shown. */ }
+    finally { retry.disabled = false; }
+  });
+
+  global.BW27Bridge = Object.freeze({
+    request, ensureReady,
+    metrics:() => Object.freeze({...metrics}),
+    version:'27.2.0', mode:'github-standalone-google-http'
+  });
+
+  // First load does not block rendering of GitHub's static login form.
+  // No staff identifier, password, token, or student record goes into this request.
+  ensureReady(false).catch(() => {});
 })(window);
