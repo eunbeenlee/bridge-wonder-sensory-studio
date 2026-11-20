@@ -7,7 +7,7 @@
   const GROUPS=[
     {key:'daily',title:'수업·출결',items:['home','classes','roster','attendance','handoff','safety','makeups','capacity','themes']},
     {key:'family',title:'상담·등록',items:['inquiries','waitlist','registrations','tuition','documents']},
-    {key:'admin',title:'운영·직원 관리',items:['operations','courseSettings','staffCompliance','users','payroll','security']}
+    {key:'admin',title:'운영·직원 관리',items:['operations','compliance','courseSettings','staffCompliance','users','payroll','security']}
   ];
   const HELP={
     home:['오늘 확인할 업무','바로가기에서 필요한 업무를 선택하거나 상단 업무 선택 메뉴로 이동하세요.'],
