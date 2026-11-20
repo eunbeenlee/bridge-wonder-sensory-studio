@@ -65,7 +65,7 @@
     inFlight=busy;
     btn.disabled=busy;
     btn.setAttribute('aria-busy',String(busy));
-    btn.textContent=busy?'접수 상태를 확인하고 있습니다…':'상담 신청하기 →';
+    btn.textContent=busy?'접수 상태를 확인하고 있습니다…':'간편 상담·등록 신청하기 →';
   }
   function makeRequestId(){
     if(window.crypto && window.crypto.randomUUID) return window.crypto.randomUUID().replace(/-/g,'');
@@ -78,7 +78,7 @@
   function verified(data){
     if(!data || data.requestId!==activeId || data.state!=='saved' || !/^BW-[A-Z0-9]{12}$/.test(String(data.receipt||'')))return;
     confirmed=true;
-    render('success','상담 신청이 접수되었습니다.', '접수번호 '+data.receipt+' · 담당자가 확인 후 연락드립니다. 신청만으로 예약이 확정되는 것은 아닙니다.');
+    render('success','상담·등록 신청이 접수되었습니다.', '접수번호 '+data.receipt+' · 담당자가 수업 횟수와 시간을 협의한 뒤 안내합니다. 신청만으로 수강이 확정되지는 않습니다.');
     setBusy(false);
     recheck.hidden=true;
     form.reset();
@@ -126,6 +126,8 @@
   function payloadFromForm(){
     const data=new FormData(form);
     const childName=String(data.get('childName')||'').trim();
+    const guardian=String(data.get('guardian')||'').trim();
+    const weekly=String(data.get('weeklyPreference')||'미정');
     const phone=normalizeMobile(data.get('phone'));
     const months=String(data.get('months')||'').trim();
     const topic=String(data.get('topic')||'');
@@ -134,12 +136,20 @@
     const contactMethod=String(data.get('contactMethod')||'');
     const legalGuardian=Boolean(form.querySelector('[name=legalGuardian]')?.checked);
     const marketing=Boolean(form.querySelector('[name=marketing]')?.checked);
-    const valid=childName.length>=1 && childName.length<=35 && Boolean(phone)
+    const valid=guardian.length>=2&&guardian.length<=35 &&
+      ['미정','주 1회','주 2회'].includes(weekly) &&
+      childName.length>=1 && childName.length<=35 && Boolean(phone)
       && /^\d{1,2}$/.test(months) && Number(months)>=7 && Number(months)<=48
       && ['체험수업 상담','정규 수업 문의','기타 문의'].includes(topic)
       && ['상관없음','오전','오후','저녁'].includes(contactTime)
-      && note.length<=400 && ['문자','전화'].includes(contactMethod) && legalGuardian && form.querySelector('[name="consent"]').checked;
-    return {valid,childName,phone,months,topic,contactTime,note,contactMethod,legalGuardian,marketing,website:String(data.get('website')||'')};
+      && note.length<=280 && ['문자','전화'].includes(contactMethod) && legalGuardian && form.querySelector('[name="consent"]').checked;
+    // The existing consultation server already stores the note field.
+    // Include new optional intake fields there for backward compatibility;
+    // do not change the submitted format of the signed contract form.
+    const clean=x=>String(x||'').replace(/[\[\]\r\n]/g,' ').trim();
+    const composite='[보호자:'+clean(guardian)+'][희망횟수:'+clean(weekly)+']'+(note?' '+note:'');
+    return {valid,guardian,weekly,childName,phone,months,topic,contactTime,
+      note:composite,contactMethod,legalGuardian,marketing,website:String(data.get('website')||'')};
   }
   form.addEventListener('submit',async(event)=>{
     event.preventDefault();
@@ -147,7 +157,7 @@
     if(!validEndpoint){render('error','온라인 상담 접수를 준비 중입니다.','전화 010-2693-2471 또는 Instagram DM으로 문의해 주세요.');return;}
     if(!form.reportValidity())return;
     const input=payloadFromForm();
-    if(!input.valid){render('error','입력 내용을 다시 확인해 주세요.','아이 이름, 보호자 휴대전화(010-1234-5678), 아이 월령(7~48개월), 문의 유형과 필수 동의 항목을 확인해 주세요.');return;}
+    if(!input.valid){render('error','입력 내용을 다시 확인해 주세요.','보호자 성함과 휴대전화, 아이 이름·월령(7~48개월), 필수 동의를 확인해 주세요.');return;}
     if(!window.fetch){render('error','이 브라우저에서는 온라인 신청을 지원하지 않습니다.','브라우저를 업데이트하거나 전화로 문의해 주세요.');return;}
     try {activeId=makeRequestId();} catch(err){render('error','안전한 접수를 시작할 수 없습니다.',err.message);return;}
     confirmed=false;
@@ -157,7 +167,8 @@
     try{sessionStorage.setItem('bw_last_inquiry_id',activeId);}catch(_){}
     const payload=new URLSearchParams({
       source:'bridgewonder-v21-child-consultation',rid:activeId,childName:input.childName,phone:input.phone,
-      months:input.months,topic:input.topic,contactTime:input.contactTime,note:input.note,
+      months:input.months,topic:input.topic,contactTime:input.contactTime,
+      guardianName:input.guardian,weeklyPreference:input.weekly,note:input.note,
       consent:'yes',legalGuardian:input.legalGuardian?'yes':'no',marketing:input.marketing?'yes':'no',contactMethod:input.contactMethod,website:input.website
     });
     // A 'simple' POST avoids CORS preflight. Response is intentionally unreadable.
