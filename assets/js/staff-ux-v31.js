@@ -10,26 +10,26 @@
     {key:'admin',title:'운영·직원 관리',items:['operations','courseSettings','staffCompliance','users','payroll','security']}
   ];
   const HELP={
-    home:['오늘 확인할 업무','바로가기에서 필요한 업무를 선택하거나 상단 업무 선택 메뉴로 이동하세요.'],
-    classes:['수업반을 등록할 때','① 요일과 시간 선택 → ② 시작일과 기간 입력 → ③ 저장. 공개 설정은 추가 설정에서 변경합니다.'],
-    roster:['담당 아이들 확인','수업반을 선택해 필요한 학생만 확인하세요. 보호자 연락처는 허용된 계정에만 보입니다.'],
-    attendance:['출결 기록하기','① 수업반 선택 → ② 수업일 확인 → ③ 명단 불러오기 → ④ 학생별 상태 저장.'],
-    handoff:['보호자 인계 기록','① 반과 날짜 선택 → ② 명단 불러오기 → ③ 보호자 동반과 종료 인계를 각각 확인하세요.'],
-    safety:['수업 전 안전 확인','수업반·날짜·재료를 확인한 뒤 항목별 점검 결과를 선택하고 저장하세요.'],
-    makeups:['결석·보강 처리','학생을 선택해 요청을 남기세요. 보강 확정은 원장·관리자가 정원과 일정을 확인합니다.'],
-    capacity:['수업반 정원 확인','확정 인원과 빈자리를 확인하고, 운영자 권한이 있으면 기준 정원을 조정할 수 있습니다.'],
-    themes:['월간 주제 기록','적용 월과 공통 주제를 먼저 입력하고 필요한 월령별 진행 방법을 펼쳐 작성하세요.'],
-    inquiries:['상담 접수 관리','이름·연락처로 검색한 뒤 접수 상태를 확인하고 후속 연락을 기록하세요.'],
-    waitlist:['대기자 기록','상담 기록과 희망 반을 선택한 뒤 상태를 저장하세요. 정식 등록 확정은 별도 절차입니다.'],
-    registrations:['수강 신청 확인','접수 내용을 검색하고 확인하세요. 이 화면에서 계약이나 결제를 임의로 확정하지 않습니다.'],
-    tuition:['수납 기록 남기기','① 등록 접수 선택 → ② 실제 처리 업무·금액 입력 → ③ 증빙 확인 후 저장.'],
-    documents:['안내문과 확인서 발급','① 문서·대상 선택 → ② 미리보기 → ③ PDF 생성 → ④ 다운로드 또는 수신자 확인 후 발송.'],
-    operations:['운영 점검표 사용','분야·진행 상태로 먼저 항목을 좁힌 뒤 담당자·예정일·상태를 확인해 저장하세요.'],
-    courseSettings:['학원 기본 정보 설정','과정·교습비를 먼저 확인하고 법정 상호와 안내 규정이 맞는지 확인한 뒤 저장하세요.'],
-    staffCompliance:['선생님 필수 확인','직원을 선택하고 법정 조회·교육 확인 상태를 기록하세요. 실제 신고·조회를 대신하지 않습니다.'],
-    users:['직원 계정 발급','① 이메일·이름·역할 등록 → ② 임시 비밀번호 발급 → ③ 직원 첫 로그인 후 직접 변경. 세부 권한은 별도로 펼쳐 설정합니다.'],
-    payroll:['급여 관리','귀속월과 직원을 선택하세요. 급여 계산 결과를 검토한 뒤 확정·지급 처리 순서로 진행합니다.'],
-    security:['접속 이력 확인','이용 기록을 확인하고 필요한 경우 비공개 백업을 생성하세요.'],
+    home:['오늘의 업무','확인이 필요한 업무부터 살펴보고, 상단 메뉴에서 원하는 업무로 이동하세요.'],
+    classes:['수업반 등록','요일과 시간을 정하고 시작일과 교습 기간을 입력한 뒤 저장하세요. 홈페이지 공개 여부는 검토 후 변경할 수 있습니다.'],
+    roster:['수강생 명단 확인','담당 반의 학생을 확인할 수 있습니다. 보호자 연락처는 권한이 있는 직원에게만 표시됩니다.'],
+    attendance:['출결 기록','수업반과 날짜를 선택하고 명단 불러오기를 누른 뒤 학생별 출결 상태를 저장하세요.'],
+    handoff:['보호자 인계 확인','반과 날짜를 선택해 명단을 불러오고, 보호자 동반 여부와 수업 종료 후 인계 상태를 기록하세요.'],
+    safety:['수업 전 안전 점검','수업반과 날짜를 확인하고, 재료 상태와 안전 항목을 점검한 뒤 저장하세요.'],
+    makeups:['보강 일정 관리','학생을 선택해 요청을 등록하세요. 원장이나 관리자가 남은 자리와 일정을 확인한 뒤 확정합니다.'],
+    capacity:['수업반 정원 관리','반별 등록 인원과 남은 자리를 확인하세요. 정원 변경은 권한이 있는 직원만 할 수 있습니다.'],
+    themes:['월간 수업 주제','적용 월과 수업 주제를 입력하고, 월령별 진행 방법은 필요한 부분을 펼쳐 작성하세요.'],
+    inquiries:['상담 접수 확인','이름이나 연락처로 상담 기록을 찾고, 연락 결과와 진행 상태를 확인하세요.'],
+    waitlist:['대기자 관리','상담 기록과 희망 수업반을 선택하고 대기 상태를 저장하세요. 등록 확정은 수강 신청 화면에서 확인합니다.'],
+    registrations:['수강 신청 확인','접수 내용을 검색해 등록 정보를 확인하세요. 계약이나 수납 처리는 해당 업무 메뉴에서 진행합니다.'],
+    tuition:['수납·환불 기록','등록 접수번호를 선택하고 실제 처리한 금액과 증빙을 확인한 후 기록을 저장하세요.'],
+    documents:['학부모 서류 발급','서류 종류와 대상 기록을 선택하고 미리보기로 내용을 확인하세요. PDF를 발급한 뒤 다운로드하거나 이메일로 보낼 수 있습니다.'],
+    operations:['운영 점검','분야와 진행 상태로 항목을 찾고, 담당자·기한·증빙을 확인한 후 저장하세요.'],
+    courseSettings:['학원 기본 정보','과정명과 교습비, 등록 정보를 확인하고 변경할 항목만 수정한 뒤 저장하세요.'],
+    staffCompliance:['직원 필수 확인','직원을 선택해 필요한 조회·교육의 완료 여부를 기록하세요. 실제 확인이 끝난 항목만 완료로 표시합니다.'],
+    users:['직원 계정 관리','직원 이메일과 역할을 등록한 뒤 임시 비밀번호를 발급하세요. 직원은 첫 로그인 후 비밀번호를 직접 변경합니다.'],
+    payroll:['직원 급여 관리','급여 귀속월과 직원을 선택하고 계산 내용을 확인하세요. 확정 후 실제 지급을 마치면 지급 완료로 기록합니다.'],
+    security:['접속 기록·백업','직원 이용 기록을 확인하고 필요한 경우 자료를 백업하세요.']
   };
   const $=id=>document.getElementById(id);
   let context=null,configured=false;
@@ -67,7 +67,7 @@
       const summary=document.createElement('summary');summary.textContent='비밀번호를 잊었거나 처음 사용하시나요?';
       links.before(details);details.append(summary,links);
       const note=document.querySelector('#loginStepPassword .bw23-legal');
-      if(note)note.textContent='원장이 발급한 임시 비밀번호가 있다면 바로 로그인하세요. 초기 설정·비밀번호 복구는 위 도움말을 이용할 수 있습니다.';
+      if(note)note.textContent='원장이 발급한 임시 비밀번호로 로그인할 수 있습니다. 비밀번호를 잊었다면 위 메뉴에서 다시 설정하세요.';
     }
   }
   function decorateNav(){
@@ -116,7 +116,7 @@
     const [heading,body]=HELP[page]||['이 화면의 사용법','필요한 내용을 확인한 뒤 저장해 주세요.'];
     const details=document.createElement('details');details.id='bw31Guide';details.className='bw31-guide';
     details.open=['classes','users','documents','operations'].includes(page);
-    const summary=document.createElement('summary');summary.textContent=heading+' · 사용 순서';
+    const summary=document.createElement('summary');summary.textContent=heading;
     const paragraph=document.createElement('p');paragraph.textContent=body;
     details.append(summary,paragraph);
     const intro=root.querySelector('.page-description');
@@ -175,7 +175,7 @@
       },true);
     }
     const note=document.createElement('p');note.className='bw31-form-note';
-    note.textContent='반 코드와 수강 과정은 기본값을 자동으로 사용합니다. 홈페이지 공개는 검토 완료 후 변경하세요.';
+    note.textContent='반 코드는 자동으로 제안됩니다. 수강 과정을 확인하고 홈페이지 공개 여부는 검토 후 설정하세요.';
     form.querySelector('.bw241-form-intro')?.after(note);
   }
   function users(){
@@ -195,7 +195,7 @@
     const access=$('bw24Person')?.closest('.panel');
     if(access&&!access.closest('.bw31-permissions')){
       const wrap=document.createElement('details');wrap.className='bw31-permissions';
-      const heading=document.createElement('summary');heading.textContent='고급 설정 · 메뉴별 조회·수정 권한 변경';
+      const heading=document.createElement('summary');heading.textContent='메뉴별 조회·수정 권한 설정';
       access.before(wrap);wrap.append(heading,access);
     }
   }
@@ -263,7 +263,7 @@
     const history=$('docHistory')?.closest('.panel');
     if(!history)return;
     const details=document.createElement('details');details.className='bw31-history';
-    const summary=document.createElement('summary');summary.textContent='이전에 발급한 PDF 보기';
+    const summary=document.createElement('summary');summary.textContent='이전에 발급한 문서 보기';
     history.before(details);details.append(summary,history);
   }
   function onPageRendered(page){

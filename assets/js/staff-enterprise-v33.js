@@ -30,12 +30,12 @@
     ]}
   ]);
   const DOCUMENT_TYPES=Object.freeze([
-    {type:'registration',label:'수강 등록 확인서',note:'등록 확인 자료'},
-    {type:'contract',label:'서명 계약서 사본',note:'보관된 계약 PDF 원본 사본'},
-    {type:'payment',label:'납부 내역 안내서',note:'법정 영수증을 대체하지 않음'},
-    {type:'class',label:'수업 안내문',note:'수업반별 안내'},
-    {type:'inquiry',label:'상담 접수 확인서',note:'상담 기록 기반'},
-    {type:'notice',label:'일반 안내문',note:'내용 직접 입력'}
+    {type:'registration',label:'수강 등록 확인서',note:'등록 내용 확인'},
+    {type:'contract',label:'서명 계약서 사본',note:'보관된 서명 계약서'},
+    {type:'payment',label:'납부 내역 안내서',note:'수납 내용 안내'},
+    {type:'class',label:'수업 안내문',note:'수업 일정과 준비물'},
+    {type:'inquiry',label:'상담 접수 확인서',note:'접수한 상담 내용'},
+    {type:'notice',label:'일반 안내문',note:'내용을 작성해 발급'}
   ]);
   const KEYWORDS=Object.freeze({
     documents:'pdf 발급 서류 증명서 계약서 등록확인서 납부 안내문 다운로드 학부모 부모 요청',
@@ -73,19 +73,19 @@
         '<button type="button" class="bw33-home" data-bw33home>운영 홈</button>'+
         '<div class="bw33-primary-groups" id="bw33NavGroups"></div>'+
         '<div class="bw33-primary-actions">'+
-          '<button type="button" class="bw33-search-trigger" id="bw33SearchToggle" aria-expanded="false" aria-controls="bw33SearchPanel">업무 검색 <small>Ctrl K</small></button>'+
+          '<button type="button" class="bw33-search-trigger" id="bw33SearchToggle" aria-expanded="false" aria-controls="bw33SearchPanel">업무 검색 <small>Ctrl + K</small></button>'+
           '<button type="button" class="bw33-pdf-trigger" id="bw33PdfToggle" aria-expanded="false" aria-controls="bw33PdfPanel">학부모 서류 PDF</button>'+
         '</div></nav>'+
         '<div class="bw33-popovers">'+
           '<div id="bw33MenuPanels"></div>'+
           '<section id="bw33SearchPanel" class="bw33-popover bw33-search-panel" aria-label="업무 검색" hidden>'+
-            '<label for="bw33SearchInput">업무 이름으로 빠르게 찾기</label><input type="search" id="bw33SearchInput" autocomplete="off" placeholder="예: 출결, 상담, 수납, PDF 발급">'+
+            '<label for="bw33SearchInput">업무 검색</label><input type="search" id="bw33SearchInput" autocomplete="off" placeholder="예: 출결, 상담, 수납, PDF 발급">'+
             '<div id="bw33SearchResults" class="bw33-search-results"></div>'+
           '</section>'+
           '<section id="bw33PdfPanel" class="bw33-popover bw33-doc-panel" aria-label="학부모 서류 유형 선택" hidden>'+
-            '<div class="bw33-doc-head"><strong>학부모 요청 서류</strong><small>기존 등록·수납·계약 기록 기반</small></div>'+
+            '<div class="bw33-doc-head"><strong>학부모 요청 서류</strong><small>등록된 수업·수납·계약 기록에서 발급합니다.</small></div>'+
             '<div id="bw33DocShortcuts" class="bw33-doc-shortcuts"></div>'+
-            '<p>대상 기록을 확인한 후 PDF를 발급합니다. 납부내역 안내서는 법정 영수증이 아닙니다.</p>'+
+            '<p>발급할 학생과 내용을 확인한 후 PDF를 만드세요. 납부 내역 안내서는 교습비 영수증과 구분해 발급합니다.</p>'+
           '</section>'+
         '</div>';
       const top=main.querySelector('.topbar');
@@ -121,7 +121,7 @@
   }
   function panelGroupHTML(group,menuById){
     return '<section class="bw33-popover bw33-menu-panel" id="bw33Panel-'+esc(group.id)+'" aria-label="'+esc(group.label)+' 세부 업무" hidden>'+
-      '<div class="bw33-panel-title">'+esc(group.label)+' <small>세부 업무를 선택하세요</small></div>'+
+      '<div class="bw33-panel-title">'+esc(group.label)+' <small>원하는 업무를 선택하세요</small></div>'+
       '<div class="bw33-panel-columns">'+group.sections.map(section=>'<div class="bw33-subgroup"><h3>'+esc(section.name)+'</h3>'+
         section.pages.map(id=>{
           const item=menuById.get(id);
@@ -217,7 +217,7 @@
     const select=$('docType');
     if(!select)return;
     if(![...select.options].some(option=>option.value===requested)){
-      env.toast?.('해당 서류는 현재 계정에서 발급할 수 없습니다. 이용 가능한 서류를 선택해 주세요.',true);
+      env.toast?.('현재 계정으로 발급할 수 없는 서류입니다. 다른 서류를 선택해 주세요.',true);
       select.focus();
       return;
     }
@@ -234,11 +234,11 @@
     if(!$('bw33DocumentHub')){
       const hub=document.createElement('section');
       hub.id='bw33DocumentHub';hub.className='bw33-document-hub';
-      hub.innerHTML='<div class="bw33-doc-hub-head"><div><span class="bw33-eyebrow">PARENT DOCUMENT SERVICE</span>'+
-        '<h3>학부모 요청 서류 · 바로 발급</h3><p>서류 선택 → 해당 기록 확인 → 내용 미리보기 → PDF 생성·다운로드</p></div>'+
-        '<button type="button" class="btn btn-outline btn-small" id="bw33HistoryOpen">기존 발급 PDF 찾기</button></div>'+
+      hub.innerHTML='<div class="bw33-doc-hub-head"><div><span class="bw33-eyebrow">빠른 문서 발급</span>'+
+        '<h3>학부모 요청 서류 발급</h3><p>서류 종류와 대상 기록을 선택하고 내용을 확인한 뒤 PDF를 발급하세요.</p></div>'+
+        '<button type="button" class="btn btn-outline btn-small" id="bw33HistoryOpen">이전 발급 문서 보기</button></div>'+
         '<div id="bw33DocumentChoices" class="bw33-doc-template-list"></div>'+
-        '<div class="bw33-document-hint">계약서 사본은 보관된 원본을 기준으로 합니다. 납부 내역 안내서는 법정 영수증을 대체하지 않습니다.</div>';
+        '<div class="bw33-document-hint">계약서 사본은 보관된 서명 원본을 기준으로 발급합니다. 납부 내역 안내서는 교습비 영수증과 다릅니다.</div>';
       const heading=pane.querySelector('.page-description'),place=heading||pane.firstElementChild;
       if(place)place.after(hub);else pane.prepend(hub);
       const options=new Set([...select.options].map(o=>o.value));

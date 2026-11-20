@@ -68,3 +68,6 @@ jobs:
       - name: enterprise top-navigation V33 tests
         if: always()
         run: node tests/staff-enterprise-v33.test.cjs
+      - name: staff layout and copy polish V34 tests
+        if: always()
+        run: node tests/staff-polish-v34.test.cjs

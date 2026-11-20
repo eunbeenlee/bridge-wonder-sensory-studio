@@ -65,14 +65,14 @@
     $('bw23Reset').onclick=()=>bw23ShowEnrollment('reset');
     $('passwordLoginForm').addEventListener('submit',async e=>{
       e.preventDefault();const form=e.currentTarget;setBusy(form,true);
-      $('loginFeedback').textContent='안전한 비밀번호 확인을 준비하고 있습니다…';
+      $('loginFeedback').textContent='로그인 정보를 확인하고 있습니다…';
       try{
         const authStarted=performance.now();
         const email=$('passwordEmail').value.trim(),password=$('passwordInput').value;
         // WebCrypto runs in the browser's native engine. Do not store or log this proof.
         const proof=window.BW29KDF?await window.BW29KDF.derive(email,password):null;
         const nativeKdfMs=Math.max(0,Math.round(performance.now()-authStarted));
-        $('loginFeedback').textContent='계정 정보를 확인하고 있습니다…';
+        $('loginFeedback').textContent='로그인 중입니다…';
         const serverStarted=performance.now();
         const r=await call('staff23PasswordLogin',{email,password,proof});
         // Timing-only diagnostics: do not expose the password, native proof or session token.
@@ -88,7 +88,7 @@
     });
     $('emailForm').addEventListener('submit',async e=>{
       e.preventDefault();const form=e.currentTarget;setBusy(form,true);
-      $('loginFeedback').textContent='인증번호를 요청하는 중입니다.';
+      $('loginFeedback').textContent='인증번호를 보내고 있습니다.';
       try{
         const email=$('loginEmail').value.trim();
         const result=await call('staff23PasswordStartEnrollment',email);
@@ -100,7 +100,7 @@
     });
     $('otpForm').addEventListener('submit',async e=>{
       e.preventDefault();const form=e.currentTarget;setBusy(form,true);
-      $('loginFeedback').textContent='인증번호와 새 비밀번호를 확인하고 있습니다.';
+      $('loginFeedback').textContent='인증번호와 새 비밀번호를 확인하고 있습니다…';
       try{
         const pw=$('bw23NewPass').value;
         if(pw!==$('bw23ConfirmPass').value)throw Error('새 비밀번호가 일치하지 않습니다.');
@@ -149,8 +149,8 @@
     function panel(title,description,inner){return `<section class="panel"><h3>${title}</h3>${description?`<p class="panel-desc">${description}</p>`:''}${inner}</section>`;}
     function table(columns,rows){if(!rows.length)return `<div class="empty">표시할 기록이 없습니다.</div>`;return `<div class="table-scroll"><table class="data-table"><thead><tr>${columns.map(x=>`<th scope="col">${x}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div>`;}
     function tag(s){return `<span class="tag ${/실패|중지|결석/.test(s)?'off':/대기|신규|확인전/.test(s)?'waiting':''}">${h(s||'미확인')}</span>`;}
-    function loading(){return `<div class="panel bw24-loading"><span class="bw24-pulse" aria-hidden="true"></span><p class="muted" role="status">자료를 불러오는 중입니다. 다른 업무 화면으로 이동할 수 있습니다.</p></div>`;}
-    async function showPage(page){if(!state.user||!bw24Can(page))return;if(state.page==='payroll'&&window.BWPayroll?.beforeLeave()===false)return;window.BWPayroll?.dispose();state.page=page;const seq=++state.navigationSeq;bw25Accel?.setNavigation(seq);renderNav();window.BW31UX?.decorateNav();window.BW33Enterprise?.sync();const m=MENU.find(x=>x[0]===page);$('topTitle').textContent=m[2];$('pageBody').innerHTML=loading();try{document.scrollingElement?.scrollTo({top:0,behavior:'auto'});if(page==='home')await renderHome();if(page==='inquiries')await renderInquiries();if(page==='registrations')await renderRegistrations();if(page==='classes')await renderClasses();if(page==='courseSettings')await renderCourseSettings();if(page==='roster')await renderRoster();if(page==='attendance')await renderAttendance();if(page==='operations')await renderOperations();if(page==='tuition')await renderTuition();if(page==='safety')await renderSafety();if(page==='handoff')await renderHandoff();if(page==='staffCompliance')await renderStaffCompliance();if(page==='users')await renderUsers();if(page==='security')await renderSecurity();if(page==='documents')await renderDocuments();if(page==='capacity')await renderCapacity();if(page==='waitlist')await renderWaitlist();if(page==='makeups')await renderMakeups();if(page==='themes')await renderThemes();if(page==='payroll')await renderPayroll();if(seq===state.navigationSeq){bw24ApplyReadonly(page);window.BW31UX?.onPageRendered(page);window.BW33Enterprise?.pageReady(page);}}catch(e){if(seq!==state.navigationSeq||e.message==='BW24_STALE_VIEW')return;if(/로그인이 필요|접속 시간이 만료|사용 권한이 중지/.test(e.message)){await logout();toast('로그인 상태를 다시 확인해 주세요.',true);}else $('pageBody').innerHTML=head(m[2],'')+panel('자료를 불러오지 못했습니다.','',`<p class="danger">${h(e.message)}</p><button id="retryPage" class="btn btn-outline spaced">다시 시도</button>`),$('retryPage').onclick=()=>showPage(page);}}
+    function loading(){return `<div class="panel bw24-loading"><span class="bw24-pulse" aria-hidden="true"></span><p class="muted" role="status">자료를 불러오고 있습니다.</p></div>`;}
+    async function showPage(page){if(!state.user||!bw24Can(page))return;if(state.page==='payroll'&&window.BWPayroll?.beforeLeave()===false)return;window.BWPayroll?.dispose();state.page=page;const seq=++state.navigationSeq;bw25Accel?.setNavigation(seq);renderNav();window.BW31UX?.decorateNav();window.BW33Enterprise?.sync();const m=MENU.find(x=>x[0]===page);$('topTitle').textContent=m[2];$('pageBody').innerHTML=loading();try{document.scrollingElement?.scrollTo({top:0,behavior:'auto'});if(page==='home')await renderHome();if(page==='inquiries')await renderInquiries();if(page==='registrations')await renderRegistrations();if(page==='classes')await renderClasses();if(page==='courseSettings')await renderCourseSettings();if(page==='roster')await renderRoster();if(page==='attendance')await renderAttendance();if(page==='operations')await renderOperations();if(page==='tuition')await renderTuition();if(page==='safety')await renderSafety();if(page==='handoff')await renderHandoff();if(page==='staffCompliance')await renderStaffCompliance();if(page==='users')await renderUsers();if(page==='security')await renderSecurity();if(page==='documents')await renderDocuments();if(page==='capacity')await renderCapacity();if(page==='waitlist')await renderWaitlist();if(page==='makeups')await renderMakeups();if(page==='themes')await renderThemes();if(page==='payroll')await renderPayroll();if(seq===state.navigationSeq){bw24ApplyReadonly(page);window.BW31UX?.onPageRendered(page);window.BW33Enterprise?.pageReady(page);}}catch(e){if(seq!==state.navigationSeq||e.message==='BW24_STALE_VIEW')return;if(/로그인이 필요|접속 시간이 만료|사용 권한이 중지/.test(e.message)){await logout();toast('로그인 상태를 다시 확인해 주세요.',true);}else $('pageBody').innerHTML=head(m[2],'')+panel('자료를 불러오지 못했습니다. 다시 시도해 주세요.','',`<p class="danger">${h(e.message)}</p><button id="retryPage" class="btn btn-outline spaced">다시 시도</button>`),$('retryPage').onclick=()=>showPage(page);}}
     // V27.1: paint safe quick links immediately; live counts arrive asynchronously.
     // V28.2: static-first paint; metrics are updated asynchronously without blocking navigation.
     let bw282HomeEpoch=0;
@@ -170,7 +170,7 @@
         panel('업무 바로가기','필요한 메뉴를 바로 선택할 수 있습니다. 권한이 없는 업무는 표시되지 않습니다.',
           `<div class="cards-list">${shortcuts.map(x=>`<button type="button" data-goto="${x[0]}" class="btn btn-outline">${h(x[2])}</button>`).join('')}</div>`)+
         panel('운영 현황','실제 수치만 Google 운영 서버에서 확인합니다.',
-          `<div class="row" style="align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap"><span class="inline-status" id="bw271HomeStatus" role="status" aria-live="polite">최신 운영 현황을 확인하고 있습니다…</span><button type="button" id="bw271RefreshHome" class="btn btn-outline btn-small">현황 새로고침</button></div>`);
+          `<div class="row" style="align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap"><span class="inline-status" id="bw271HomeStatus" role="status" aria-live="polite">오늘의 운영 현황을 불러오고 있습니다…</span><button type="button" id="bw271RefreshHome" class="btn btn-outline btn-small">현황 새로고침</button></div>`);
       $('pageBody').querySelectorAll('[data-goto]').forEach(b=>b.onclick=()=>showPage(b.dataset.goto));
       $('bw271RefreshHome').onclick=()=>{bw24ClearCache();renderHome();};
       // Private details stay on Google. Missing metrics remain unknown (—), never an invented zero.
@@ -233,26 +233,26 @@
       const times=[...new Set(state.classes.map(c=>String(c.time||'').trim()).filter(Boolean))].slice(0,5);
       const form=editable?panel('수업 시간표 만들기','한 가지 과정으로 운영합니다. 요일과 시간부터 입력하고, 나머지 정보는 확인 후 저장하세요.',`
         <form id="classForm" class="bw241-class-form" novalidate>
-          <div class="bw241-form-intro"><div><strong id="bw241Mode">새 수업반 등록</strong><br><small>${principal?'원장 계정: 모든 항목을 직접 입력하거나 추천값을 선택할 수 있습니다.':'등록된 과정과 운영 정책 안에서 수업반을 관리합니다.'}</small></div><span class="bw241-badge">단일 과정 운영</span></div>
+          <div class="bw241-form-intro"><div><strong id="bw241Mode">새 수업반 등록</strong><br><small>${principal?'수업 정보를 순서대로 입력하고, 공개 여부를 마지막에 확인하세요.':'수업 요일과 시간을 정한 뒤 등록된 과정을 선택하세요.'}</small></div><span class="bw241-badge">수업반 관리</span></div>
           <div class="bw241-step"><b>1</b>요일과 수업 시간</div>
           <div class="bw241-grid">
-            <div class="form-item"><label for="classDay">수업 요일</label>${dayField}<small class="bw241-help">목록에서 요일을 선택해 주세요.</small></div>
-            <div class="form-item"><label for="classTime">수업 시간</label><input id="classTime" class="bw241-selectable-time" type="text" placeholder="예: 11:30 또는 11:30–12:20" maxlength="50" inputmode="text" required><small class="bw241-help">24시간제로 입력하세요. 시작 시간만 넣어도 됩니다.</small>${times.length?`<div class="bw241-chip-row" aria-label="기존 수업 시간 추천">${times.map(t=>`<button class="bw241-chip" type="button" data-bw241-time="${h(t)}">${h(t)}</button>`).join('')}</div>`:''}</div>
+            <div class="form-item"><label for="classDay">수업 요일</label>${dayField}<small class="bw241-help">수업할 요일을 선택하세요.</small></div>
+            <div class="form-item"><label for="classTime">수업 시간</label><input id="classTime" class="bw241-selectable-time" type="text" placeholder="예: 11:30 또는 11:30–12:20" maxlength="50" inputmode="text" required><small class="bw241-help">예: 오전 11시 30분은 11:30으로 입력하세요.</small>${times.length?`<div class="bw241-chip-row" aria-label="기존 수업 시간 추천">${times.map(t=>`<button class="bw241-chip" type="button" data-bw241-time="${h(t)}">${h(t)}</button>`).join('')}</div>`:''}</div>
           </div>
           <div class="bw241-step"><b>2</b>수업 상세 정보</div>
           <div class="bw241-grid bw241-grid--three">
-            <div class="form-item"><label for="classDate">수업 시작일</label><input id="classDate" type="date" required><small class="bw241-help">달력에서 선택하거나 직접 입력</small></div>
+            <div class="form-item"><label for="classDate">수업 시작일</label><input id="classDate" type="date" required><small class="bw241-help">첫 수업 날짜를 선택하세요.</small></div>
             <div class="form-item"><label for="classPeriod">교습 기간</label><input id="classPeriod" type="text" placeholder="예: 1개월 / 2027.01.02~01.31" maxlength="160" required>${principal?`<div class="bw241-chip-row">${(window.BWStaffDefaults?.classEditor?.durationChoices||['1개월','3개월','6개월']).map(x=>`<button type="button" class="bw241-chip" data-bw241-period="${x}">${x}</button>`).join('')}</div>`:''}</div>
-            <div class="form-item"><label for="classId">반 코드</label><div class="row" style="gap:6px;flex-wrap:nowrap"><input id="classId" type="text" placeholder="요일·시간 입력 시 자동 제안" maxlength="32" autocomplete="off" required>${principal?'<button type="button" id="bw241GenerateCode" class="btn btn-outline btn-small" style="flex:none">자동 제안</button>':''}</div><small class="bw241-help">신규 반은 직접 입력 가능. 기존 반 코드는 변경할 수 없습니다.</small></div>
+            <div class="form-item"><label for="classId">반 코드</label><div class="row" style="gap:6px;flex-wrap:nowrap"><input id="classId" type="text" placeholder="요일·시간 입력 시 자동 제안" maxlength="32" autocomplete="off" required>${principal?'<button type="button" id="bw241GenerateCode" class="btn btn-outline btn-small" style="flex:none">자동 제안</button>':''}</div><small class="bw241-help">새 반의 코드는 자동 제안됩니다. 등록한 반의 코드는 변경할 수 없습니다.</small></div>
           </div>
           <div class="bw241-grid bw241-grid--three" style="margin-top:15px">
             <div class="form-item"><label for="classTemplate">수강 과정</label>${courseField}<small class="bw241-help">${commonCourse?`기본 과정: ${h(commonCourse.course)} (${h(commonCourse.id)})`:'먼저 학원 운영정보에서 과정을 활성화해 주세요.'}</small></div>
-            <div class="form-item"><label for="classPublic">홈페이지 공개</label>${publishField}<small class="bw241-help">신규 반은 비공개가 기본값입니다.</small></div>
-            <div class="form-item"><label for="classReview">운영자 검토</label>${reviewField}<small class="bw241-help">공개 전 검토완료 설정이 필요합니다.</small></div>
+            <div class="form-item"><label for="classPublic">홈페이지 공개</label>${publishField}<small class="bw241-help">검토가 끝날 때까지 홈페이지에 표시되지 않습니다.</small></div>
+            <div class="form-item"><label for="classReview">운영자 검토</label>${reviewField}<small class="bw241-help">홈페이지 공개 전에 검토 완료로 바꿔 주세요.</small></div>
           </div>
-          <div class="bw241-preview" aria-live="polite"><small>홈페이지 시간표 미리보기</small><b id="bw241PreviewTime">요일과 시간을 입력하세요.</b><small id="bw241PreviewMeta">실제 수업 시간표는 저장 후 공개 조건에 따라 표시됩니다.</small></div>
+          <div class="bw241-preview" aria-live="polite"><small>홈페이지 시간표 미리보기</small><b id="bw241PreviewTime">요일과 시간을 입력하세요.</b><small id="bw241PreviewMeta">저장한 반은 공개 설정에 따라 홈페이지 시간표에 표시됩니다.</small></div>
           <div id="bw241Feedback" class="bw241-feedback" role="alert" aria-live="polite"></div>
-          <div class="bw241-footer"><button class="btn btn-primary" id="bw241Save" type="submit">새 수업반 저장</button><button class="btn btn-outline" type="button" id="resetClass">새 반 입력</button><small class="bw241-help">저장 즉시 Google Sheets에 반영됩니다.</small></div>
+          <div class="bw241-footer"><button class="btn btn-primary" id="bw241Save" type="submit">새 수업반 저장</button><button class="btn btn-outline" type="button" id="resetClass">새 반 입력</button><small class="bw241-help">저장하면 수업반 목록에 바로 반영됩니다.</small></div>
         </form>`):'';
       const items=state.classes.slice().sort((a,b)=>{
         const d=weekday.indexOf(a.day)-weekday.indexOf(b.day);
@@ -367,7 +367,7 @@
     async function renderRoster(){state.roster=await call('staffListRoster',state.token);if(state.page!=='roster')return;
       $('pageBody').innerHTML=head('수강생 명단','등록이 확정되고 수강생 대장에 반영된 학생만 표시합니다.')+
       panel('담당 학생','선생님 계정에는 배정된 수업반만 표시됩니다.',table(['수업반','아이 이름','생년월','과정','보호자 연락'],state.roster.map(s=>`<tr><td>${h(s.classId)}</td><td><b>${h(s.child)}</b></td><td>${h(s.birth)}</td><td>${h(s.course)}</td><td>${s.phone?`<div>${h(s.guardian)}</div><a href="tel:${h(s.phone)}">${h(s.phone)}</a>`:'<span class="muted">권한 제한</span>'}</td></tr>`)))+
-      `<p class="footnote">건강·알레르기 정보와 전자서명 PDF는 이 화면에 노출되지 않습니다. 이전 방식의 개별 링크 등록 건은 반배정 확인이 필요합니다.</p>`;
+      `<p class="footnote">건강 관련 정보와 서명 계약서는 별도로 보관됩니다. 이전에 접수한 학생은 반 배정 여부를 확인해 주세요.</p>`;
     }
     async function renderAttendance(){await getClasses();if(state.page!=='attendance')return;const today=(()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`})();
       $('pageBody').innerHTML=head('출결 관리','담당 수업반을 선택해 아이들의 출석 여부를 기록하세요.')+
@@ -377,7 +377,7 @@
     async function renderUsers(){const [people,cls]=await Promise.all([call('staffListUsers',state.token),getClasses()]);state.staff=people;if(state.page!=='users')return;
       $('pageBody').innerHTML=head('선생님 계정·권한','선생님별로 담당 반과 열람·수정 권한을 관리해요.')+
       panel('등록된 계정','담당 수업이나 업무가 바뀌면 권한을 조정하고, 퇴사 시 계정 사용을 중지해 주세요.',table(['이메일 · 이름','역할','담당 반','연락처 열람','상태','관리'],state.staff.map(x=>`<tr><td><b>${h(x.name)}</b><br><small>${h(x.email)}</small></td><td>${h(ROLE_NAMES[x.role])}</td><td>${h(x.classes.join(', ')||'—')}</td><td>${x.canContact?'허용':'차단'}</td><td>${tag(x.status)}</td><td>${x.locked?'원장 계정':`<button class="btn btn-outline btn-small" data-edit-user="${h(x.email)}">수정</button>`}</td></tr>`)))+
-      panel('선생님 계정 등록·수정','직원 이메일을 등록한 뒤 목록에서 임시 비밀번호를 발급할 수 있습니다. 직원은 최초 로그인 시 본인이 새 비밀번호로 변경합니다.',`<form id="userForm" class="stack"><div class="fields"><div class="form-item"><label for="userEmail">직원 이메일</label><input type="email" id="userEmail" placeholder="teacher@example.com" required></div><div class="form-item"><label for="userName">이름</label><input id="userName" maxlength="40" required></div><div class="form-item"><label for="userRole">역할</label><select id="userRole"><option value="teacher">선생님</option><option value="director">관리자</option><option value="frontdesk">상담 담당자</option></select></div><div class="form-item"><label for="userStatus">사용 상태</label><select id="userStatus"><option value="사용">사용</option><option value="중지">중지</option></select></div></div><div><label>담당 수업반</label><div class="cols" id="userClasses">${state.classes.length?state.classes.map(c=>`<label class="admin-check"><input type="checkbox" value="${h(c.id)}"> ${h(c.id)} · ${h(c.day)} ${h(c.time)}</label>`).join(''):'<p class="help">현재 등록된 수업반이 없습니다. 먼저 수업반을 생성해 주세요.</p>'}</div></div><label class="admin-check"><input type="checkbox" id="userContact"> 담당 반 보호자 연락처 열람 허용</label><p class="help">선생님 계정은 기본적으로 보호자 연락처를 볼 수 없습니다. 업무상 필요한 경우에만 별도로 허용하세요.</p><div class="row"><button type="submit" class="btn btn-primary">계정 저장</button><button type="button" id="resetUser" class="btn btn-outline">새 직원 입력</button></div></form>`);
+      panel('선생님 계정 등록·수정','직원 이메일을 등록한 뒤 목록에서 임시 비밀번호를 발급할 수 있습니다. 직원은 최초 로그인 시 본인이 새 비밀번호로 변경합니다.',`<form id="userForm" class="stack"><div class="fields"><div class="form-item"><label for="userEmail">직원 이메일</label><input type="email" id="userEmail" placeholder="teacher@example.com" required></div><div class="form-item"><label for="userName">이름</label><input id="userName" maxlength="40" required></div><div class="form-item"><label for="userRole">역할</label><select id="userRole"><option value="teacher">선생님</option><option value="director">관리자</option><option value="frontdesk">상담 담당자</option></select></div><div class="form-item"><label for="userStatus">사용 상태</label><select id="userStatus"><option value="사용">사용</option><option value="중지">중지</option></select></div></div><div><label>담당 수업반</label><div class="cols" id="userClasses">${state.classes.length?state.classes.map(c=>`<label class="admin-check"><input type="checkbox" value="${h(c.id)}"> ${h(c.id)} · ${h(c.day)} ${h(c.time)}</label>`).join(''):'<p class="help">등록된 수업반이 없습니다. 먼저 시간표를 만들어 주세요.</p>'}</div></div><label class="admin-check"><input type="checkbox" id="userContact"> 담당 반 보호자 연락처 열람 허용</label><p class="help">보호자 연락처는 기본적으로 공개되지 않습니다. 업무에 필요한 직원에게만 열람 권한을 주세요.</p><div class="row"><button type="submit" class="btn btn-primary">계정 저장</button><button type="button" id="resetUser" class="btn btn-outline">새 직원 입력</button></div></form>`);
       bw24MountPermissions();
       window.BW30Accounts?.mountUsers();
       $('resetUser').onclick=()=>$('userForm').reset();$('pageBody').querySelectorAll('[data-edit-user]').forEach(el=>el.onclick=()=>{const x=state.staff.find(a=>a.email===el.dataset.editUser);if(!x)return;$('userEmail').value=x.email;$('userName').value=x.name;$('userRole').value=x.role;$('userStatus').value=x.status;$('userContact').checked=x.canContact;$('userClasses').querySelectorAll('input').forEach(i=>i.checked=x.classes.includes(i.value));$('userEmail').scrollIntoView({behavior:'smooth',block:'center'});});
@@ -430,12 +430,12 @@
       $('pageBody').innerHTML=head('접속기록·백업','직원 계정과 개인정보 취급 이력을 정기적으로 확인하세요.')+
       panel('수동 백업','현재 스프레드시트의 비공개 사본을 생성합니다. 서명 PDF 백업은 기존 등록 시스템에서 별도로 관리합니다.',`<div class="row"><button id="backupNow" class="btn btn-primary">스프레드시트 지금 백업</button><span class="help">독립 계정 백업은 별도로 운영해야 합니다.</span></div>`)+
       panel('최근 접속·작업 이력','로그인은 계정으로 식별하며, 읽기·수정·권한 변경 등이 기록됩니다.',table(['시각','계정','업무','대상','결과'],audit.map(a=>`<tr><td>${h(a.at)}</td><td>${h(a.user)}</td><td>${h(a.action)}</td><td>${h(a.target)}</td><td>${tag(a.result)}</td></tr>`)))+
-      `<div class="warning">현재 Apps Script는 접속 IP 주소를 별도로 확보하지 못합니다. 법정 접속기록·보안조치 충족 여부는 실제 운영 환경을 기준으로 추가 점검해야 합니다.</div>`;
+      `<div class="warning">현재 접속 기록에는 IP 주소가 포함되지 않습니다. 개인정보 보호 점검 시 다른 보안 기록도 함께 확인해 주세요.</div>`;
       const last=bw24Timings.slice(-15),avg=last.length?Math.round(last.reduce((n,x)=>n+x.ms,0)/last.length):0;
       const perf=bw25Accel?.metrics();
       $('pageBody').insertAdjacentHTML('beforeend',panel('화면 응답 속도 확인','이 브라우저에서 발생한 최근 업무 요청의 처리 시간을 표시합니다. 실제 체감 속도는 네트워크·Google 처리량에 따라 달라질 수 있습니다.',
         `<div class="row"><span class="pill">최근 ${last.length}건</span><strong>평균 ${avg}ms</strong>${perf?`<span class="pill">중복 조회 ${perf.coalesced}건 방지</span><span class="pill">캐시 ${perf.cacheHits}건 사용</span><span class="pill">95% ${perf.p95Ms}ms</span>`:''}</div>`+
-        (last.length?'<div class="table-scroll spaced"><table class="data-table"><thead><tr><th>요청</th><th>소요시간</th></tr></thead><tbody>'+last.slice().reverse().map(x=>`<tr><td>${h(x.name)}</td><td>${h(x.ms)}ms</td></tr>`).join('')+'</tbody></table></div>':'<p class="help">먼저 몇 가지 메뉴를 열어 보면 소요 시간이 표시됩니다.</p>')));
+        (last.length?'<div class="table-scroll spaced"><table class="data-table"><thead><tr><th>요청</th><th>소요시간</th></tr></thead><tbody>'+last.slice().reverse().map(x=>`<tr><td>${h(x.name)}</td><td>${h(x.ms)}ms</td></tr>`).join('')+'</tbody></table></div>':'<p class="help">메뉴를 이용하면 처리 시간이 이곳에 표시됩니다.</p>')));
       $('backupNow').onclick=async()=>{if(!confirm('현재 스프레드시트의 비공개 사본을 만들까요?'))return;const b=$('backupNow');b.disabled=true;try{const r=await call('staffBackupNow',state.token);toast('백업 완료: '+r.filename);}catch(e){toast(e.message,true);}finally{b.disabled=false;}};
     }
     // V18 operating modules. All API endpoints enforce role permissions again on the server.
@@ -446,8 +446,8 @@
       const completed=rows.filter(x=>x.status==='완료').length;
       $('pageBody').innerHTML=head('운영 점검','개원 준비와 법정 서류, 정기 점검을 확인합니다. 기한은 관할 교육지원청의 기준에 맞춰 직접 설정하세요.')+
       `<div class="metric-grid"><article class="metric"><div class="metric-name">점검 항목</div><div class="metric-value">${rows.length}</div></article><article class="metric"><div class="metric-name">완료</div><div class="metric-value">${completed}</div></article><article class="metric"><div class="metric-name">확인 필요</div><div class="metric-value">${rows.length-completed}</div></article></div>`+
-      panel('항목별 진행 상태','증빙 파일은 공개 링크로 공유하지 말고, 비공개 Drive 내부 참조만 기록하세요.',`<div class="toolbar"><select id="opsCategory" aria-label="운영 점검 분야"><option value="">전체 분야</option>${groups.map(c=>`<option>${h(c)}</option>`).join('')}</select><span class="pill">법정 확인과 운영 권장 사항을 구분했습니다.</span></div><div id="opsRows"></div>`)+
-      `<p class="footnote">완료 버튼은 점검 사실을 기록하는 용도입니다. 관할 기관의 등록·신고·보험 가입을 대신하지 않습니다.</p>`;
+      panel('항목별 진행 상태','증빙 서류는 학원 전용 문서함에 보관하고, 이곳에는 파일명이나 보관 위치를 기록해 주세요.',`<div class="toolbar"><select id="opsCategory" aria-label="운영 점검 분야"><option value="">전체 분야</option>${groups.map(c=>`<option>${h(c)}</option>`).join('')}</select><span class="pill">법정 확인과 운영 권장 사항을 구분했습니다.</span></div><div id="opsRows"></div>`)+
+      `<p class="footnote">완료로 표시하기 전에 실제 신고 내용과 보험·증빙 서류를 확인해 주세요.</p>`;
       const draw=()=>{
         const selected=$('opsCategory').value,arr=rows.filter(x=>!selected||x.category===selected);
         $('opsRows').innerHTML=`<div class="ops-card-grid">${arr.map(x=>`<article class="ops-task-card"><div class="row space-between"><small class="pill">${h(x.category)} · ${h(x.kind)}</small><small class="muted">${h(x.code)}</small></div><h4>${h(x.title)}</h4><div class="fields"><div class="form-item"><label for="op-status-${h(x.code)}">진행 상태</label><select id="op-status-${h(x.code)}" data-op-status="${h(x.code)}">${statusOptions.map(s=>`<option ${s===x.status?'selected':''}>${s}</option>`).join('')}</select></div><div class="form-item"><label for="op-due-${h(x.code)}">확인 예정일</label><input id="op-due-${h(x.code)}" type="date" data-op-due="${h(x.code)}" value="${h(x.due||'')}"></div><div class="form-item"><label for="op-person-${h(x.code)}">담당자</label><input id="op-person-${h(x.code)}" data-op-person="${h(x.code)}" maxlength="60" placeholder="담당자" value="${h(x.person||'')}"></div><div class="form-item"><label for="op-evidence-${h(x.code)}">증빙 참조</label><input id="op-evidence-${h(x.code)}" data-op-evidence="${h(x.code)}" maxlength="180" placeholder="비공개 Drive 자료 위치" value="${h(x.evidence||'')}"></div></div><div class="row space-between"><small class="muted">${x.updated?'최종 수정 '+h(x.updated):'아직 수정 이력이 없습니다.'}</small><button class="btn btn-outline btn-small" data-op-save="${h(x.code)}">저장</button></div></article>`).join('')}</div>`;
@@ -466,9 +466,9 @@
       const d=await call('staffListTuition',state.token);if(state.page!=='tuition')return;
       const kinds=['납부확인','영수증발급확인','환불요청','환불완료'];
       $('pageBody').innerHTML=head('수납·영수증·환불','실제로 확인한 수납과 영수증 발급, 반환 처리 이력을 남깁니다.')+
-      panel('처리 내역 추가','이 화면은 거래내역 확인용입니다. 결제 처리나 법정 영수증 발급을 대신하지 않습니다.',`<form id="tuitionForm" class="stack"><div class="fields"><div class="form-item"><label for="payReceipt">수강등록 접수번호</label><select id="payReceipt" required><option value="">접수번호를 선택해 주세요</option>${d.students.map(x=>`<option value="${h(x.receipt)}">${h(x.name)} · ${h(x.receipt)}</option>`).join('')}</select></div><div class="form-item"><label for="payKind">기록할 업무</label><select id="payKind">${kinds.map(x=>`<option>${x}</option>`).join('')}</select></div><div class="form-item"><label for="payAmount">금액 (원)</label><input id="payAmount" type="number" min="0" max="100000000" step="1" inputmode="numeric" value="0" required></div><div class="form-item"><label for="payReference">영수증·결제·환불 증빙번호</label><input id="payReference" maxlength="85" placeholder="민감한 결제정보는 입력하지 마세요"></div></div><div class="form-item"><label for="payNote">간단한 운영 메모</label><textarea id="payNote" maxlength="120" placeholder="예: 카드 매출전표 발급 확인. 카드번호나 계좌번호는 적지 않습니다."></textarea></div><div class="row"><button type="submit" class="btn btn-primary">처리 이력 추가</button><small>한 번 저장된 항목은 자동 삭제하거나 수정하지 않습니다.</small></div></form>`)+
+      panel('처리 내역 추가','실제 수납·환불 내역을 확인한 뒤 기록해 주세요. 영수증은 별도로 발급해야 합니다.',`<form id="tuitionForm" class="stack"><div class="fields"><div class="form-item"><label for="payReceipt">수강등록 접수번호</label><select id="payReceipt" required><option value="">접수번호를 선택해 주세요</option>${d.students.map(x=>`<option value="${h(x.receipt)}">${h(x.name)} · ${h(x.receipt)}</option>`).join('')}</select></div><div class="form-item"><label for="payKind">기록할 업무</label><select id="payKind">${kinds.map(x=>`<option>${x}</option>`).join('')}</select></div><div class="form-item"><label for="payAmount">금액 (원)</label><input id="payAmount" type="number" min="0" max="100000000" step="1" inputmode="numeric" value="0" required></div><div class="form-item"><label for="payReference">영수증·결제·환불 증빙번호</label><input id="payReference" maxlength="85" placeholder="민감한 결제정보는 입력하지 마세요"></div></div><div class="form-item"><label for="payNote">간단한 운영 메모</label><textarea id="payNote" maxlength="120" placeholder="예: 카드 매출전표 발급 확인. 카드번호나 계좌번호는 적지 않습니다."></textarea></div><div class="row"><button type="submit" class="btn btn-primary">처리 이력 추가</button><small>저장한 수납 기록은 수정하거나 삭제할 수 없으니 내용을 확인해 주세요.</small></div></form>`)+
       panel('최근 수납 기록',`최근 ${d.records.length}건을 표시합니다.`,table(['기록시각','등록 접수번호','처리 종류','금액(원)','증빙참조','담당자'],d.records.map(x=>`<tr><td>${h(x.at)}</td><td>${h(x.receipt)}</td><td>${tag(x.kind)}</td><td>${h(x.amount)}</td><td>${h(x.reference)}</td><td>${h(x.operator)}</td></tr>`)))+
-      `<div class="warning">환불액은 운영자가 실제 반환처리 후에만 ‘환불완료’로 기록하세요. 법정 반환 기준 계산과 지급은 별도 확인이 필요합니다.</div>`;
+      `<div class="warning">환불금 지급을 마친 건만 '환불완료'로 표시하세요. 반환 금액은 교습비 반환 기준에 따라 확인해야 합니다.</div>`;
       let pendingTuition=null;
       $('tuitionForm').onsubmit=async e=>{e.preventDefault();const f=e.currentTarget;
         const payload={receipt:$('payReceipt').value,kind:$('payKind').value,amount:Number($('payAmount').value),reference:$('payReference').value,note:$('payNote').value};
@@ -485,9 +485,9 @@
       const statuses=['','확인완료','조치필요','해당없음'];const today=new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Seoul'}).format(new Date());
       const opts=statuses.map(v=>`<option value="${v}">${v||'확인 결과 선택'}</option>`).join('');
       $('pageBody').innerHTML=head('수업 준비·안전 점검','같은 월간 주제를 운영하더라도 월령에 맞는 재료와 진행 방법을 따로 점검합니다.')+
-      panel('수업 전 확인','안전 문제가 발견되면 수업부터 조정하거나 중단하고, 필요한 보호자 연락·응급조치를 우선합니다.',`<form id="safetyForm" class="stack"><div class="fields"><div class="form-item"><label for="safeClass">수업반</label><select id="safeClass" required><option value="">반 선택</option>${state.classes.map(c=>`<option value="${h(c.id)}">${h(c.id)} · ${h(c.day)} ${h(c.time)}</option>`).join('')}</select></div><div class="form-item"><label for="safeDate">수업일</label><input id="safeDate" type="date" value="${today}" required></div><div class="form-item"><label for="safeTheme">월간 공통 주제</label><input id="safeTheme" maxlength="70" placeholder="예: Little Color Explorers" required></div><div class="form-item"><label for="safeMaterial">재료 유형</label><select id="safeMaterial"><option>식재료</option><option>자연소재</option><option>교구</option><option>복합</option><option>재료 없음</option></select></div></div><div class="fields">${[['fresh','재료·유통 상태'],['room','바닥·출입문 등'],['smallParts','삼킴 위험·작은 교구'],['hygiene','손 씻기·세척·정리'],['notice','보호자 사전안내']].map(([id,label])=>`<div class="form-item"><label for="safe-${id}">${label}</label><select id="safe-${id}" required>${opts}</select></div>`).join('')}</div><div class="form-item"><label for="safeAction">조치가 필요한 사항</label><textarea id="safeAction" maxlength="120" placeholder="재료 교체·사용 중지 등 운영 조치만 적어 주세요. 아동의 질병·알레르기 등 민감정보는 적지 않습니다."></textarea></div><div class="row"><button type="submit" class="btn btn-primary">점검 결과 저장</button><small>같은 반·같은 날 기록은 최근 내용으로 갱신됩니다.</small></div></form>`)+
+      panel('수업 전 확인','안전 문제가 발견되면 수업부터 조정하거나 중단하고, 필요한 보호자 연락·응급조치를 우선합니다.',`<form id="safetyForm" class="stack"><div class="fields"><div class="form-item"><label for="safeClass">수업반</label><select id="safeClass" required><option value="">반 선택</option>${state.classes.map(c=>`<option value="${h(c.id)}">${h(c.id)} · ${h(c.day)} ${h(c.time)}</option>`).join('')}</select></div><div class="form-item"><label for="safeDate">수업일</label><input id="safeDate" type="date" value="${today}" required></div><div class="form-item"><label for="safeTheme">월간 공통 주제</label><input id="safeTheme" maxlength="70" placeholder="예: Little Color Explorers" required></div><div class="form-item"><label for="safeMaterial">재료 유형</label><select id="safeMaterial"><option>식재료</option><option>자연소재</option><option>교구</option><option>복합</option><option>재료 없음</option></select></div></div><div class="fields">${[['fresh','재료·유통 상태'],['room','바닥·출입문 등'],['smallParts','삼킴 위험·작은 교구'],['hygiene','손 씻기·세척·정리'],['notice','보호자 사전안내']].map(([id,label])=>`<div class="form-item"><label for="safe-${id}">${label}</label><select id="safe-${id}" required>${opts}</select></div>`).join('')}</div><div class="form-item"><label for="safeAction">조치가 필요한 사항</label><textarea id="safeAction" maxlength="120" placeholder="재료 교체·사용 중지 등 운영 조치만 적어 주세요. 아동의 질병·알레르기 등 민감정보는 적지 않습니다."></textarea></div><div class="row"><button type="submit" class="btn btn-primary">점검 결과 저장</button><small>같은 반과 날짜의 점검 기록을 다시 저장하면 내용이 갱신됩니다.</small></div></form>`)+
       panel('최근 점검 결과','담당 반 이외의 기록은 선생님 계정에서 보이지 않습니다.',table(['수업일·반','주제·재료','재료·위생·안전','조치사항','기록자'],d.map(x=>`<tr><td>${h(x.date)}<br>${h(x.classId)}</td><td>${h(x.theme)}<br><small>${h(x.material)}</small></td><td>${tag(x.fresh)} / ${tag(x.room)} / ${tag(x.smallParts)}<br>${tag(x.hygiene)} / ${tag(x.notice)}</td><td class="note-cell">${h(x.action||'—')}</td><td>${h(x.operator)}</td></tr>`)))+
-      `<div class="subtle">체크리스트는 안전관리 보조기록입니다. 사고 발생 시 실제 응급조치·신고 의무와 기관 안전 매뉴얼을 우선하세요.</div>`;
+      `<div class="subtle">응급 상황에서는 점검표 작성보다 현장 대응과 보호자 연락을 우선해 주세요.</div>`;
       $('safetyForm').onsubmit=async e=>{e.preventDefault();const f=e.currentTarget;setBusy(f,true);try{const p={classId:$('safeClass').value,date:$('safeDate').value,theme:$('safeTheme').value,material:$('safeMaterial').value,action:$('safeAction').value};for(const k of ['fresh','room','smallParts','hygiene','notice'])p[k]=$('safe-'+k).value;await call('staffSaveDailyCheck',state.token,p);toast('수업 안전 점검을 저장했습니다.');await renderSafety();}catch(err){toast(err.message,true);}finally{setBusy(f,false);}};
     }
     async function renderHandoff(){
@@ -496,7 +496,7 @@
       $('pageBody').innerHTML=head('보호자 동반·인계','수업 중 보호자 동반과 종료 시 인계 여부를 확인합니다.')+
       panel('수업 선택','선생님 계정은 담당 반의 확정 수강생만 확인할 수 있습니다.',`<div class="fields"><div class="form-item"><label for="handoffClass">수업반</label><select id="handoffClass"><option value="">수업반 선택</option>${state.classes.map(c=>`<option value="${h(c.id)}">${h(c.id)} · ${h(c.day)} ${h(c.time)}</option>`).join('')}</select></div><div class="form-item"><label for="handoffDate">수업일</label><input id="handoffDate" type="date" value="${today}"></div></div><div class="spaced"><button id="handoffLoad" class="btn btn-outline">명단 불러오기</button></div>`)+
       panel('아동별 확인','미확인 또는 확인 필요로 표시된 경우에는 운영자에게 확인을 요청하세요.',`<div id="handoffRows" class="empty">수업반과 날짜를 선택해 주세요.</div>`)+
-      `<p class="footnote">이 화면에서는 보호자 성명·연락처·아동 건강정보를 기록하지 않습니다. 임의의 타인에게 인계하지 않도록 내부 안전 절차를 별도로 운영하세요.</p>`;
+      `<p class="footnote">보호자는 학원 인계 절차에 따라 확인하고, 이곳에는 동반·인계 여부만 기록해 주세요.</p>`;
       $('handoffLoad').onclick=async()=>{const id=$('handoffClass').value,date=$('handoffDate').value;if(!id)return toast('수업반을 선택해 주세요.',true);const b=$('handoffLoad');b.disabled=true;try{
         const items=await call('staffListHandoffs',state.token,{classId:id,date});
         $('handoffRows').innerHTML=table(['아동','보호자 동반','종료 인계','저장'],items.map((x,i)=>`<tr><td><b>${h(x.child)}</b></td><td><select class="inline-select" id="arrive-${i}">${['미확인','동반 확인','확인 필요'].map(s=>`<option ${s===x.arrival?'selected':''}>${s}</option>`).join('')}</select></td><td><select class="inline-select" id="leave-${i}">${['미확인','인계 확인','확인 필요'].map(s=>`<option ${s===x.departure?'selected':''}>${s}</option>`).join('')}</select></td><td><button class="btn btn-outline btn-small" data-save-handoff="${i}">저장</button></td></tr>`));
@@ -509,7 +509,7 @@
       const statuses=['미확인','확인완료','해당없음','재점검필요'];
       const fields=[['criminal','성범죄 관련 법정 조회'],['child','아동학대 관련 전력 조회'],['report','채용·해임 신고'],['abuse','아동학대 신고의무 교육'],['welfare','긴급복지 신고의무 교육'],['disability','장애인학대 신고의무 교육']];
       $('pageBody').innerHTML=head('선생님 준수 사항','직원별 법정 조회·신고·교육 이수 여부를 관리합니다. 결과 원본이나 건강정보는 입력하지 마세요.')+
-      `<div class="alert">이 화면은 실제 조회·신고·교육을 대신하지 않습니다. 관할 기관과 대상 직원의 자격·업무에 따라 ‘해당없음’ 여부를 확인해야 합니다.</div>`+
+      `<div class="alert">조회와 교육을 실제로 마친 뒤 상태를 기록하세요. 적용 대상이 아닌 항목은 근거를 확인한 후 '해당없음'으로 표시하세요.</div>`+
       `<div class="ops-card-grid spaced">${people.map((u,i)=>`<article class="ops-task-card"><div><h4>${h(u.name)} <span class="pill">${h(ROLE_NAMES[u.role]||u.role)}</span></h4><small class="muted">${h(u.email)}</small></div><div class="fields">${fields.map(([k,label])=>`<div class="form-item"><label for="staff-${i}-${k}">${h(label)}</label><select id="staff-${i}-${k}">${statuses.map(v=>`<option ${u[k]===v?'selected':''}>${v}</option>`).join('')}</select></div>`).join('')}</div><div class="form-item"><label for="staff-evidence-${i}">증빙 자료 내부 참조</label><input id="staff-evidence-${i}" maxlength="180" value="${h(u.evidence)}" placeholder="비공개 Drive 문서 위치"></div><div class="row space-between"><small class="muted">${u.updated?'최종 수정 '+h(u.updated):'아직 점검 이력이 없습니다.'}</small><button class="btn btn-outline btn-small" data-staff-compliance="${i}">확인 내용 저장</button></div></article>`).join('')}</div>`;
       $('pageBody').querySelectorAll('[data-staff-compliance]').forEach(btn=>btn.onclick=async()=>{
         const i=Number(btn.dataset.staffCompliance),p={email:people[i].email,evidence:$('staff-evidence-'+i).value};
@@ -524,25 +524,25 @@
       if(state.page!=='documents')return;
       
       $('pageBody').innerHTML=head('문서 생성·발송','기록을 선택해 확인서를 만들고, PDF를 내려받거나 확인된 이메일 주소로 보내실 수 있습니다.')+
-      `<div class="warning">서명된 수강계약은 기존에 보관된 PDF 원본을 그대로 교부합니다. 등록 확인서는 계약서를 대신하지 않으며, 납부 내역 안내서는 법정 영수증이 아닙니다.</div>`+
+      `<div class="warning">서명 계약서는 보관된 원본에서 사본을 발급합니다. 등록 확인서와 납부 내역 안내서는 계약서나 영수증을 대신할 수 없습니다.</div>`+
       panel('1. 발급 문서 선택','먼저 문서 종류와 해당 기록을 선택해 주세요.',
-      `<div class="stack" id="docStepForm"><div class="fields"><div class="form-item"><label for="docType">문서 종류</label><select id="docType">${types.map(t=>`<option value="${h(t.id)}">${h(t.label)}</option>`).join('')}</select></div><div class="form-item"><label for="docSource">기록 선택</label><select id="docSource"><option value="">자료를 불러오는 중입니다.</option></select></div></div><div class="form-item hidden" id="docCustomTitleBox"><label for="docCustomTitle">안내문 제목</label><input id="docCustomTitle" maxlength="95" placeholder="예: 3월 수업 준비물 안내"></div><div class="form-item hidden" id="docCustomNoteBox"><label for="docCustomNote">추가 안내 내용</label><textarea id="docCustomNote" maxlength="1600" rows="4" placeholder="보호자에게 전달할 내용을 간단히 적어 주세요."></textarea></div><div class="row"><button type="button" class="btn btn-outline" id="docPreviewBtn">내용 미리보기</button><small>미리보기를 확인한 다음 PDF를 생성합니다.</small></div></div>`)+
+      `<div class="stack" id="docStepForm"><div class="fields"><div class="form-item"><label for="docType">문서 종류</label><select id="docType">${types.map(t=>`<option value="${h(t.id)}">${h(t.label)}</option>`).join('')}</select></div><div class="form-item"><label for="docSource">기록 선택</label><select id="docSource"><option value="">자료를 불러오는 중입니다.</option></select></div></div><div class="form-item hidden" id="docCustomTitleBox"><label for="docCustomTitle">안내문 제목</label><input id="docCustomTitle" maxlength="95" placeholder="예: 3월 수업 준비물 안내"></div><div class="form-item hidden" id="docCustomNoteBox"><label for="docCustomNote">추가 안내 내용</label><textarea id="docCustomNote" maxlength="1600" rows="4" placeholder="보호자에게 전달할 내용을 간단히 적어 주세요."></textarea></div><div class="row"><button type="button" class="btn btn-outline" id="docPreviewBtn">내용 미리보기</button><small>내용을 확인한 후 PDF를 생성하세요.</small></div></div>`)+
       panel('2. 문서 확인','보호자·수업 정보가 맞는지 확인하세요.',`<div id="docPreview" class="empty">문서를 선택하고 미리보기를 눌러 주세요.</div><div class="row spaced"><button id="docGenerateBtn" type="button" class="btn btn-primary hidden">확인한 내용으로 PDF 생성</button></div>`)+
       panel('3. PDF 다운로드·메일 발송','PDF 생성 후 사용할 수 있습니다.',
-      `<div id="docResult" class="empty">아직 생성한 문서가 없습니다.</div><div id="docSendArea" class="hidden stack spaced"><div class="row"><button id="docDownloadBtn" type="button" class="btn btn-outline">PDF 내려받기</button><small>PDF 원본은 비공개 Drive에 보관됩니다.</small></div><div class="fields"><div class="form-item"><label for="docRecipient">받는 사람 이메일</label><input type="email" id="docRecipient" autocomplete="off" placeholder="받는 분의 이메일 주소" maxlength="180"></div><div class="form-item"><label for="docConfirmEmail">이메일 다시 입력</label><input type="email" id="docConfirmEmail" autocomplete="off" placeholder="주소를 다시 입력해 주세요" maxlength="180"></div></div><div class="form-item"><label for="docMailNote">이메일에 덧붙일 안내 (선택)</label><textarea id="docMailNote" rows="2" maxlength="350" placeholder="예: 요청하신 안내서를 보내드립니다."></textarea></div><label class="row" style="font-size:12px;align-items:flex-start;gap:10px"><input id="docMailConfirm" type="checkbox" style="width:19px;min-height:19px;margin-top:2px;flex:none"><span>받는 분의 주소와 첨부 문서를 확인했습니다. 개인정보가 포함된 문서는 수신자에게 교부할 수 있는지 확인한 후 발송합니다.</span></label><div class="row"><button id="docSendBtn" type="button" class="btn btn-primary">PDF 이메일 보내기</button><small>전송 요청 기록이 남으며 실제 메일 수신은 별도 확인이 필요합니다.</small></div></div>`)+
+      `<div id="docResult" class="empty">발급한 문서가 없습니다.</div><div id="docSendArea" class="hidden stack spaced"><div class="row"><button id="docDownloadBtn" type="button" class="btn btn-outline">PDF 내려받기</button><small>발급한 PDF는 학원 전용 문서함에 보관됩니다.</small></div><div class="fields"><div class="form-item"><label for="docRecipient">받는 사람 이메일</label><input type="email" id="docRecipient" autocomplete="off" placeholder="받는 분의 이메일 주소" maxlength="180"></div><div class="form-item"><label for="docConfirmEmail">이메일 다시 입력</label><input type="email" id="docConfirmEmail" autocomplete="off" placeholder="주소를 다시 입력해 주세요" maxlength="180"></div></div><div class="form-item"><label for="docMailNote">이메일에 덧붙일 안내 (선택)</label><textarea id="docMailNote" rows="2" maxlength="350" placeholder="예: 요청하신 안내서를 보내드립니다."></textarea></div><label class="row" style="font-size:12px;align-items:flex-start;gap:10px"><input id="docMailConfirm" type="checkbox" style="width:19px;min-height:19px;margin-top:2px;flex:none"><span>받는 분의 주소와 첨부 문서를 확인했습니다. 개인정보가 포함된 문서는 수신자에게 교부할 수 있는지 확인한 후 발송합니다.</span></label><div class="row"><button id="docSendBtn" type="button" class="btn btn-primary">PDF 이메일 보내기</button><small>발송 후에는 수신자에게 메일 도착 여부를 확인해 주세요.</small></div></div>`)+
       panel('최근 발급 기록','기존 문서는 다시 생성하지 않고 내려받을 수 있습니다.',
       `<div id="docHistory">${docHistoryTable(history)}</div>`)+
-      `<div class="footnote">교습비 영수증은 결제 증빙 발급 절차에서 별도 처리해 주세요. 같은 Google 계정에 저장된 백업만으로는 계정 장애에 대비할 수 없으므로 독립 백업도 유지해야 합니다.</div>`;
+      `<div class="footnote">교습비 영수증은 별도로 발행해야 합니다. 계약서와 발급 문서는 학원 보관 기준에 따라 원본과 백업을 관리해 주세요.</div>`;
       let preview=null,generated=null;
       function req(){return {type:$('docType').value,sourceId:$('docSource').value,title:$('docCustomTitle').value.trim(),note:$('docCustomNote').value.trim()};}
-      function resetPreview(){preview=null;generated=null;$('docPreview').className='empty';$('docPreview').textContent='내용을 선택하고 미리보기를 확인해 주세요.';$('docGenerateBtn').classList.add('hidden');$('docResult').className='empty';$('docResult').textContent='아직 생성한 문서가 없습니다.';$('docSendArea').classList.add('hidden');$('docMailConfirm').checked=false;}
+      function resetPreview(){preview=null;generated=null;$('docPreview').className='empty';$('docPreview').textContent='내용을 선택하고 미리보기를 확인해 주세요.';$('docGenerateBtn').classList.add('hidden');$('docResult').className='empty';$('docResult').textContent='발급한 문서가 없습니다.';$('docSendArea').classList.add('hidden');$('docMailConfirm').checked=false;}
       async function loadSources(){
         resetPreview();const type=$('docType').value;
         $('docCustomTitleBox').classList.toggle('hidden',type!=='notice');
         $('docCustomNoteBox').classList.toggle('hidden',!['notice','class'].includes(type));
         const select=$('docSource');select.innerHTML='<option value="">목록을 불러오고 있습니다.</option>';select.disabled=true;
         try{const sources=await call('staffDocSources',state.token,type);if(type!==$('docType').value)return;
-          select.innerHTML='<option value="">자료를 선택해 주세요</option>'+sources.map(x=>`<option value="${h(x.id)}">${h(x.label)}</option>`).join('');
+          select.innerHTML='<option value="">발급할 대상을 선택하세요</option>'+sources.map(x=>`<option value="${h(x.id)}">${h(x.label)}</option>`).join('');
           if(type==='notice')select.value='GENERAL';
           if(!sources.length)select.innerHTML='<option value="">발급 가능한 기록이 없습니다.</option>';
         }catch(e){select.innerHTML='<option value="">불러오기 실패</option>';toast(e.message,true);}finally{select.disabled=false;}
@@ -556,7 +556,7 @@
         const b=$('docPreviewBtn');b.disabled=true;
         try{const v=await call('staffDocPreview',state.token,req());preview=v;generated=null;
           $('docPreview').className='';
-          $('docPreview').innerHTML=`<div class="doc-preview"><div class="doc-preview-brand"><img class="bw21-doc-preview-logo" src="${document.querySelector('.sidebar-logo').getAttribute('src')}" alt="Bridge Wonder · Sensory Play Studio"><small>발급 내용을 확인해 주세요</small></div><h3>${h(v.title)}</h3><div class="table-scroll"><table class="data-table"><tbody>${v.items.map(x=>`<tr><th scope="row">${h(x[0])}</th><td style="white-space:normal;word-break:break-word">${h(x[1])}</td></tr>`).join('')}</tbody></table></div>${v.paragraphs.map(x=>`<p style="margin-top:15px;white-space:pre-wrap">${h(x)}</p>`).join('')}<div class="footnote">발급 문서의 법적 성격과 수신인 정보를 확인해 주세요.</div></div>`;
+          $('docPreview').innerHTML=`<div class="doc-preview"><div class="doc-preview-brand"><img class="bw21-doc-preview-logo" src="${document.querySelector('.sidebar-logo').getAttribute('src')}" alt="Bridge Wonder · Sensory Play Studio"><small>발급 내용을 확인해 주세요</small></div><h3>${h(v.title)}</h3><div class="table-scroll"><table class="data-table"><tbody>${v.items.map(x=>`<tr><th scope="row">${h(x[0])}</th><td style="white-space:normal;word-break:break-word">${h(x[1])}</td></tr>`).join('')}</tbody></table></div>${v.paragraphs.map(x=>`<p style="margin-top:15px;white-space:pre-wrap">${h(x)}</p>`).join('')}<div class="footnote">문서 내용과 수신자 정보를 한 번 더 확인해 주세요.</div></div>`;
           $('docGenerateBtn').classList.remove('hidden');$('docSendArea').classList.add('hidden');$('docResult').className='empty';$('docResult').textContent='PDF 생성을 진행해 주세요.';
           $('docRecipient').value=v.recipient||'';$('docConfirmEmail').value='';$('docMailConfirm').checked=false;
         }catch(e){toast(e.message,true);}finally{b.disabled=false;}
@@ -576,7 +576,7 @@
         try{const r=await call('staffDocDownload',state.token,docId),binary=atob(r.base64),data=new Uint8Array(binary.length);
           for(let i=0;i<binary.length;i++)data[i]=binary.charCodeAt(i);
           const url=URL.createObjectURL(new Blob([data],{type:'application/pdf'}));
-          const a=document.createElement('a');a.href=url;a.download=r.filename;a.style.display='none';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);toast('PDF 다운로드가 시작되었습니다.');
+          const a=document.createElement('a');a.href=url;a.download=r.filename;a.style.display='none';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);toast('PDF 파일을 내려받고 있습니다.');
         }catch(e){toast(e.message||'PDF 다운로드에 실패했습니다.',true);}
       }
       $('docDownloadBtn').onclick=()=>{if(generated)download(generated.id);};
@@ -601,11 +601,11 @@ function bw20ClassOptions(list,empty){return `<option value="">${h(empty||'수�
 async function renderCapacity(){
  const d=await call('staff20Capacity',state.token);if(state.page!=='capacity')return;
  const edit=bw20CanEdit();
- const cards=d.rows.map(x=>`<article class="bw20-cap-card"><div class="bw20-cap-top"><div><b>${h(x.id)}</b><p>${h(x.day)} · ${h(x.time)}</p></div>${tag(x.status)}</div><dl class="bw20-cap-stats"><div><dt>확정 등록</dt><dd>${bw20Fmt(x.enrolled)}명</dd></div><div><dt>남은 자리</dt><dd>${x.free===null?'—':bw20Fmt(x.free)+'명'}</dd></div><div><dt>대기</dt><dd>${bw20Fmt(x.waiting)}건</dd></div></dl>${edit?`<div class="bw20-cap-edit"><label for="bw20cap-${h(x.id)}">기준 정원</label><div class="row"><input id="bw20cap-${h(x.id)}" type="number" min="1" max="100" value="${x.capacity||''}" placeholder="정원 입력" aria-label="${h(x.id)} 기준 정원" data-cap-value="${h(x.id)}"><button type="button" class="btn btn-outline btn-small" data-cap-save="${h(x.id)}">저장</button></div></div>`:`<p class="footnote">기준 정원 ${x.capacity?bw20Fmt(x.capacity)+'명':'미설정'}</p>`}</article>`).join('');
+ const cards=d.rows.map(x=>`<article class="bw20-cap-card"><div class="bw20-cap-top"><div><b>${h(x.id)}</b><p>${h(x.day)} · ${h(x.time)}</p></div>${tag(x.status)}</div><dl class="bw20-cap-stats"><div><dt>확정 등록</dt><dd>${bw20Fmt(x.enrolled)}명</dd></div><div><dt>남은 자리</dt><dd>${x.free===null?'—':bw20Fmt(x.free)+'명'}</dd></div><div><dt>대기</dt><dd>${bw20Fmt(x.waiting)}건</dd></div></dl>${edit?`<div class="bw20-cap-edit"><label for="bw20cap-${h(x.id)}">기준 정원</label><div class="row"><input id="bw20cap-${h(x.id)}" type="number" min="1" max="100" value="${x.capacity||''}" placeholder="정원 입력" aria-label="${h(x.id)} 기준 정원" data-cap-value="${h(x.id)}"><button type="button" class="btn btn-outline btn-small" data-cap-save="${h(x.id)}">저장</button></div></div>`:`<p class="footnote">등록된 정원 ${x.capacity?bw20Fmt(x.capacity)+'명':'미설정'}</p>`}</article>`).join('');
  $('pageBody').innerHTML=head('정원 현황','수업반별 확정 등록 인원과 대기 현황을 확인합니다. 정원은 운영자가 승인한 실제 수용 기준을 입력해 주세요.')+
  panel('반별 운영 인원','정원이 설정되어야 보강 승인 시 빈자리를 확인할 수 있습니다.',`<div class="bw20-cap-grid">${cards||'<div class="empty">등록된 수업반이 없습니다.</div>'}</div>`)+
- (d.legacyNotice?`<p class="footnote">이전 개별 링크로 등록한 기록 ${bw20Fmt(d.legacyNotice)}건은 반별 인원 집계에서 제외될 수 있습니다. 운영자가 반배정을 먼저 확인해 주세요.</p>`:'')+
- `<p class="footnote">정원·잔여 자리는 내부 운영 참고값이며, 법정 면적·시설 기준 적합 여부를 자동 판정하지 않습니다.</p>`;
+ (d.legacyNotice?`<p class="footnote">이전 링크로 접수한 ${bw20Fmt(d.legacyNotice)}건은 정원 집계에서 빠져 있을 수 있습니다. 반 배정을 확인해 주세요.</p>`:'')+
+ `<p class="footnote">화면의 정원은 수업 운영을 위한 수치입니다. 실제 시설 기준은 등록 서류와 함께 확인해 주세요.</p>`;
  if(edit)$('pageBody').querySelectorAll('[data-cap-save]').forEach(b=>b.onclick=async()=>{b.disabled=true;const classId=b.dataset.capSave,capacity=Number($('pageBody').querySelector(`[data-cap-value="${classId}"]`).value);try{await call('staff20SetCapacity',state.token,{classId,capacity});toast('수업반 정원을 저장했습니다.');await renderCapacity();}catch(e){toast(e.message,true);}finally{b.disabled=false;}});
 }
 async function renderWaitlist(){
@@ -676,8 +676,8 @@ function bw26LoadPayroll(){
     return bw26PayrollLoads[id];
   }
   bw26PayrollAssets=Promise.all([
-    asset('bw26PayrollCSS','link',base+'css/administration-payroll.css?v=26.0.0','급여 화면 스타일'),
-    asset('bw26PayrollJS','script',base+'js/administration-payroll.js?v=26.0.0','급여 화면')
+    asset('bw26PayrollCSS','link',base+'css/administration-payroll.css?v=34.0.0','급여 화면 스타일'),
+    asset('bw26PayrollJS','script',base+'js/administration-payroll.js?v=34.0.0','급여 화면')
   ]).catch(e=>{bw26PayrollAssets=null;throw e;});
   return bw26PayrollAssets;
 }

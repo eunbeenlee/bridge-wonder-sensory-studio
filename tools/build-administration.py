@@ -19,22 +19,22 @@ let appStarted=false,engineTimer;
 function loadApp(){
   if(appStarted)return;appStarted=true;clearTimeout(engineTimer);
   function startMain(){
-    const s=document.createElement('script');s.src=base+'administration.js?v=33.0.0';s.async=false;
+    const s=document.createElement('script');s.src=base+'administration.js?v=34.0.0';s.async=false;
     s.onerror=()=>{const status=document.createElement('section');status.setAttribute('role','alert');status.style.cssText='padding:14px;background:#fff2ea;color:#7d3925';status.textContent='업무 화면을 불러오지 못했습니다. 새로고침하거나 관리 담당자에게 문의해 주세요.';document.body.prepend(status);};
     document.body.appendChild(s);
   }
   function loadAccount(){
-    const account=document.createElement('script');account.src=base+'staff-account-management.js?v=30.0.0';account.async=false;
+    const account=document.createElement('script');account.src=base+'staff-account-management.js?v=34.0.0';account.async=false;
     account.onload=startMain;account.onerror=startMain;document.body.appendChild(account);
   }
-  const ux=document.createElement('script');ux.src=base+'staff-ux-v31.js?v=30.0.0';ux.async=false;
+  const ux=document.createElement('script');ux.src=base+'staff-ux-v31.js?v=34.0.0';ux.async=false;
   function loadEnterprise(){
-    const e=document.createElement('script');e.src=base+'staff-enterprise-v33.js?v=33.0.0';e.async=false;
+    const e=document.createElement('script');e.src=base+'staff-enterprise-v33.js?v=34.0.0';e.async=false;
     e.onload=loadAccount;e.onerror=loadAccount;document.body.appendChild(e);
   }
   ux.onload=loadEnterprise;ux.onerror=loadEnterprise;document.body.appendChild(ux);
 }
-const engine=document.createElement('script');engine.src=base+'administration-accelerator.js?v=33.0.0';engine.async=false;
+const engine=document.createElement('script');engine.src=base+'administration-accelerator.js?v=34.0.0';engine.async=false;
 engineTimer=setTimeout(loadApp,8000);
 engine.onload=loadApp;engine.onerror=loadApp;document.body.appendChild(engine);
 })();
