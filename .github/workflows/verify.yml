@@ -65,3 +65,6 @@ jobs:
       - name: staff UX V31 tests
         if: always()
         run: node tests/staff-ux-v31.test.cjs
+      - name: enterprise top-navigation V33 tests
+        if: always()
+        run: node tests/staff-enterprise-v33.test.cjs
