@@ -1,143 +1,174 @@
-/* Bridge Wonder · account-only Instagram profile embed
- * Free, no API key, no third-party widget and no individual post URLs.
- * Instagram official embed.js is loaded only when the visitor asks to view
- * the feed, so no Instagram request is triggered on initial page load.
+/* Bridge Wonder V36 — automatic, account-only Instagram profile embed.
+ * No Meta API key, paid widget, scraping, or individual-post URLs.
+ * Official Instagram embed.js loads once per visit, near the feed viewport;
+ * the visitor does not have to click anything to see recent posts.
  */
 (function () {
   'use strict';
   const USERNAME = 'bridgewonder.e';
   const PROFILE = 'https://www.instagram.com/' + USERNAME + '/';
-  const SCRIPT_URL = 'https://www.instagram.com/embed.js';
-  let scriptPromise = null;
+  const EMBED_SCRIPT = 'https://www.instagram.com/embed.js';
+  let rendererPromise = null;
 
-  function element(tag, klass, text) {
+  function make(tag, klass, text) {
     const node = document.createElement(tag);
     if (klass) node.className = klass;
     if (text !== undefined) node.textContent = text;
     return node;
   }
 
-  function profileLink(label) {
-    const link = element('a', 'btn btn-dark', label);
-    link.href = PROFILE;
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
-    return link;
+  function link(label, klass) {
+    const a = make('a', klass || 'btn btn-dark', label);
+    a.href = PROFILE;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    return a;
   }
 
-  function loadInstagramRenderer() {
-    if (window.instgrm && window.instgrm.Embeds && typeof window.instgrm.Embeds.process === 'function') {
-      return Promise.resolve();
-    }
-    if (scriptPromise) return scriptPromise;
-    scriptPromise = new Promise((resolve, reject) => {
+  function renderer() {
+    if (window.instgrm?.Embeds?.process) return Promise.resolve();
+    if (rendererPromise) return rendererPromise;
+    rendererPromise = new Promise((resolve, reject) => {
       const script = document.createElement('script');
+      script.src = EMBED_SCRIPT;
       script.async = true;
-      script.src = SCRIPT_URL;
-      script.onload = () => {
-        if (window.instgrm && window.instgrm.Embeds && typeof window.instgrm.Embeds.process === 'function') resolve();
-        else reject(Error('Instagram profile renderer is unavailable'));
-      };
-      script.onerror = () => reject(Error('Instagram could not load'));
+      script.referrerPolicy = 'no-referrer-when-downgrade';
+      script.onload = () => window.instgrm?.Embeds?.process
+        ? resolve() : reject(Error('Instagram embed unavailable'));
+      script.onerror = () => reject(Error('Instagram embed unavailable'));
       document.head.appendChild(script);
     }).catch(error => {
-      scriptPromise = null;
+      rendererPromise = null;
       throw error;
     });
-    return scriptPromise;
+    return rendererPromise;
   }
 
-  function status(root, text) {
-    const label = root.querySelector('.bw-instagram-profile-status');
-    if (label) label.textContent = text;
-  }
+  function profileCard() {
+    const intro = make('div', 'bw-instagram-account-intro');
+    const account = make('div', 'bw-instagram-account-identity');
+    const mark = make('img');
+    mark.src = '/assets/img/brand-mark.png';
+    mark.alt = '';
+    mark.width = 82;
+    mark.height = 58;
+    mark.loading = 'lazy';
+    mark.decoding = 'async';
+    const handle = make('div', 'bw-instagram-handle');
+    handle.append(make('span', '', 'BRIDGE WONDER · OFFICIAL INSTAGRAM'),
+      make('strong', '', '@' + USERNAME));
+    account.append(mark, handle);
 
-  function showFallback(root) {
-    root.replaceChildren();
-    const card = element('div', 'bw-instagram-empty');
-    const intro = element('div', 'bw-instagram-empty-head');
-    const logo = element('img');
-    logo.src = '/assets/img/brand-mark.png';
-    logo.alt = '';
-    logo.width = 96;
-    logo.height = 68;
-    logo.loading = 'lazy';
-    const copy = element('div');
-    copy.append(
-      element('strong', '', '원더의 새로운 이야기를 만나 보세요.'),
-      element('p', '', '수업 준비와 새로운 놀이 소식은 브릿지 원더 공식 인스타그램에 전해 드립니다.')
+    intro.append(
+      account,
+      make('h3', 'bw-instagram-account-title', '원더의 작은 순간을 기록합니다.'),
+      make('p', 'bw-instagram-account-description',
+        '그림책과 노래, 감각놀이를 준비하는 모습부터 새로운 프로그램 소식까지. 브릿지 원더의 이야기를 가까이에서 만나 보세요.')
     );
-    intro.append(logo, copy);
-    card.append(intro, profileLink('@bridgewonder.e 방문하기'));
-    root.appendChild(card);
+
+    const labels = make('div', 'bw-instagram-account-tags');
+    labels.append(make('span', '', '사진'), make('span', '', '릴스'), make('span', '', '원더의 소식'));
+    intro.append(labels);
+
+    const links = make('div', 'bw-instagram-account-actions');
+    links.append(link('인스타그램 전체 보기'));
+    intro.append(links);
+
+    intro.append(make('p', 'bw-instagram-story-note',
+      '24시간 스토리는 공식 인스타그램에서 확인하실 수 있습니다.'));
+    return intro;
   }
 
-  function showAccount(root) {
-    root.replaceChildren();
-    const outer = element('div', 'bw-instagram-account-widget');
-    const intro = element('div', 'bw-instagram-account-intro');
-    const caption = element('div');
-    caption.append(
-      element('strong', '', '@' + USERNAME),
-      element('p', '', '최근 게시물과 릴스는 인스타그램이 제공하는 프로필 화면에서 확인할 수 있습니다.')
-    );
-    const actions = element('div', 'bw-instagram-account-actions');
-    const button = element('button', 'btn btn-outline bw-instagram-profile-load', '최근 게시물 보기');
-    button.type = 'button';
-    const link = profileLink('인스타그램으로 이동');
-    actions.append(button, link);
-    intro.append(caption, actions);
-    const note = element('p', 'bw-instagram-profile-status', '게시물 보기를 선택하면 Instagram의 공식 프로필이 열립니다.');
-    note.setAttribute('role', 'status');
-    const frame = element('div', 'bw-instagram-profile-frame');
-    frame.hidden = true;
-    outer.append(intro, note, frame);
-    root.appendChild(outer);
+  function profileFrame() {
+    const media = make('div', 'bw-instagram-account-media');
+    media.setAttribute('aria-label', '@' + USERNAME + ' 인스타그램 최근 게시물');
+    const frame = make('div', 'bw-instagram-profile-frame');
+    const quote = make('blockquote', 'instagram-media');
+    quote.setAttribute('data-instgrm-permalink', PROFILE);
+    quote.setAttribute('data-instgrm-version', '14');
+    quote.style.width = '100%';
+    quote.style.maxWidth = '540px';
+    quote.style.minWidth = '0';
+    quote.style.margin = '0 auto';
+    quote.appendChild(link('인스타그램에서 게시물 보기', 'bw-instagram-profile-original'));
+    frame.appendChild(quote);
 
-    button.addEventListener('click', async () => {
-      button.disabled = true;
-      button.textContent = '프로필을 불러오는 중…';
-      frame.hidden = false;
-      frame.replaceChildren();
+    const state = make('p', 'bw-instagram-profile-status', '인스타그램의 최신 게시물을 불러오고 있습니다.');
+    state.setAttribute('role', 'status');
+    media.append(frame, state);
+    return {media, frame, state};
+  }
 
-      // Instagram supports profile URLs in its official embed flow.
-      // The profile, not an individual post, is the only input.
-      const blockquote = element('blockquote', 'instagram-media');
-      blockquote.setAttribute('data-instgrm-permalink', PROFILE);
-      blockquote.setAttribute('data-instgrm-version', '14');
-      blockquote.style.width = '100%';
-      blockquote.style.maxWidth = '540px';
-      blockquote.style.minWidth = '0';
-      blockquote.style.margin = '0 auto';
-      const original = element('a', '', 'Instagram에서 @' + USERNAME + ' 보기');
-      original.href = PROFILE;
-      original.target = '_blank';
-      original.rel = 'noopener noreferrer';
-      blockquote.appendChild(original);
-      frame.appendChild(blockquote);
-      status(root, '인스타그램 프로필을 불러오고 있습니다.');
-
-      try {
-        await loadInstagramRenderer();
-        window.instgrm.Embeds.process();
-        button.textContent = '다시 불러오기';
-        button.disabled = false;
-        status(root, '프로필을 표시하지 못할 경우, 인스타그램으로 이동해 확인해 주세요.');
-      } catch (_) {
-        frame.hidden = true;
-        frame.replaceChildren();
-        button.textContent = '프로필 다시 불러오기';
-        button.disabled = false;
-        status(root, '이 브라우저에서는 인스타그램 미리보기를 열 수 없습니다. 공식 계정에서 확인해 주세요.');
+  function loadNearViewport(root, frame, state) {
+    let started = false;
+    function begin() {
+      if (started) return; // no repeated requests or background polling
+      started = true;
+      let finished = false;
+      let timeout = null;
+      let watch = null;
+      const success = () => {
+        if (finished) return;
+        finished = true;
+        if (timeout) clearTimeout(timeout);
+        if (watch) watch.disconnect();
+        state.hidden = true;
+        root.classList.add('bw-instagram-embed-ready');
+      };
+      const unavailable = () => {
+        if (finished) return;
+        finished = true;
+        if (timeout) clearTimeout(timeout);
+        if (watch) watch.disconnect();
+        state.hidden = false;
+        state.textContent = '인스타그램 게시물을 표시하지 못했습니다. 공식 계정에서 확인해 주세요.';
+        root.classList.add('bw-instagram-embed-unavailable');
+      };
+      if (typeof MutationObserver !== 'undefined') {
+        watch = new MutationObserver(() => {
+          if (frame.querySelector('iframe')) success();
+        });
+        watch.observe(frame, {childList:true, subtree:true});
       }
-    });
+      timeout = setTimeout(() => {
+        if (frame.querySelector('iframe')) success();
+        else unavailable();
+      }, 16000);
+      renderer().then(() => {
+        if (!finished && !frame.querySelector('iframe')) {
+          window.instgrm.Embeds.process();
+        }
+        if (frame.querySelector('iframe')) success();
+      }).catch(unavailable);
+    }
+
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver(entries => {
+        if (!entries.some(entry => entry.isIntersecting)) return;
+        observer.disconnect();
+        begin();
+      }, {rootMargin:'650px 0px', threshold:0});
+      observer.observe(root);
+    } else {
+      begin(); // older browsers: automatic render without a button
+    }
+  }
+
+  function init(root) {
+    root.replaceChildren();
+    const widget = make('div', 'bw-instagram-account-widget');
+    const intro = profileCard();
+    const {media,frame,state} = profileFrame();
+    widget.append(intro,media);
+    root.appendChild(widget);
+    loadNearViewport(root,frame,state);
   }
 
   function initialize() {
-    document.querySelectorAll('[data-bw-instagram-feed]').forEach(showAccount);
+    document.querySelectorAll('[data-bw-instagram-feed]').forEach(init);
   }
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initialize, {once:true});
+    document.addEventListener('DOMContentLoaded',initialize,{once:true});
   } else {
     initialize();
   }
