@@ -62,9 +62,13 @@
     $('bw23Reset').onclick=()=>bw23ShowEnrollment('reset');
     $('passwordLoginForm').addEventListener('submit',async e=>{
       e.preventDefault();const form=e.currentTarget;setBusy(form,true);
-      $('loginFeedback').textContent='로그인 중입니다.';
+      $('loginFeedback').textContent='안전한 비밀번호 확인을 준비하고 있습니다…';
       try{
-        const r=await call('staff23PasswordLogin',{email:$('passwordEmail').value.trim(),password:$('passwordInput').value});
+        const email=$('passwordEmail').value.trim(),password=$('passwordInput').value;
+        // WebCrypto runs in the browser's native engine. Do not store or log this proof.
+        const proof=window.BW29KDF?await window.BW29KDF.derive(email,password):null;
+        $('loginFeedback').textContent='계정 정보를 확인하고 있습니다…';
+        const r=await call('staff23PasswordLogin',{email,password,proof});
         state.token=r.token;state.user=r.user;
         $('passwordInput').value='';
         try{sessionStorage.setItem('bw17_staff_session',state.token);}catch(_){}
@@ -89,7 +93,9 @@
       try{
         const pw=$('bw23NewPass').value;
         if(pw!==$('bw23ConfirmPass').value)throw Error('새 비밀번호가 일치하지 않습니다.');
-        const r=await call('staff23PasswordCompleteEnrollment',{email:$('loginEmail').value.trim(),code:$('loginOtp').value.trim(),password:pw,mode:bw23EnrollMode});
+        const email=$('loginEmail').value.trim();
+        const proof=window.BW29KDF?await window.BW29KDF.derive(email,pw):null;
+        const r=await call('staff23PasswordCompleteEnrollment',{email,code:$('loginOtp').value.trim(),password:pw,proof,mode:bw23EnrollMode});
         $('passwordEmail').value=$('loginEmail').value.trim();
         $('loginOtp').value='';$('bw23NewPass').value='';$('bw23ConfirmPass').value='';
         bw23ShowPassword(r.message||'비밀번호를 설정했습니다. 새 비밀번호로 로그인해 주세요.');
