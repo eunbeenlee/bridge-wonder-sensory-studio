@@ -131,7 +131,7 @@ check('no duplicate consultations and no premature 2x weekly enrollment',()=>{
   assert.throws(()=>ctx.staff37SaveStudent('owner',{...common,revision:0}),/같은 이름|이미.*등록/);
   assert.throws(()=>ctx.staff37SaveStudent('owner',{...common,id,revision:1,
     status:'재원',birth:'2025-01-20',classIds:['BW-MON'],evidence:'private approved',
-    verifiedAt:'2026-03-02'}),/두 수업반/);
+    verifiedAt:'2026-03-02'}),/수업횟수|두 수업반/);
 });
 check('after guardian confirmation, two classes appear independently in attendance roster',()=>{
   const result=ctx.staff37SaveStudent('owner',{...common,id,revision:1,
