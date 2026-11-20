@@ -65,3 +65,6 @@ jobs:
       - name: staff UX V31 tests
         if: always()
         run: node tests/staff-ux-v31.test.cjs
+      - name: compliance / inspection PDF V32 tests
+        if: always()
+        run: node tests/compliance-v32.test.cjs
