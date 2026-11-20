@@ -15,7 +15,7 @@
     return '건강·알레르기·진단 정보와 주민등록번호는 이 화면에 입력하지 마세요. 보호자 서명 원본은 별도로 보관합니다.';
   }
   function studentEditor(classes){
-    return '<details id="bw37StudentEditor" class="bw37-editor" open><summary>학생 정보 등록·수정</summary>'+
+    return '<details id="bw37StudentEditor" class="bw37-editor" open><summary>아이 정보 등록·수정</summary>'+
       '<div class="bw37-editor-content"><p class="bw37-help">먼저 기본정보만 저장할 수 있습니다. 주 1회·2회와 실제 수업반은 상담 후 정하세요.</p>'+
       '<form id="bw37StudentForm" class="stack" autocomplete="off">'+
       '<input type="hidden" id="bw37StudentId"><input type="hidden" id="bw37StudentRevision" value="0">'+
@@ -59,7 +59,7 @@
     }).join('');
   }
   async function renderStudents(root,context){
-    root.innerHTML='<h2 class="page-title">학생 기본정보 관리</h2>'+
+    root.innerHTML='<h2 class="page-title">아이 기본정보</h2>'+
       '<p class="page-description">아이와 보호자 기본정보를 먼저 등록하고, 상담 후 주간 횟수와 수업반을 배정하세요.</p>'+
       '<div class="bw37-notice">온라인 전자서명 계약서는 변경하지 않습니다. 직접 등록 학생은 보호자 확인 후 재원 처리해야 출결과 정원에 반영됩니다.</div>'+
       '<div id="bw37StudentApp" class="bw37-loading">학생 정보를 불러오고 있습니다…</div>';
@@ -68,12 +68,12 @@
     let manual=response.manual||[],online=response.online||[],inquiries=response.inquiries||[];
     const classes=response.classes||[],host=$('bw37StudentApp');
     host.innerHTML='<section class="panel bw37-inquiry-import">'+
-      '<h3>상담 접수에서 시작하기</h3><p class="bw37-help">홈페이지에서 접수한 상담 정보를 선택하면 학생 이름과 연락처를 자동으로 채웁니다. 부족한 정보는 상담 후 입력하세요.</p>'+
+      '<h3>상담 접수에서 아이 정보 가져오기</h3><p class="bw37-help">홈페이지에서 접수한 상담 정보를 선택하면 학생 이름과 연락처를 자동으로 채웁니다. 부족한 정보는 상담 후 입력하세요.</p>'+
       '<div class="bw37-actions"><select id="bw37ConsultSelect" aria-label="상담 접수 선택"><option value="">최근 상담 접수 선택</option>'+
        inquiries.map(x=>'<option value="'+esc(x.receipt)+'">'+esc(x.child+' · '+x.phone+' · '+x.receipt)+'</option>').join('')+
       '</select><button type="button" id="bw37ImportInquiry" class="btn btn-outline">학생 초안으로 옮기기</button></div></section>'+
       studentEditor(classes)+
-      '<section class="panel bw37-student-list"><div class="bw37-title-row"><div><h3>전체 학생 명단</h3><p class="bw37-help">온라인 확정 학생과 관리자 직접 등록 학생을 함께 확인합니다.</p></div>'+
+      '<section class="panel bw37-student-list"><div class="bw37-title-row"><div><h3>아이 전체 명단</h3><p class="bw37-help">온라인 확정 학생과 관리자 직접 등록 학생을 함께 확인합니다.</p></div>'+
       '<span id="bw37StudentCount" class="bw37-pill"></span></div>'+
       '<div class="bw37-fields"><label>학생 검색 <input type="search" id="bw37StudentSearch" placeholder="아이·보호자 이름, 학생번호"></label>'+
       '<label>반별 보기 <select id="bw37StudentClass"><option value="">전체 수업반</option>'+
@@ -211,7 +211,7 @@
       '" alt="선택한 수업 테마 일러스트" data-bw37-preview="'+i+'" loading="lazy"></div></fieldset>').join('');
   }
   async function renderExperiences(root,context){
-    root.innerHTML='<h2 class="page-title">홈페이지 체험 테마</h2>'+
+    root.innerHTML='<h2 class="page-title">월간 체험 테마</h2>'+
       '<p class="page-description">매달 소개할 체험 주제를 작성하고 공개할 월을 선택하세요.</p>'+
       '<div class="bw37-notice">내부 월간 수업 계획은 기존 ‘이달의 수업 주제’ 메뉴에서 계속 관리합니다. 홈페이지에는 공개 승인한 내용만 표시됩니다.</div>'+
       '<div id="bw37ExperienceApp" class="bw37-loading">월간 테마 정보를 불러오고 있습니다…</div>';
