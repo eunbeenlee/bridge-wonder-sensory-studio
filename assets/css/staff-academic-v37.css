@@ -1,0 +1,55 @@
+/* Bridge Wonder V37: student intake and monthly experiences management.
+ * Reuses established forest/sage/cream theme with no new color variables.
+ */
+#pageBody .bw37-notice{border-radius:12px;border:1px solid #dce5d8;background:#f3f7f1;
+  color:#3f5844;padding:15px 17px;font-size:13px;line-height:1.8;margin:15px 0 22px;}
+#pageBody .bw37-help{font-size:12.5px;line-height:1.75;color:#687a68;margin:9px 0;}
+#pageBody .bw37-loading,#pageBody .bw37-empty{padding:20px;color:#70816f;text-align:center;font-size:13px;}
+#pageBody .bw37-editor{margin:16px 0;border:1px solid #dbe4d8;background:#fffdf8;border-radius:14px;overflow:hidden;}
+#pageBody .bw37-editor>summary{cursor:pointer;padding:16px 19px;font-size:16px;font-weight:760;color:#355640;}
+#pageBody .bw37-editor-content{border-top:1px solid #e2e8dd;padding:16px 20px 22px;}
+#pageBody .bw37-fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px 17px;margin:14px 0 17px;}
+#pageBody .bw37-fields>label,#pageBody .bw37-editor form>label,#pageBody .bw37-theme-editor form>label,
+#pageBody .bw37-theme-card>label{display:flex;flex-direction:column;gap:7px;min-width:0;font-size:13px;font-weight:650;color:#405a43;}
+#pageBody .bw37-fields input,#pageBody .bw37-fields select,
+#pageBody .bw37-editor form>label>input,#pageBody .bw37-editor form>label>textarea,
+#pageBody .bw37-theme-editor form>label>input,#pageBody .bw37-theme-editor form>label>textarea,
+#pageBody .bw37-theme-card>label>input,#pageBody .bw37-theme-card>label>textarea{
+  box-sizing:border-box;min-height:44px;width:100%;min-width:0;padding:10px 11px;
+  border:1px solid #c9d7c5;border-radius:9px;background:#fff;color:#36533d;font:inherit;font-size:13px;
+}
+#pageBody .bw37-fields label input:focus,#pageBody .bw37-fields label select:focus{outline:2px solid #9ab19a;}
+#pageBody .bw37-fields .bw37-optional{font-size:11px;color:#82907c;font-weight:400;}
+#pageBody .bw37-assignment{margin:12px 0;border:1px solid #e1e7dd;border-radius:12px;padding:0 15px;background:#f7faf5;}
+#pageBody .bw37-assignment summary{cursor:pointer;padding:14px 0;font-weight:710;color:#3a6340;}
+#pageBody .bw37-assignment .bw37-fields{grid-template-columns:repeat(2,minmax(0,1fr));}
+#pageBody .bw37-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:16px 0 0;min-width:0;}
+#pageBody .bw37-actions select{min-height:44px;min-width:min(350px,100%);max-width:100%;border:1px solid #c9d8c5;
+ border-radius:10px;background:white;color:#355640;padding:9px 12px;flex:1;}
+#pageBody .bw37-student-list .bw37-title-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+#pageBody .bw37-title-row h3{margin:0 0 5px;}
+#pageBody .bw37-student-list table td small{display:block;color:#778778;font-size:11px;margin-top:4px;}
+#pageBody .bw37-pill{display:inline-flex;padding:6px 11px;border-radius:20px;background:#e6f0e5;color:#3a6241;font-weight:700;font-size:12px;white-space:nowrap;}
+#pageBody .bw37-origin{color:#7c8c7b;font-size:12px;}
+#pageBody .bw37-theme-card{border:1px solid #dce7d8;border-radius:12px;padding:17px 19px;margin:15px 0;background:#fcfdf9;}
+#pageBody .bw37-theme-card legend{color:#3f5b40;font-size:14px;font-weight:750;padding:0 8px;}
+#pageBody .bw37-image-preview{display:flex;justify-content:flex-start;align-items:center;min-height:128px;background:#f3f5ed;
+border-radius:12px;padding:15px;margin:12px 0 0;}
+#pageBody .bw37-image-preview img{max-height:130px;max-width:185px;width:100%;object-fit:contain;}
+#pageBody .bw37-month-row{padding:14px 2px;border-bottom:1px solid #e6e9e1;display:flex;justify-content:space-between;
+ align-items:center;gap:13px;min-width:0;}
+#pageBody .bw37-month-row>div{min-width:0;}
+#pageBody .bw37-month-row strong{display:block;font-size:14px;color:#34513c;word-break:keep-all;}
+#pageBody .bw37-month-row span{display:block;color:#788877;font-size:12px;margin-top:5px;}
+#pageBody .bw37-theme-editor>p{max-width:780px;}
+@media(max-width:980px){
+  #pageBody .bw37-fields{grid-template-columns:repeat(2,minmax(0,1fr));}
+}
+@media(max-width:600px){
+  #pageBody .bw37-editor-content{padding:14px 12px;}
+  #pageBody .bw37-fields,#pageBody .bw37-assignment .bw37-fields{grid-template-columns:minmax(0,1fr);gap:12px;}
+  #pageBody .bw37-theme-card{padding:15px 13px;}
+  #pageBody .bw37-actions{align-items:stretch;flex-direction:column;}
+  #pageBody .bw37-actions .btn,#pageBody .bw37-actions select{width:100%;max-width:100%;}
+  #pageBody .bw37-month-row{align-items:flex-start;flex-wrap:wrap;}
+}
