@@ -152,6 +152,44 @@ check('after guardian confirmation, two classes appear independently in attendan
   assert.equal(ctx.bw37ManualStudent_(id,'2026-03-05').classId,'BW-THU');
   assert.equal(ctx.bw37ManualStudent_(id,'2026-03-02').classId,'BW-MON');
 });
+check('manual student IDs cannot be used after a signed online duplicate is found',()=>{
+  const previous=ctx.bw37SignedKeys_;
+  const active=ctx.bw37ManualStudents_().find(x=>x.id===id);
+  ctx.bw37SignedKeys_=()=>new Set([ctx.bw37StudentKey_(active.child,active.birth,active.phone)]);
+  assert.throws(()=>ctx.bw37ManualStudent_(id,'2026-03-02'),/중복/);
+  assert.equal(ctx.bw37ManualRoster_({role:'owner',classes:[],canContact:true}).length,0);
+  ctx.bw37SignedKeys_=previous;
+});
+async function checkStudentPrefill(){
+  const dom=new JSDOM('<!doctype html><html lang="ko"><body><div id="pageBody"></div></body></html>',{
+    url:'https://bridgewonder.bridgeacademy.co.kr/staff/',runScripts:'outside-only'});
+  const w=dom.window,d=w.document;
+  w.HTMLElement.prototype.scrollIntoView=function(){};
+  w.eval(admin);
+  const ctxUi={
+    token:'synthetic-session',
+    isCurrent:()=>true,
+    prefillReceipt:'BW-ABCDEF123456',
+    toast:()=>{},
+    call:async name=>{
+      if(name==='staff37ListStudents')return {manual:[],online:[],
+        classes:[{id:'BW-MON',day:'월요일',time:'10:00'},{id:'BW-THU',day:'목요일',time:'10:00'}],
+        inquiries:[{receipt:'BW-ABCDEF123456',child:'가상아이',
+          guardian:'김보호',phone:'01012345678',weekly:'주 2회'}]};
+      throw Error('Unexpected RPC '+name);
+    }
+  };
+  await w.BW37Academic.renderStudents(d.getElementById('pageBody'),ctxUi);
+  assert.equal(d.getElementById('bw37Child').value,'가상아이');
+  assert.equal(d.getElementById('bw37Guardian').value,'김보호');
+  assert.equal(d.getElementById('bw37Weekly').value,'주 2회');
+  assert.equal(d.getElementById('bw37Class1').value,'');
+  assert.equal(d.getElementById('bw37Class2').value,'');
+  assert.equal(d.getElementById('bw37Status').value,'임시등록');
+  assert.match(d.getElementById('bw37InquiryConnection').textContent,/BW-ABCDEF123456/);
+  dom.window.close();
+  console.log('PASS student intake screen opens a consultation with prefilled basic information');
+}
 check('monthly experience publication is owner-only and public payload contains no personal information',()=>{
   const cards=[
     {title:'봄의 촉감',description:'꽃잎과 새싹을 만나요',tags:'꽃 · 촉감',image:'welcome'},
@@ -215,4 +253,6 @@ check('manager frontend and public experience renderer parse without syntax erro
   assert.match(from('sensory-studio/experience/index.html'),/public-experience-v37\.js/);
   assert.match(from('sensory-studio/index.html'),/public-experience-v37\.js/);
 });
-console.log(JSON.stringify({suite:'V37 consultation-first student & public experience',passed}));
+checkStudentPrefill().then(()=>{
+  console.log(JSON.stringify({suite:'V37 consultation-first student & public experience',passed:passed+1}));
+}).catch(error=>{console.error(error);process.exitCode=1;});
