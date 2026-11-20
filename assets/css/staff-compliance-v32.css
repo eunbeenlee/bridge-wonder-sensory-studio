@@ -1,0 +1,46 @@
+/* Bridge Wonder V32 | Korean Academy compliance workspace
+ * Scoped to new module; preserve all existing academy theme assets.
+ */
+#pageBody .bw32-notice{background:#fff7ea;border-left:3px solid #b97a42;color:#6f5030;
+  padding:12px 15px;margin:14px 0 18px;border-radius:7px;font-size:12px;line-height:1.8;}
+#pageBody .bw32-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:16px 0 20px;}
+#pageBody .bw32-stats>div{border:1px solid #dde6d9;border-radius:12px;padding:14px;background:#fbfdfb;display:flex;flex-direction:column;gap:6px;}
+#pageBody .bw32-stats span{font-size:12px;color:#61735f;line-height:1.5;}
+#pageBody .bw32-stats strong{font-size:23px;color:#344f3b;font-variant-numeric:tabular-nums;}
+#pageBody .bw32-top{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap;}
+#pageBody .bw32-top h3{margin:0 0 6px;font-size:17px;}
+#pageBody .bw32-top p{font-size:12px;color:#677968;margin:0 0 12px;line-height:1.7;}
+#pageBody .bw32-actions{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin:12px 0;}
+#pageBody .bw32-filters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;padding:14px;background:#f7faf7;border-radius:11px;margin:14px 0;}
+#pageBody .bw32-filters label,#pageBody .bw32-grid label,#pageBody .bw32-item-form>label{font-size:12px;font-weight:600;color:#415947;display:block;min-width:0;}
+#pageBody .bw32-filters label>*,
+#pageBody .bw32-grid label>input,
+#pageBody .bw32-grid label>select,
+#pageBody .bw32-item-form>label>textarea{display:block;width:100%;box-sizing:border-box;min-height:41px;margin-top:6px;border:1px solid #cbd7c9;border-radius:8px;background:#fff;color:#334d39;padding:9px 10px;font-size:13px;}
+#pageBody .bw32-item-form>label>textarea{min-height:67px;}
+#pageBody .bw32-help{font-size:12px;color:#6b7d6c;line-height:1.7;display:block;}
+#pageBody .bw32-item{border:1px solid #dfe8dc;border-radius:11px;background:#fff;margin-bottom:9px;overflow:hidden;}
+#pageBody .bw32-item>summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px;}
+#pageBody .bw32-item>summary::-webkit-details-marker{display:none;}
+#pageBody .bw32-item>summary::before{content:"›";font-size:19px;color:#769378;}
+#pageBody .bw32-item[open]>summary::before{content:"⌄";}
+#pageBody .bw32-item-title{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;color:#334d39;}
+#pageBody .bw32-item-title small{font-size:11px;color:#788a79;}
+#pageBody .bw32-item-title b{font-size:13px;font-weight:700;line-height:1.5;}
+#pageBody .bw32-status{white-space:nowrap;font-size:11px;background:#e7efe7;color:#436346;padding:6px 10px;border-radius:20px;}
+#pageBody .bw32-status.late{background:#fff0e8;color:#98542d;}
+#pageBody .bw32-body{padding:14px 17px;border-top:1px solid #e2e9df;}
+#pageBody .bw32-body>p{font-size:12px;line-height:1.7;color:#637262;margin:0 0 8px;}
+#pageBody .bw32-body>a{font-size:12px;text-decoration:underline;color:#376a4b;}
+#pageBody .bw32-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 16px;margin:14px 0;}
+#pageBody .bw32-item-form{margin:0;}
+#pageBody .bw32-feedback{color:#405e40;}
+#pageBody .bw32-refunds{margin-top:20px;}
+#pageBody .bw32-refunds h4{font-size:15px;color:#40543a;margin:18px 0 12px;}
+#pageBody .bw32-grid output{border-radius:8px;display:block;background:#f1f5ed;color:#304e35;padding:13px 10px;margin-top:6px;min-height:41px;box-sizing:border-box;}
+#pageBody .bw32-item:focus-within,#pageBody .bw32-refunds input:focus-visible{outline-color:#729778;}
+@media(max-width:980px){#pageBody .bw32-stats,#pageBody .bw32-filters{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:620px){#pageBody .bw32-stats,#pageBody .bw32-filters,#pageBody .bw32-grid{grid-template-columns:1fr;}
+ #pageBody .bw32-item>summary{padding:11px;flex-wrap:wrap;} #pageBody .bw32-body{padding:12px;}
+ #pageBody .bw32-top .bw32-actions{width:100%;}#pageBody .bw32-top .bw32-actions .btn{flex:1;min-width:160px;}
+}
