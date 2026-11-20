@@ -245,6 +245,11 @@ check('published prices distinguish regular tuition from trial promotion without
   assert.match(experience,/정규 수업은 50분 1회 30,000원/);
   assert.match(programs,/정규 수업은 50분 1회 30,000원/);
   assert.match(app,/1회 안내가격을 그대로 월 교습비로 입력하지 말고/);
+  assert.match(app,/id="bw38SessionCount"/);
+  assert.match(app,/id="bw38SessionFee"/);
+  assert.match(app,/n\*30000/);
+  assert.match(app,/위 계약 교습비는 자동 변경되지 않으며/);
+  assert.match(visit,/정규 수업 50분 1회 30,000원/);
   assert.doesNotMatch(academic,/25000|30000|25,000|30,000/);
 });
 check('new public form collects guardian and weekly frequency without mandatory schedule',()=>{
