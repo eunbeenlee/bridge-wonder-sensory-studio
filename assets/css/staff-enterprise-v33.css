@@ -1,0 +1,178 @@
+/* Bridge Wonder V33 — enterprise top-first staff workspace
+ * Progressive enhancement: only switch layout after JS adds .bw33-ready.
+ * Existing class/form/payroll colors are unchanged.
+ */
+#workspace.bw33-ready{display:block!important;min-height:100vh;}
+#workspace.bw33-ready>.sidebar{display:none!important;}
+#workspace.bw33-ready>.main{width:100%;min-width:0;display:block;}
+#workspace.bw33-ready .mobile-menu,
+#workspace.bw33-ready .bw20-mobile-switch,
+#workspace.bw33-ready .bw31-task-switch{display:none!important;}
+#workspace.bw33-ready .topbar{
+  position:sticky;top:0;z-index:25;min-height:72px;height:auto;
+  padding:13px clamp(16px,3vw,42px);border-bottom:1px solid #e7e9df;
+  background:#fffefa;box-shadow:0 1px 10px rgba(31,50,34,.035);
+}
+#workspace.bw33-ready .topbar .row{flex-wrap:wrap;gap:9px;justify-content:flex-end;}
+#workspace.bw33-ready .topbar h1{font-size:19px;}
+#workspace.bw33-ready .topbar .bw30-account-btn{margin:0;}
+#workspace.bw33-ready .topbar .logout-mobile{display:inline-flex;}
+#workspace.bw33-ready .content{
+  width:min(1450px,100%);margin:0 auto;
+  padding:clamp(21px,3vw,38px) clamp(16px,3vw,42px) 75px;box-sizing:border-box;
+}
+#workspace.bw33-ready .page-title{font-size:clamp(22px,2.3vw,28px);}
+#workspace.bw33-ready .page-description{margin-bottom:15px;line-height:1.7;}
+#workspace .bw33-navigation{
+  z-index:23;position:sticky;top:72px;background:#fffefa;
+  border-bottom:1px solid #dfe8dd;isolation:isolate;box-shadow:0 3px 8px rgba(39,59,43,.045);
+}
+#workspace .bw33-primary{
+  min-height:57px;display:flex;align-items:center;gap:9px;
+  padding:8px clamp(16px,3vw,42px);box-sizing:border-box;
+  max-width:1600px;margin:0 auto;
+}
+#workspace .bw33-home,
+#workspace .bw33-group-trigger,
+#workspace .bw33-search-trigger,
+#workspace .bw33-pdf-trigger{
+  border:0;cursor:pointer;display:inline-flex;justify-content:center;align-items:center;
+  background:transparent;font-size:13px;font-weight:700;color:#506352;
+  min-height:41px;padding:8px 13px;line-height:1.5;border-radius:9px;white-space:nowrap;
+}
+#workspace .bw33-home:hover,#workspace .bw33-group-trigger:hover,
+#workspace .bw33-search-trigger:hover{background:#edf2ec;color:#254c33;}
+#workspace .bw33-home.is-active,#workspace .bw33-group-trigger.is-active{
+  background:#e7f0e4;color:#315e3a;
+}
+#workspace .bw33-group-trigger[aria-expanded=true]{background:#e7f0e4;color:#315e3a;}
+#workspace .bw33-group-trigger::after{content:'⌄';font-size:14px;margin-left:7px;opacity:.68;}
+#workspace .bw33-primary-groups{display:flex;align-items:center;gap:3px;min-width:0;flex:1;}
+#workspace .bw33-primary-actions{display:flex;align-items:center;gap:9px;flex:none;margin-left:auto;}
+#workspace .bw33-search-trigger{border:1px solid #e1e7df;color:#657666;padding:7px 12px;font-size:12px;background:#fbfcfa;}
+#workspace .bw33-search-trigger small{
+  display:inline-flex;align-items:center;justify-content:center;
+  padding:1px 5px;font-size:10px;font-weight:600;margin-left:10px;
+  border:1px solid #d8e0d4;border-radius:5px;color:#8b9b8d;
+}
+#workspace .bw33-pdf-trigger{
+  background:#355940;color:#fff;padding:8px 15px;font-size:12px;
+  border:1px solid #355940;
+}
+#workspace .bw33-pdf-trigger:hover,#workspace .bw33-pdf-trigger[aria-expanded=true]{
+  background:#254832;color:#fff;box-shadow:0 2px 8px rgba(35,65,38,.16);
+}
+#workspace .bw33-pdf-trigger[hidden]{display:none!important;}
+#workspace .bw33-popovers{position:relative;max-width:1600px;margin:0 auto;}
+#workspace .bw33-popover{
+  position:absolute;top:0;left:clamp(14px,3vw,42px);
+  border:1px solid #dce5d9;background:#fffefa;color:#3b5140;border-radius:0 0 14px 14px;
+  box-shadow:0 24px 45px rgba(31,49,31,.16);padding:21px 23px;
+  max-height:min(67vh,600px);overflow:auto;z-index:26;box-sizing:border-box;
+}
+#workspace .bw33-popover[hidden]{display:none!important;}
+#workspace .bw33-menu-panel{width:min(900px,calc(100% - 28px));}
+#workspace .bw33-panel-title{font-weight:800;font-size:15px;color:#2d4934;margin-bottom:14px;padding-bottom:11px;border-bottom:1px solid #e4eae2;}
+#workspace .bw33-panel-title small{font-size:12px;color:#748475;font-weight:500;margin-left:8px;}
+#workspace .bw33-panel-columns{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;}
+#workspace .bw33-subgroup h3{font-size:12px;color:#768679;font-weight:800;letter-spacing:.01em;padding:6px 8px;margin:0 0 8px;}
+#workspace .bw33-route{
+  width:100%;display:block;text-align:left;border:0;background:transparent;
+  border-radius:8px;min-height:39px;font-size:13px;color:#3b5844;cursor:pointer;
+  padding:9px 10px;font-weight:620;line-height:1.6;
+}
+#workspace .bw33-route:hover,#workspace .bw33-route[aria-current=page]{background:#eaf1e8;color:#285338;}
+#workspace .bw33-search-panel{left:auto;right:clamp(14px,3vw,42px);width:min(450px,calc(100% - 28px));}
+#workspace .bw33-search-panel>label{font-size:12px;font-weight:750;margin-bottom:8px;display:block;}
+#workspace .bw33-search-panel input{width:100%;border:1px solid #cddbcf;border-radius:9px;min-height:44px;padding:11px 13px;box-sizing:border-box;}
+#workspace .bw33-search-results{margin-top:10px;display:flex;flex-direction:column;gap:4px;}
+#workspace .bw33-search-results button{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  cursor:pointer;min-height:41px;padding:9px 11px;text-align:left;background:transparent;
+  border:0;border-radius:8px;color:#33563c;font-weight:650;font-size:13px;
+}
+#workspace .bw33-search-results button:hover{background:#ebf3eb;}
+#workspace .bw33-search-results small{font-weight:500;color:#809083;font-size:11px;}
+#workspace .bw33-search-results p{font-size:12px;color:#768576;line-height:1.7;}
+#workspace .bw33-doc-panel{left:auto;right:clamp(14px,3vw,42px);width:min(555px,calc(100% - 28px));}
+#workspace .bw33-doc-head{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;}
+#workspace .bw33-doc-head strong{font-size:16px;color:#31543b;}
+#workspace .bw33-doc-head small{font-size:12px;color:#788579;}
+#workspace .bw33-doc-shortcuts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+#workspace .bw33-doc-shortcuts button{
+  cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:5px;
+  background:#f6f9f4;border:1px solid #e0eadf;border-radius:9px;
+  padding:11px 12px;color:#355b3c;font-size:13px;font-weight:700;
+}
+#workspace .bw33-doc-shortcuts button:hover{background:#e8f1e5;border-color:#b7cfb9;}
+#workspace .bw33-doc-shortcuts small{font-size:11px;font-weight:500;color:#748775;}
+#workspace .bw33-doc-panel>p{font-size:11px;color:#758274;line-height:1.7;margin:13px 0 0;}
+#workspace .bw33-breadcrumb{
+  max-width:1600px;margin:0 auto;display:flex;gap:10px;align-items:center;
+  padding:13px clamp(16px,3vw,42px) 0;font-size:12px;box-sizing:border-box;color:#8b998c;
+}
+#workspace .bw33-breadcrumb strong{color:#46694c;font-weight:700;}
+#workspace .bw33-document-hub{
+  margin:17px 0 20px;border:1px solid #d9e6d9;background:#f7faf5;
+  border-radius:14px;padding:19px 21px;
+}
+#workspace .bw33-doc-hub-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
+#workspace .bw33-document-hub h3{font-size:19px;color:#304f37;font-weight:800;margin:4px 0;}
+#workspace .bw33-document-hub p{font-size:12px;color:#637a65;line-height:1.8;margin:7px 0 11px;}
+#workspace .bw33-eyebrow{font-size:10px;letter-spacing:.09em;font-weight:800;color:#6f9475;}
+#workspace .bw33-doc-template-list{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px;
+}
+#workspace .bw33-doc-choice{
+  display:flex;flex-direction:column;align-items:flex-start;gap:6px;
+  padding:13px 14px;border:1px solid #d8e6d9;background:#fff;
+  border-radius:9px;cursor:pointer;color:#395b41;text-align:left;min-width:0;
+}
+#workspace .bw33-doc-choice strong{font-size:13px;line-height:1.5;}
+#workspace .bw33-doc-choice small{font-size:11px;color:#849285;line-height:1.4;}
+#workspace .bw33-doc-choice:hover,#workspace .bw33-doc-choice.is-active{
+  background:#eaf3e8;border-color:#9cbe9f;
+}
+#workspace .bw33-document-hint{
+  font-size:11px;color:#7e8c7c;line-height:1.6;margin-top:13px;
+}
+#workspace .bw33-popover button:focus-visible,#workspace .bw33-primary button:focus-visible,
+#workspace .bw33-doc-choice:focus-visible{outline:3px solid #86ad8c;outline-offset:2px;}
+@media(max-width:1130px){
+  #workspace .bw33-primary{gap:4px;}
+  #workspace .bw33-home,#workspace .bw33-group-trigger{font-size:12px;padding:8px 10px;}
+  #workspace .bw33-search-trigger small{display:none;}
+  #workspace .bw33-primary-actions{gap:5px;}
+}
+@media(max-width:850px){
+  #workspace.bw33-ready .topbar{padding:11px 16px;min-height:65px;}
+  #workspace .bw33-navigation{top:65px;}
+  #workspace .bw33-primary{padding:8px 14px;flex-wrap:wrap;gap:5px;min-height:80px;}
+  #workspace .bw33-home{order:1;}
+  #workspace .bw33-primary-actions{order:2;margin-left:auto;}
+  #workspace .bw33-primary-groups{
+    order:3;flex:1 1 100%;white-space:nowrap;overflow-x:auto;
+    scrollbar-width:thin;overscroll-behavior-x:contain;padding-bottom:2px;
+  }
+  #workspace .bw33-primary-groups .bw33-group{flex:none;}
+  #workspace .bw33-panel-columns{grid-template-columns:repeat(2,minmax(0,1fr));}
+  #workspace.bw33-ready .topbar .topbar-sub{display:none;}
+  #workspace .bw33-doc-template-list{grid-template-columns:repeat(2,minmax(0,1fr));}
+}
+@media(max-width:565px){
+  #workspace .bw33-search-trigger{font-size:0;width:40px;min-width:40px;padding:7px;}
+  #workspace .bw33-search-trigger::before{content:'⌕';font-size:23px;}
+  #workspace .bw33-pdf-trigger{font-size:11px;padding:7px 10px;}
+  #workspace .bw33-panel-columns{grid-template-columns:1fr;}
+  #workspace .bw33-menu-panel{padding:13px 15px;}
+  #workspace .bw33-doc-shortcuts{grid-template-columns:1fr;}
+  #workspace .bw33-doc-template-list{grid-template-columns:1fr;}
+  #workspace .bw33-doc-hub-head{flex-direction:column;}
+  #workspace .bw33-document-hub{padding:14px;}
+  #workspace .bw33-navigation{top:65px;}
+  #workspace.bw33-ready .topbar h1{font-size:16px;}
+  #workspace .bw33-breadcrumb{gap:7px;font-size:11px;flex-wrap:wrap;}
+}
+@media(prefers-reduced-motion:reduce){
+  #workspace .bw33-popover *{scroll-behavior:auto!important;}
+}
