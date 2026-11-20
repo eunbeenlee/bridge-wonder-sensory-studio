@@ -1,126 +1,157 @@
-/* Bridge Wonder V35 — public Instagram story feed.
- * Reads ONLY a same-origin JSON snapshot. Never exposes Instagram credentials
- * in the browser and never scrapes Instagram's private endpoints.
+/* Bridge Wonder V35 — free curated Instagram post and Reel embeds.
+ * No Meta API, developer registration, token, account password, scraping,
+ * third-party thumbnail provider, or browser-persisted user data.
+ * Site owner adds each public Instagram URL from GitHub Actions.
+ * Official Instagram embed.js is loaded ONLY after the visitor clicks.
  */
 (function(){
   'use strict';
   const FEED='/assets/data/instagram-feed.json';
   const PROFILE='https://www.instagram.com/bridgewonder.e/';
-  const MAX_ITEMS=9;
-  const host='www.instagram.com';
+  const MAX_ITEMS=6;
+  const MEDIA=/^\/(?:p|reel|tv)\/[A-Za-z0-9_-]{5,40}\/?$/;
+  let embedPromise=null;
   function permalink(value){
-    if(typeof value!=='string'||value.length>230)return null;
+    if(typeof value!=='string'||value.length>300)return null;
     try{
       const url=new URL(value);
       if(url.protocol!=='https:'||!['www.instagram.com','instagram.com'].includes(url.hostname))return null;
-      if(!/^\/(?:p|reel|tv)\/[A-Za-z0-9_-]{5,40}\/?$/.test(url.pathname))return null;
-      return url.origin+url.pathname;
+      if(!MEDIA.test(url.pathname)||url.username||url.password||url.port)return null;
+      return 'https://www.instagram.com'+url.pathname.replace(/\/?$/,'/');
     }catch(_){return null;}
   }
-  function mediaSrc(value){
-    if(typeof value!=='string'||value.length>180)return null;
-    if(!/^\/assets\/img\/instagram\/ig-[0-9]{6,30}\.webp$/.test(value))return null;
-    return value;
-  }
   function caption(value){
-    return String(value??'').replace(/[\u0000-\u001f\u007f]/g,' ').replace(/\s+/g,' ').trim().slice(0,125);
+    return String(value??'').replace(/[\u0000-\u001f\u007f]/g,' ').replace(/\s+/g,' ').trim().slice(0,110);
   }
   function valid(data){
-    if(!data||data.account!=='bridgewonder.e'||!Array.isArray(data.items))return [];
-    const dedupe=new Set();
-    return data.items.slice(0,40).map(item=>{
+    if(!data||data.account!=='bridgewonder.e'||data.mode!=='manual_embed'||!Array.isArray(data.items))return [];
+    const seen=new Set();
+    return data.items.slice(0,30).map(item=>{
       if(!item||typeof item!=='object')return null;
-      const url=permalink(item.permalink),image=mediaSrc(item.image),id=String(item.id||'');
-      if(!url||!image||!/^\d{6,30}$/.test(id)||dedupe.has(id))return null;
-      dedupe.add(id);
-      const kind=['IMAGE','VIDEO','CAROUSEL_ALBUM'].includes(item.media_type)?item.media_type:'IMAGE';
-      const when=typeof item.timestamp==='string'&&/^\d{4}-\d{2}-\d{2}T/.test(item.timestamp)?item.timestamp:'';
-      return {id,url,image,kind,when,caption:caption(item.caption)};
+      const url=permalink(item.url);
+      if(!url||seen.has(url))return null;
+      seen.add(url);
+      return {url,title:caption(item.title)||'브릿지 원더 인스타그램 게시물',
+        kind:url.includes('/reel/')?'릴스':'게시물'};
     }).filter(Boolean).slice(0,MAX_ITEMS);
   }
-  function node(tag,klass,text){
-    const el=document.createElement(tag);
-    if(klass)el.className=klass;
-    if(text!==undefined)el.textContent=text;
-    return el;
+  function el(tag,klass,text){
+    const node=document.createElement(tag);
+    if(klass)node.className=klass;
+    if(text!==undefined)node.textContent=text;
+    return node;
   }
-  function storyImage(){
-    const img=node('img');
-    img.src='/assets/img/brand-mark.png';
-    img.alt='';
-    img.loading='lazy';
-    img.decoding='async';
-    img.width=96;
-    img.height=68;
-    return img;
+  function profileLink(text){
+    const a=el('a','btn btn-dark',text);
+    a.href=PROFILE;a.target='_blank';a.rel='noopener noreferrer';
+    return a;
   }
   function fallback(root){
     root.replaceChildren();
-    const box=node('div','bw-instagram-empty');
-    const group=node('div','bw-instagram-empty-head');
-    const copy=node('div');
-    copy.append(
-      node('strong','', '원더의 이야기는 인스타그램에서 이어집니다.'),
-      node('p','','수업을 준비하는 모습과 새로운 놀이 소식은 공식 인스타그램에서 확인해 주세요.')
-    );
-    group.append(storyImage(),copy);
-    const link=node('a','btn btn-dark','@bridgewonder.e 방문하기');
-    link.href=PROFILE;link.target='_blank';link.rel='noopener noreferrer';
-    box.append(group,link);root.appendChild(box);
+    const box=el('div','bw-instagram-empty');
+    const lead=el('div','bw-instagram-empty-head');
+    const logo=el('img');logo.src='/assets/img/brand-mark.png';logo.alt='';logo.width=96;logo.height=68;logo.loading='lazy';
+    const copy=el('div');
+    copy.append(el('strong','', '브릿지 원더의 이야기는 인스타그램에서 만나요.'),
+      el('p','','새로운 놀이 소식과 수업 준비 이야기는 공식 인스타그램에서 확인할 수 있습니다.'));
+    lead.append(logo,copy);
+    box.append(lead,profileLink('@bridgewonder.e 방문하기'));
+    root.appendChild(box);
   }
-  function prettyDate(when){
-    if(!when)return '';
-    const time=Date.parse(when.replace(/([+-]\d{2})(\d{2})$/,'$1:$2'));
-    if(!Number.isFinite(time))return '';
-    return new Intl.DateTimeFormat('ko-KR',{timeZone:'Asia/Seoul',year:'numeric',month:'short',day:'numeric'}).format(new Date(time));
+  function loadOfficialEmbedScript(){
+    if(embedPromise)return embedPromise;
+    embedPromise=new Promise((resolve,reject)=>{
+      if(window.instgrm?.Embeds?.process){resolve();return;}
+      const script=document.createElement('script');
+      script.src='https://www.instagram.com/embed.js';
+      script.async=true;
+      script.referrerPolicy='no-referrer-when-downgrade';
+      script.onload=()=>window.instgrm?.Embeds?.process?resolve():reject(Error('Instagram renderer missing'));
+      script.onerror=()=>reject(Error('Instagram renderer unavailable'));
+      document.head.appendChild(script);
+    }).catch(error=>{embedPromise=null;throw error;});
+    return embedPromise;
   }
   function card(item){
-    const link=node('a','bw-instagram-post');
-    link.href=item.url;link.target='_blank';link.rel='noopener noreferrer';
-    link.setAttribute('aria-label','Instagram에서 게시물 보기: '+(item.caption.slice(0,50)||'브릿지 원더'));
-    const art=node('div','bw-instagram-post-media');
-    const image=node('img');
-    image.src=item.image;
-    image.alt=item.caption?item.caption.slice(0,100):'브릿지 원더 공식 인스타그램 게시물';
-    image.loading='lazy';
-    image.decoding='async';
-    image.width=600;image.height=600;
-    image.addEventListener('error',()=>{
-      // Never insert a fake image, show a direct original-post link instead.
-      image.remove();
-      art.appendChild(node('span','bw-instagram-image-unavailable','원본 게시물 보기'));
-    },{once:true});
-    art.appendChild(image);
-    const content=node('div','bw-instagram-post-copy');
-    const kind=item.kind==='VIDEO'?'릴스·영상':item.kind==='CAROUSEL_ALBUM'?'사진 여러 장':'사진';
-    const day=prettyDate(item.when);
-    content.appendChild(node('span','bw-instagram-post-meta',day?kind+' · '+day:kind));
-    content.appendChild(node('p','bw-instagram-post-title',item.caption||'브릿지 원더 인스타그램 게시물 보기'));
-    link.append(art,content);
-    return link;
+    const article=el('article','bw-instagram-embed-card');
+    const head=el('div','bw-instagram-embed-head');
+    const label=el('strong','',item.title);
+    const kind=el('span','',item.kind);
+    head.append(label,kind);
+    const view=el('div','bw-instagram-embed-view');
+    const call=el('a','bw-instagram-open-original','Instagram에서 원본 보기');
+    call.href=item.url;call.target='_blank';call.rel='noopener noreferrer';
+    article.append(head,view,call);
+    return {article,view};
   }
-  async function draw(){
+  function installEmbeds(root,posts,button){
+    const grid=el('div','bw-instagram-embed-grid');
+    posts.forEach(post=>{
+      const {article,view}=card(post);
+      const quote=el('blockquote','instagram-media');
+      quote.setAttribute('data-instgrm-permalink',post.url);
+      quote.setAttribute('data-instgrm-version','14');
+      quote.setAttribute('data-instgrm-captioned','');
+      quote.style.width='100%';
+      quote.style.minWidth='0';
+      quote.style.maxWidth='100%';
+      quote.style.margin='0';
+      const link=el('a','','Instagram에서 게시물 열기');
+      link.href=post.url;link.target='_blank';link.rel='noopener noreferrer';
+      quote.appendChild(link);
+      view.appendChild(quote);
+      grid.appendChild(article);
+    });
+    root.replaceChildren(grid);
+    button.disabled=true;
+    button.textContent='게시물을 불러오는 중입니다…';
+    loadOfficialEmbedScript().then(()=>{
+      window.instgrm.Embeds.process();
+      button.remove();
+    }).catch(()=>{
+      button.disabled=false;
+      button.textContent='게시물 다시 불러오기';
+      const hint=el('p','bw-instagram-embed-note',
+        'Instagram 게시물을 표시하지 못했습니다. 각 게시물의 원본 보기로 확인할 수 있습니다.');
+      grid.before(hint);
+    });
+  }
+  function display(root,posts){
+    root.replaceChildren();
+    const toolbar=el('div','bw-instagram-feed-toolbar');
+    const count=el('p','','최근에 등록한 '+posts.length+'개의 인스타그램 게시물이 있습니다.');
+    const button=el('button','btn btn-outline bw-instagram-load','게시물 보기');
+    button.type='button';
+    button.setAttribute('aria-label','Instagram 게시물 미리보기 불러오기');
+    const note=el('p','bw-instagram-embed-note',
+      '게시물 보기를 누르면 Instagram의 사진과 릴스를 이 페이지에서 열어 볼 수 있습니다.');
+    toolbar.append(count,button);
+    root.append(toolbar,note);
+    const links=el('div','bw-instagram-link-list');
+    posts.forEach(post=>{
+      const a=el('a','bw-instagram-preview-link');
+      a.href=post.url;a.target='_blank';a.rel='noopener noreferrer';
+      a.append(el('span','',post.kind),el('strong','',post.title),el('span','','Instagram에서 보기'));
+      links.appendChild(a);
+    });
+    root.appendChild(links);
+    button.addEventListener('click',()=>installEmbeds(root,posts,button));
+  }
+  async function start(){
     const roots=[...document.querySelectorAll('[data-bw-instagram-feed]')];
     if(!roots.length)return;
     roots.forEach(fallback);
-    let controller=null,timer=null;
+    const controller=typeof AbortController!=='undefined'?new AbortController():null;
+    const timeout=controller?setTimeout(()=>controller.abort(),4500):null;
     try{
-      controller=typeof AbortController!=='undefined'?new AbortController():null;
-      if(controller)timer=setTimeout(()=>controller.abort(),4500);
-      const response=await fetch(FEED,{cache:'no-cache',credentials:'omit',...(controller?{signal:controller.signal}:{})});
-      if(!response.ok)throw Error('Feed unavailable');
-      const data=await response.json();
-      const items=valid(data);
+      const resp=await fetch(FEED,{cache:'no-cache',credentials:'omit',...(controller?{signal:controller.signal}:{})});
+      if(!resp.ok)throw Error('Feed unavailable');
+      const items=valid(await resp.json());
       if(!items.length)return;
-      roots.forEach(root=>{
-        const grid=node('div','bw-instagram-grid');
-        items.forEach(item=>grid.appendChild(card(item)));
-        root.replaceChildren(grid);
-        root.dataset.bwFeedStatus='loaded';
-      });
-    }catch(_){/* Editorial fallback is kept; nothing fabricated. */}
-    finally{if(timer)clearTimeout(timer);}
+      roots.forEach(root=>display(root,items));
+    }catch(_){/* Honest social link fallback, never fake or scrape posts. */}
+    finally{if(timeout)clearTimeout(timeout);}
   }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',draw,{once:true});
-  else draw();
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});
+  else start();
 })();
