@@ -740,8 +740,8 @@ renderNav=function(){bw20OldRenderNav();const el=$('bw20PageSelect');if(!el)retu
      });
    };
    bw32ModulePromise=Promise.all([
-     load('link',base+'css/staff-compliance-v32.css?v=38.0.0','bw32ComplianceStyle'),
-     load('script',base+'js/staff-compliance-v32.js?v=38.0.0','bw32ComplianceScript')
+     load('link',base+'css/staff-compliance-v32.css?v=39.0.0','bw32ComplianceStyle'),
+     load('script',base+'js/staff-compliance-v32.js?v=39.0.0','bw32ComplianceScript')
    ]).then(()=>{
      if(!window.BW32Compliance)throw Error('법정 관리 화면 초기화에 실패했습니다.');
      return window.BW32Compliance;
@@ -775,8 +775,8 @@ renderNav=function(){bw20OldRenderNav();const el=$('bw20PageSelect');if(!el)retu
      else{element.src=url;element.async=false;document.body.appendChild(element);}
    });
    bw37AssetsPromise=Promise.all([
-     include('link',base+'css/staff-academic-v37.css?v=38.0.0','bw37AcademicStyle'),
-     include('script',base+'js/staff-academic-v37.js?v=38.0.0','bw37AcademicScript')
+     include('link',base+'css/staff-academic-v37.css?v=39.0.0','bw37AcademicStyle'),
+     include('script',base+'js/staff-academic-v37.js?v=39.0.0','bw37AcademicScript')
    ]).then(()=>{
      if(!window.BW37Academic)throw Error('학생·테마 관리 화면을 초기화할 수 없습니다.');
      return window.BW37Academic;
@@ -825,8 +825,8 @@ function bw26LoadPayroll(){
     return bw26PayrollLoads[id];
   }
   bw26PayrollAssets=Promise.all([
-    asset('bw26PayrollCSS','link',base+'css/administration-payroll.css?v=38.0.0','급여 화면 스타일'),
-    asset('bw26PayrollJS','script',base+'js/administration-payroll.js?v=38.0.0','급여 화면')
+    asset('bw26PayrollCSS','link',base+'css/administration-payroll.css?v=39.0.0','급여 화면 스타일'),
+    asset('bw26PayrollJS','script',base+'js/administration-payroll.js?v=39.0.0','급여 화면')
   ]).catch(e=>{bw26PayrollAssets=null;throw e;});
   return bw26PayrollAssets;
 }
