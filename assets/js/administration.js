@@ -751,8 +751,8 @@ renderNav=function(){bw20OldRenderNav();const el=$('bw20PageSelect');if(!el)retu
      else{element.src=url;element.async=false;document.body.appendChild(element);}
    });
    bw37AssetsPromise=Promise.all([
-     include('link',base+'css/staff-academic-v37.css?v=37.0.0','bw37AcademicStyle'),
-     include('script',base+'js/staff-academic-v37.js?v=37.0.0','bw37AcademicScript')
+     include('link',base+'css/staff-academic-v37.css?v=38.0.0','bw37AcademicStyle'),
+     include('script',base+'js/staff-academic-v37.js?v=38.0.0','bw37AcademicScript')
    ]).then(()=>{
      if(!window.BW37Academic)throw Error('학생·테마 관리 화면을 초기화할 수 없습니다.');
      return window.BW37Academic;
