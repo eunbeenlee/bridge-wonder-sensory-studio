@@ -8,12 +8,12 @@
   const NAV=Object.freeze([
     {id:'classes',label:'교육·수업',sections:[
       {name:'수업 기획',pages:['classes','themes','experiences','capacity']},
-      {name:'학생·출결',pages:['students','roster','attendance','makeups']},
+      {name:'학생·출결',pages:['roster','attendance','makeups']},
       {name:'안전·인계',pages:['safety','handoff']}
     ]},
     {id:'parents',label:'학부모·등록',sections:[
       {name:'상담 관리',pages:['inquiries','waitlist']},
-      {name:'수강 등록',pages:['registrations']},
+      {name:'수강 등록',pages:['students','registrations']},
       {name:'요청 서류·PDF',pages:['documents']}
     ]},
     {id:'finance',label:'수납·정산',sections:[
