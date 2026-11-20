@@ -9,6 +9,7 @@
   <link rel="icon" href="../assets/img/favicon.png">
   <link rel="stylesheet" href="../assets/css/administration.css?v=27.1.0">
   <link rel="stylesheet" href="../assets/css/staff-enterprise-v33.css?v=33.0.0">
+  <link rel="stylesheet" href="../assets/css/staff-polish-v34.css?v=34.0.0">
   <link rel="stylesheet" href="../assets/css/staff-ux-v31.css?v=30.0.0">
   <style>#bw27-server-status{position:fixed;z-index:60;bottom:12px;left:12px;right:12px;max-width:440px;margin:0 auto;border:1px solid #e8dcc8;border-radius:12px;background:#fffdf8;padding:10px 13px;color:#40543a;box-shadow:0 8px 24px #40543a14;font:12px/1.7 system-ui,-apple-system,'Noto Sans KR',sans-serif}#bw27-server-status[hidden]{display:none} .bw271-login-tools{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin-top:15px}.bw271-login-tools .inline-link{font-size:12px;color:#40543a;text-underline-offset:3px}.bw271-login-tools a{align-self:center}</style>
 </head><body>
@@ -20,7 +21,7 @@
         <div id="loginStepPassword">
           <div class="bw23-badge">BRIDGE WONDER · STAFF</div>
           <h2>운영 관리 로그인</h2>
-          <p class="help">등록된 업무용 이메일과 비밀번호로 로그인하세요.</p>
+          <p class="help">등록된 이메일 주소와 비밀번호를 입력하세요.</p>
           <form id="passwordLoginForm" autocomplete="on">
             <div><label for="passwordEmail">업무용 이메일</label><input id="passwordEmail" type="email" autocomplete="username" maxlength="180" placeholder="name@example.com" required></div>
             <div><label for="passwordInput">비밀번호</label><input id="passwordInput" type="password" autocomplete="current-password" maxlength="100" required></div>
@@ -30,11 +31,11 @@
             <button type="button" id="bw23FirstTime" class="inline-link">처음 사용하는 계정</button>
             <button type="button" id="bw23Reset" class="inline-link">비밀번호 재설정</button>
           </div>
-          <div class="bw23-legal">처음 한 번 이메일을 인증한 후 비밀번호를 설정합니다. 계정별 접근 권한은 원장이 관리합니다.</div>
+          <div class="bw23-legal">처음 이용할 때는 발급받은 임시 비밀번호로 로그인하거나 이메일 인증 후 비밀번호를 설정하세요.</div>
         </div>
         <div id="loginStepEmail" hidden>
           <h2>안녕하세요.</h2>
-          <p class="help">계정 확인을 위해 이메일로 6자리 인증번호를 보내드립니다.</p>
+          <p class="help">등록된 이메일 주소로 인증번호 6자리를 보내드립니다.</p>
           <form id="emailForm"><div><label for="loginEmail">업무용 이메일</label><input id="loginEmail" name="email" type="email" placeholder="name@example.com" autocomplete="email" maxlength="180" required></div><button type="submit" class="btn btn-primary w-full">인증번호 받기</button></form>
         </div>
         <div id="loginStepOtp" hidden>
@@ -46,7 +47,7 @@
           <button id="backToEmail" type="button" class="inline-link">로그인 화면으로 돌아가기</button>
         </div>
         <div id="loginFeedback" class="inline-status" role="status" aria-live="polite" style="margin-top:15px"></div>
-        <div class="login-note">승인된 직원만 사용할 수 있습니다. 모든 정보는 업무 목적에 한해 조회하세요.</div>
+        <div class="login-note">직원 전용 페이지입니다. 업무에 필요한 정보만 확인해 주세요.</div>
         <div class="bw271-login-tools"><button id="bw27-check-server" type="button" class="inline-link">서버 연결 다시 확인</button><a class="inline-link" href="https://script.google.com/macros/s/AKfycbwQVKOruJFxxUHVrsrsDvIpv95jz-ag5SbozlJcJ9mDNrpdGFyYp-uIsT2y2_-3n-xa/exec" rel="noopener noreferrer" target="_blank">Google 직접 접속</a></div>
       </section>
     </div>
@@ -59,12 +60,12 @@
 <!-- BW25_UI_END -->
 <p style="position:fixed;top:10px;left:10px;right:10px;max-width:520px;margin:0 auto;padding:6px 12px;border-radius:9px;background:#fff2ea;color:#8c4428;z-index:62;text-align:center;font:12px/1.7 system-ui">검증용 접속 화면입니다. Google 서버 연결 상태를 확인할 수 있습니다.</p>
 <p id="bw27-server-status" role="status" aria-live="polite">Google 서버 연결 상태를 확인할 수 있습니다. 서버 연결에 실패해도 이 로그인 화면은 유지됩니다.</p>
-<script src="../assets/js/staff-static-defaults.js?v=27.1.0" defer></script>
-<script src="../assets/js/staff-google-bridge.js?v=33.0.0" defer></script>
-<script src="../assets/js/administration-accelerator.js?v=33.0.0" defer></script>
-<script src="../assets/js/staff-native-kdf.js?v=33.0.0" defer></script>
-<script src="../assets/js/staff-account-management.js?v=30.0.0" defer></script>
-<script src="../assets/js/staff-ux-v31.js?v=30.0.0" defer></script>
-<script src="../assets/js/staff-enterprise-v33.js?v=33.0.0" defer></script>
-<script src="../assets/js/administration.js?v=33.0.0" defer></script>
+<script src="../assets/js/staff-static-defaults.js?v=34.0.0" defer></script>
+<script src="../assets/js/staff-google-bridge.js?v=34.0.0" defer></script>
+<script src="../assets/js/administration-accelerator.js?v=34.0.0" defer></script>
+<script src="../assets/js/staff-native-kdf.js?v=34.0.0" defer></script>
+<script src="../assets/js/staff-account-management.js?v=34.0.0" defer></script>
+<script src="../assets/js/staff-ux-v31.js?v=34.0.0" defer></script>
+<script src="../assets/js/staff-enterprise-v33.js?v=34.0.0" defer></script>
+<script src="../assets/js/administration.js?v=34.0.0" defer></script>
 </body></html>
