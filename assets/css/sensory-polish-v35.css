@@ -700,3 +700,257 @@
 @media(max-width:365px) {
   .page-wonder .bw-instagram-account-actions {grid-template-columns:1fr;}
 }
+
+
+/* V36 — Instagram profile editorial layout.
+ * The profile widget has its own maximum width (~540px), so enlarging that
+ * iframe merely stretches/crops it. Fill the remaining space with meaningful
+ * profile information instead of two empty white margins.
+ * The brand palette and original site.css remain untouched.
+ */
+.page-wonder .bw-instagram-feed-section .container {
+  width:min(calc(100% - 56px),1260px);
+}
+.page-wonder .bw-instagram-feed-heading {
+  margin-bottom:24px;
+}
+.page-wonder .bw-instagram-account-widget {
+  display:grid;
+  grid-template-columns:minmax(275px,.78fr) minmax(0,1.22fr);
+  gap:clamp(14px,2.5vw,32px);
+  align-items:stretch;
+  padding:clamp(16px,2.3vw,30px);
+  width:100%;
+  min-width:0;
+  border-radius:25px;
+  background:#fffdfa;
+  border:1px solid #e0e8dc;
+}
+.page-wonder .bw-instagram-account-intro {
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  justify-content:center;
+  flex-wrap:nowrap;
+  gap:0;
+  min-width:0;
+  height:100%;
+  min-height:395px;
+  padding:clamp(20px,3.2vw,39px);
+  border-radius:20px;
+  background:linear-gradient(150deg,#eaf0e6 0%,#f7f7ef 70%,#f7f0e6 100%);
+  border:1px solid #e2e8dd;
+}
+.page-wonder .bw-instagram-account-identity {
+  display:flex;
+  align-items:center;
+  gap:13px;
+  min-width:0;
+  width:100%;
+  margin-bottom:24px;
+}
+.page-wonder .bw-instagram-account-identity img {
+  width:77px;
+  height:62px;
+  max-width:77px;
+  flex:none;
+  object-fit:contain;
+}
+.page-wonder .bw-instagram-handle {
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+  min-width:0;
+}
+.page-wonder .bw-instagram-handle span {
+  font-size:10px;
+  line-height:1.5;
+  letter-spacing:.055em;
+  color:#75866e;
+  font-weight:700;
+  overflow-wrap:break-word;
+}
+.page-wonder .bw-instagram-handle strong {
+  font-size:clamp(17px,2.1vw,22px);
+  line-height:1.4;
+  letter-spacing:-.03em;
+  color:var(--forest);
+  overflow-wrap:anywhere;
+}
+.page-wonder .bw-instagram-account-title {
+  font-size:clamp(26px,2.3vw,36px);
+  line-height:1.38;
+  letter-spacing:-.055em;
+  color:var(--forest);
+  font-weight:750;
+  margin:0 0 17px;
+  max-width:16ch;
+  word-break:keep-all;
+}
+.page-wonder .bw-instagram-account-description {
+  font-size:14px;
+  line-height:1.95;
+  color:#5b6e5b;
+  margin:0;
+  word-break:keep-all;
+  max-width:36ch;
+}
+.page-wonder .bw-instagram-account-tags {
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+  margin:23px 0 21px;
+}
+.page-wonder .bw-instagram-account-tags span {
+  font-size:12px;
+  font-weight:700;
+  color:#61795f;
+  border:1px solid #dce5d7;
+  background:#fffdf8;
+  border-radius:999px;
+  padding:6px 12px;
+}
+.page-wonder .bw-instagram-account-actions {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin:0;
+  flex:0 0 auto;
+  width:100%;
+  max-width:100%;
+}
+.page-wonder .bw-instagram-account-actions .btn {
+  width:100%;
+  max-width:270px;
+  white-space:normal;
+  min-height:49px;
+  padding:12px 18px;
+  font-size:13px;
+  line-height:1.5;
+}
+.page-wonder .bw-instagram-story-note {
+  margin:14px 0 0;
+  color:#647563;
+  font-size:12.5px;
+  line-height:1.7;
+  word-break:keep-all;
+}
+.page-wonder .bw-instagram-account-media {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  min-height:470px;
+  padding:clamp(10px,1.6vw,20px);
+  border:1px solid #e4e7df;
+  border-radius:20px;
+  background:#fff;
+  overflow:hidden;
+}
+.page-wonder .bw-instagram-account-media .bw-instagram-profile-frame {
+  width:100%;
+  min-width:0;
+  max-width:100%;
+  margin:0;
+  padding:0;
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+  overflow-x:auto;
+  overflow-y:visible;
+}
+.page-wonder .bw-instagram-account-media .bw-instagram-profile-frame blockquote.instagram-media,
+.page-wonder .bw-instagram-account-media .bw-instagram-profile-frame iframe {
+  display:block;
+  width:min(100%,540px)!important;
+  max-width:100%!important;
+  margin:0 auto!important;
+  border-radius:12px;
+  box-sizing:border-box;
+}
+.page-wonder .bw-instagram-account-media .bw-instagram-profile-status {
+  display:block;
+  font-size:12.5px;
+  line-height:1.7;
+  color:#667b65;
+  text-align:center;
+  margin:15px 0 0;
+  max-width:60ch;
+}
+.page-wonder .bw-instagram-account-media .bw-instagram-profile-status[hidden] {
+  display:none!important;
+}
+.page-wonder .bw-instagram-embed-ready .bw-instagram-account-media {
+  justify-content:flex-start;
+}
+.page-wonder .bw-instagram-embed-unavailable .bw-instagram-profile-original {
+  display:inline-block;
+  text-align:center;
+  font-size:13px;
+  font-weight:700;
+  color:var(--forest);
+  padding:14px;
+}
+@media(max-width:1000px){
+  .page-wonder .bw-instagram-account-widget {
+    grid-template-columns:minmax(0,1fr);
+    max-width:760px;
+    margin-inline:auto;
+    gap:13px;
+  }
+  .page-wonder .bw-instagram-account-intro {
+    height:auto;
+    min-height:0;
+    padding:23px 26px;
+  }
+  .page-wonder .bw-instagram-account-identity{margin-bottom:13px;}
+  .page-wonder .bw-instagram-account-title{max-width:none;margin-bottom:10px;font-size:27px;}
+  .page-wonder .bw-instagram-account-description{max-width:none;}
+  .page-wonder .bw-instagram-account-tags{margin:14px 0 16px;}
+  .page-wonder .bw-instagram-account-actions .btn{width:auto;}
+  .page-wonder .bw-instagram-account-media{min-height:0;padding:18px 10px;}
+}
+@media(max-width:600px){
+  .page-wonder .bw-instagram-feed-section .container {width:min(calc(100% - 24px),450px);}
+  .page-wonder .bw-instagram-account-widget {
+    display:flex;
+    flex-direction:column;
+    background:transparent;
+    border:0;
+    border-radius:0;
+    padding:0;
+    gap:12px;
+    max-width:100%;
+  }
+  .page-wonder .bw-instagram-account-intro {
+    background:#eef2e8;
+    border-radius:17px;
+    padding:20px 18px;
+  }
+  .page-wonder .bw-instagram-account-identity img{width:62px;height:49px;max-width:62px;}
+  .page-wonder .bw-instagram-handle strong{font-size:18px;}
+  .page-wonder .bw-instagram-account-title{font-size:25px;line-height:1.36;}
+  .page-wonder .bw-instagram-account-description{font-size:13px;line-height:1.85;}
+  .page-wonder .bw-instagram-account-tags{margin:15px 0;}
+  .page-wonder .bw-instagram-account-tags span{font-size:11px;padding:5px 10px;}
+  .page-wonder .bw-instagram-account-actions{display:flex;margin-top:0;}
+  .page-wonder .bw-instagram-account-actions .btn{width:100%;max-width:none;}
+  .page-wonder .bw-instagram-story-note{font-size:12px;}
+  .page-wonder .bw-instagram-account-media {
+    min-height:0;
+    padding:12px 4px;
+    background:#fffdfa;
+    border-radius:17px;
+    overflow:hidden;
+  }
+  .page-wonder .bw-instagram-account-media .bw-instagram-profile-frame{
+    padding:0;
+    max-width:100%;
+    overflow-x:auto;
+    overscroll-behavior-x:contain;
+    justify-content:center;
+  }
+}
