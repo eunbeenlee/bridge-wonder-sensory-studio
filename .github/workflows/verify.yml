@@ -29,4 +29,30 @@ jobs:
           package-manager-cache: false
       - run: npm ci --ignore-scripts --no-audit --no-fund
       - run: npm run check
-      - run: npm test
+      - name: payroll tests
+        if: always()
+        run: node tests/payroll.test.cjs
+      - name: acceleration tests
+        if: always()
+        run: node tests/acceleration.test.cjs
+      - name: security tests
+        if: always()
+        run: node tests/security.test.cjs
+      - name: payroll-ui tests
+        if: always()
+        run: node tests/payroll-ui.test.cjs
+      - name: administration tests
+        if: always()
+        run: node tests/administration.test.cjs
+      - name: staff-login-gateway tests
+        if: always()
+        run: node tests/staff-login-gateway.test.cjs
+      - name: staff-google-bridge tests
+        if: always()
+        run: node tests/staff-google-bridge.test.cjs
+      - name: staff-static-fast tests
+        if: always()
+        run: node tests/staff-static-fast.test.cjs
+      - name: staff-v28-home tests
+        if: always()
+        run: node tests/staff-v28-home.test.cjs
