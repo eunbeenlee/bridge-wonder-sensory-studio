@@ -80,6 +80,9 @@ jobs:
       - name: unified V32 compliance and inspection readiness PDF tests
         if: always()
         run: node tests/compliance-v32.test.cjs
+      - name: sensory-studio staff workflow V39 tests
+        if: always()
+        run: node tests/staff-sensory-v39.test.cjs
       - name: Create staff Apps Script V38 installer ZIP
         if: success()
         run: python3 tools/build-gas-install-package.py
