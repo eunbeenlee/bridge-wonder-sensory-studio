@@ -23,6 +23,8 @@
     throw Error('직원용 Google 배포 주소가 올바르지 않습니다.');
   }
   let count = 0;
+  // V29 diagnostics track only method names and elapsed time, never arguments or tokens.
+  let transportHistory = [];
   let bridgeVerified = false;
   let healthPromise = null;
   function checkHealth(force=false) {
@@ -40,9 +42,14 @@
     const body = JSON.stringify({protocol:PROTOCOL,method:name,args});
     if (body.length > 350000) throw Error('요청이 너무 큽니다. 입력 데이터를 확인해 주세요.');
     const controller = new AbortController();
-    // Existing login verifier may require a longer server time than read-only requests.
-    const timeout = (name === 'bridgeHealth') ? 15000 : ((name === 'staff23PasswordLogin') ? 55000 : 46000);
+    const isAuth=name==='staff23PasswordLogin'||name==='staff23PasswordCompleteEnrollment';
+    // Keep one-time migration within the accelerator's 90-second auth deadline.
+    const timeout = name==='bridgeHealth'?15000:isAuth?85000:46000;
     const timer = setTimeout(() => controller.abort(), timeout);
+    const started = Date.now();
+    const delayed = isAuth?setTimeout(()=>{
+      msg('첫 로그인은 보안 방식 전환으로 시간이 더 걸릴 수 있습니다. 다시 누르지 말고 인증 결과를 확인해 주세요.',false);
+    },10000):null;
     count += 1;
     try {
       const response = await fetch(ENDPOINT, {
@@ -74,6 +81,10 @@
       throw new Error(detail);
     } finally {
       clearTimeout(timer);
+      if(delayed)clearTimeout(delayed);
+      const elapsed=Date.now()-started;
+      transportHistory.push({method:name,elapsedMs:Math.max(0,elapsed)});
+      if(transportHistory.length>30)transportHistory.shift();
     }
   }
   // Mimic google.script.run's success/failure callback chain without importing Google UI.
@@ -97,7 +108,14 @@
     });
   }
   global.google = Object.assign(global.google || {}, {script:Object.assign((global.google||{}).script || {},{run:runner(null,null,null)})});
-  global.BW27Bridge = Object.freeze({request,checkHealth,version:'27.1.0',mode:'github-standalone-google-api'});
+  global.BW27Bridge = Object.freeze({
+    request,checkHealth,version:'29.0.0',mode:'github-standalone-google-api',
+    metrics:()=>Object.freeze({
+      calls:count,
+      last:transportHistory.slice(-15).map(x=>({...x})),
+      slow:transportHistory.filter(x=>x.elapsedMs>=3000).length
+    })
+  });
   const check = document.getElementById('bw27-check-server');
   if (check) check.addEventListener('click', async () => {
     check.disabled=true;

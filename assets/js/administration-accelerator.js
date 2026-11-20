@@ -64,7 +64,13 @@
     function writeInvoke(name,args,requestSession) {
       return new Promise((resolve,reject)=>{
         let finished=false;
-        const timer=setTimeout(()=>{if(finished)return;finished=true;timedOut++;reject(Error('저장 결과를 확인하지 못했습니다. 중복 저장하지 말고 먼저 기록을 새로 조회해 주세요.'));},writeTimeout);
+        // V29: legacy PBKDF2 -> native KDF migration may need one longer verification.
+        // Avoid timing out early while Google is still verifying; never resend writes.
+        const isAuth=name==='staff23PasswordLogin'||name==='staff23PasswordCompleteEnrollment';
+        const deadline=isAuth?Math.max(90000,writeTimeout):writeTimeout;
+        const timer=setTimeout(()=>{if(finished)return;finished=true;timedOut++;reject(Error(isAuth
+          ? '인증 응답이 지연되었습니다. 인증 기록을 확인한 뒤 다시 로그인해 주세요.'
+          : '저장 결과를 확인하지 못했습니다. 중복 저장하지 말고 먼저 기록을 새로 조회해 주세요.'));},deadline);
         Promise.resolve().then(()=>options.invoke(name,args)).then(value=>{
           if(requestSession===session)invalidate();
           if(!finished){finished=true;clearTimeout(timer);resolve(value);}

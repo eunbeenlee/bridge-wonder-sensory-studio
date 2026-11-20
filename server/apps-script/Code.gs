@@ -1149,10 +1149,35 @@ function bw23Pbkdf2_(pwd,salt,rounds) {
   }
   return bw23Hex_(t);
 }
+// BW29 native-browser KDF migration: no change to owner/teacher authorization.
+const BW29_CLIENT_ROUNDS_ = 160000;
+function bw29ValidProof_(p) {return typeof p==='string'&&/^[a-f0-9]{64}$/.test(p);}
+function bw29ProofHash_(email,proof) {
+  if(!bw29ValidProof_(proof))throw Error('비밀번호 확인이 필요합니다.');
+  // Only the peppered HMAC is stored. Never log or persist the client proof.
+  const key=Utilities.newBlob(bw23Pepper_()).getBytes();
+  const msg=Utilities.newBlob('BW29-V2|'+String(email||'').trim().toLowerCase()+'|'+proof).getBytes();
+  return bw23Hex_(Utilities.computeHmacSha256Signature(msg,key));
+}
+function bw29Credential_(email,proof,legacy) {
+  const c={v:2,scheme:'BW29-WEBCRYPTO-PBKDF2-SHA256-PEPPER-HMAC',rounds:BW29_CLIENT_ROUNDS_,
+    hash:bw29ProofHash_(email,proof),updatedAt:new Date().toISOString()};
+  // Legacy Google HtmlService clients may still log in by their original password.
+  // Retain only the existing peppered v1 verifier; never store plaintext or browser proof.
+  if(legacy&&legacy.v===1&&legacy.salt&&legacy.hash&&Number.isInteger(legacy.rounds)){
+    c.legacy={salt:legacy.salt,hash:legacy.hash,rounds:legacy.rounds};
+  }
+  return c;
+}
 function bw23GetCred_(email){
   const raw=PropertiesService.getScriptProperties().getProperty(bw23CredentialKey_(email));
   if(!raw)return null;
-  try{const c=JSON.parse(raw);if(c.v===1&&c.hash&&c.salt&&c.rounds)return c;}catch(_){ }
+  try {
+    const c=JSON.parse(raw);
+    if(c.v===1&&c.hash&&c.salt&&Number.isInteger(c.rounds))return c;
+    if(c.v===2&&c.scheme==='BW29-WEBCRYPTO-PBKDF2-SHA256-PEPPER-HMAC'&&
+       c.rounds===BW29_CLIENT_ROUNDS_&&/^[a-f0-9]{64}$/.test(c.hash))return c;
+  }catch(_){ }
   throw Error('로그인 정보가 손상되었습니다. 원장에게 문의해 주세요.');
 }
 function bw23IssueSession_(user) {
@@ -1190,12 +1215,15 @@ function staff23PasswordCompleteEnrollment(p) {
   // Verification burns the OTP and creates a short-lived session, which we revoke below.
   const verified=staffLoginVerify({email:email,code:code});
   if(!verified || verified.user.email!==email)throw Error('인증 정보가 일치하지 않습니다.');
-  const salt=Utilities.getUuid().replace(/-/g,'');
-  const digest=bw23Pbkdf2_(pwd,salt,BW23_PASSWORD_ROUNDS_);
+  const proof=p&&p.proof,fast=bw29ValidProof_(proof);
+  // Native browser KDF avoids 24,000 Apps Script HMAC operations during enrollment.
+  const next=fast?bw29Credential_(email,proof):null;
+  const salt=fast?'':Utilities.getUuid().replace(/-/g,'');
+  const digest=fast?'':bw23Pbkdf2_(pwd,salt,BW23_PASSWORD_ROUNDS_);
   const lock=LockService.getScriptLock();lock.waitLock(15000);
   try {
     if(mode==='setup'&&bw23GetCred_(email))throw Error('이미 등록된 계정입니다.');
-    PropertiesService.getScriptProperties().setProperty(bw23CredentialKey_(email),JSON.stringify({v:1,salt:salt,hash:digest,rounds:BW23_PASSWORD_ROUNDS_,updatedAt:new Date().toISOString()}));
+    PropertiesService.getScriptProperties().setProperty(bw23CredentialKey_(email),JSON.stringify(next||{v:1,salt:salt,hash:digest,rounds:BW23_PASSWORD_ROUNDS_,updatedAt:new Date().toISOString()}));
     PropertiesService.getScriptProperties().deleteProperty(bw23LockKey_(email));
     bw17Audit_(user,mode==='reset'?'비밀번호 재설정':'비밀번호 최초 설정','직원 포털','성공','이메일 OTP 확인');
   } finally {lock.releaseLock();}
@@ -1204,7 +1232,8 @@ function staff23PasswordCompleteEnrollment(p) {
   return {ok:true,message:'비밀번호가 등록되었습니다. 새 비밀번호로 로그인해 주세요.'};
 }
 function staff23PasswordLogin(p) {
-  const email=bw17Email_(p&&p.email),pwd=p&&p.password;
+  const started=Date.now();
+  const email=bw17Email_(p&&p.email),pwd=p&&p.password,proof=p&&p.proof;
   const invalid='이메일 또는 비밀번호가 올바르지 않습니다.';
   if(!email||typeof pwd!=='string'||pwd.length>100)throw Error(invalid);
   const user=bw17User_(email),cred=bw23GetCred_(email);
@@ -1223,19 +1252,44 @@ function staff23PasswordLogin(p) {
     attemptNumber=Number(rec.n||0)+1;
     props.setProperty(k,JSON.stringify({n:attemptNumber,until:0}));
   }finally{gate.releaseLock();}
-  // Expensive password verifier deliberately runs outside the global lock.
-  const proofKey='bw24_ok_'+bw17Hash_(email+'|'+String(cred.updatedAt||'')+'|'+bw24FastProof_(pwd)).slice(0,42);
+  // Existing V1 passwords are verified normally once; successful accounts migrate.
+  // V2 verifies one HMAC of native-browser PBKDF2 proof, not 24,000 GAS HMAC calls.
+  const isV2=cred.v===2,hasProof=bw29ValidProof_(proof);
   const cache=CacheService.getScriptCache();
-  const valid=cache.get(proofKey)==='yes' || bw23Equals_(bw23Pbkdf2_(pwd,cred.salt,cred.rounds),cred.hash);
+  let proofKey='',valid=false;
+  if(isV2){
+    if(hasProof)valid=bw23Equals_(bw29ProofHash_(email,proof),cred.hash);
+    else if(cred.legacy&&cred.legacy.salt&&cred.legacy.hash&&Number.isInteger(cred.legacy.rounds)){
+      // Older Google UI still works, but uses its original slow verifier.
+      valid=bw23Equals_(bw23Pbkdf2_(pwd,cred.legacy.salt,cred.legacy.rounds),cred.legacy.hash);
+    }
+  }else{
+    proofKey='bw24_ok_'+bw17Hash_(email+'|'+String(cred.updatedAt||'')+'|'+bw24FastProof_(pwd)).slice(0,42);
+    valid=cache.get(proofKey)==='yes'||bw23Equals_(bw23Pbkdf2_(pwd,cred.salt,cred.rounds),cred.hash);
+  }
   const finish=LockService.getScriptLock();finish.waitLock(15000);
   try{
-    if(valid){props.deleteProperty(k);cache.put(proofKey,'yes',180);}
-    else if(attemptNumber>=BW23_MAX_PASSWORD_ATTEMPTS_){
+    if(valid){
+      if(!isV2 && hasProof){
+        // Never silently overwrite another session's concurrent password reset.
+        const current=bw23GetCred_(email);
+        if(current&&current.v===1&&current.hash===cred.hash){
+          props.setProperty(bw23CredentialKey_(email),JSON.stringify(bw29Credential_(email,proof,cred)));
+        }else if(!current||current.v!==2||!bw23Equals_(bw29ProofHash_(email,proof),current.hash)){
+          throw Error('로그인 정보가 갱신되었습니다. 다시 로그인해 주세요.');
+        }
+      }
+      props.deleteProperty(k);
+      if(!isV2)cache.put(proofKey,'yes',180);
+    }else if(attemptNumber>=BW23_MAX_PASSWORD_ATTEMPTS_){
       props.setProperty(k,JSON.stringify({n:0,until:Date.now()+BW23_LOCK_SECONDS_*1000}));
     }
   }finally{finish.releaseLock();}
   if(!valid)throw Error(invalid);
-  return bw23IssueSession_(user);
+  const result=bw23IssueSession_(user);
+  // Timing only: never log password, browser proof or authentication token.
+  Logger.log('BW29_AUTH ms='+String(Date.now()-started)+' credential='+String(cred.v));
+  return result;
 }
 
 const BW24_ACCESS_ = Object.freeze({"home":{"label":"오늘의 업무","read":["owner","director","teacher","frontdesk"],"write":[]},"inquiries":{"label":"상담 접수","read":["owner","director","frontdesk"],"write":["owner","director","frontdesk"]},"registrations":{"label":"수강 신청 확인","read":["owner","director"],"write":[]},"classes":{"label":"수업 시간표","read":["owner","director","teacher","frontdesk"],"write":["owner","director"]},"courseSettings":{"label":"학원 운영정보","read":["owner","director"],"write":["owner","director"]},"roster":{"label":"우리 반 아이들","read":["owner","director","teacher"],"write":[]},"attendance":{"label":"출석 체크","read":["owner","director","teacher"],"write":["owner","director","teacher"]},"operations":{"label":"개원·운영 체크리스트","read":["owner","director"],"write":["owner","director"]},"tuition":{"label":"수납·환불 기록","read":["owner","director"],"write":["owner","director"]},"safety":{"label":"수업 준비·안전","read":["owner","director","teacher"],"write":["owner","director","teacher"]},"handoff":{"label":"보호자 인계 기록","read":["owner","director","teacher"],"write":["owner","director","teacher"]},"staffCompliance":{"label":"선생님 준수 사항","read":["owner"],"write":["owner"]},"users":{"label":"선생님 계정·권한","read":["owner"],"write":["owner"]},"documents":{"label":"안내문·확인서","read":["owner","director","teacher","frontdesk"],"write":["owner","director","teacher","frontdesk"]},"capacity":{"label":"반별 정원","read":["owner","director","teacher","frontdesk"],"write":["owner","director"]},"waitlist":{"label":"대기 상담","read":["owner","director","frontdesk"],"write":["owner","director","frontdesk"]},"makeups":{"label":"결석·보강 관리","read":["owner","director","teacher"],"write":["owner","director","teacher"]},"themes":{"label":"이달의 수업 주제","read":["owner","director","teacher","frontdesk"],"write":["owner","director"]},"security":{"label":"이용 기록·백업","read":["owner"],"write":["owner"]},"payroll":{"label":"직원 급여관리","read":["owner"],"write":["owner"]}});
