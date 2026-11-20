@@ -26,7 +26,7 @@ function loadApp(){
   const account=document.createElement('script');account.src=base+'staff-account-management.js?v=30.0.0';account.async=false;
   account.onload=startMain;account.onerror=startMain;document.body.appendChild(account);
 }
-const engine=document.createElement('script');engine.src=base+'administration-accelerator.js?v=29.0.0';engine.async=false;
+const engine=document.createElement('script');engine.src=base+'administration-accelerator.js?v=30.0.0';engine.async=false;
 engineTimer=setTimeout(loadApp,8000);
 engine.onload=loadApp;engine.onerror=loadApp;document.body.appendChild(engine);
 })();
