@@ -60,6 +60,10 @@ const BW27_METHODS_ = Object.freeze({
   staff20SaveMakeup: staff20SaveMakeup,
   staff20Themes: staff20Themes,
   staff20SaveTheme: staff20SaveTheme,
+  staff37ListStudents: staff37ListStudents,
+  staff37SaveStudent: staff37SaveStudent,
+  staff37ListExperiences: staff37ListExperiences,
+  staff37SaveExperience: staff37SaveExperience,
   staff20ActionCenter: staff20ActionCenter,
   payrollCommand: payrollCommand
 });
