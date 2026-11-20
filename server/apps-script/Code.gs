@@ -64,9 +64,7 @@ function bw17Audit_(who,action,target,result,note) {
 }
 function bw17Authorized_(token,roles) {
   if(typeof token!=='string'||!/^([a-f0-9-]{36}){3}$/.test(token))throw Error('로그인이 필요합니다.');
-  const key='session_'+bw17Hash_(token);const email=CacheService.getScriptCache().get(key);
-  if(!email)throw Error('접속 시간이 만료되었습니다. 다시 로그인해 주세요.');
-  const user=bw17User_(email);if(!user||user.status!=='사용')throw Error('사용 권한이 중지되었습니다.');
+  const user=bw30SessionUser_(token,false);
   if(roles&&roles.indexOf(user.role)<0){bw17Audit_(user,'권한 없는 접근','관리 기능','차단','권한 불일치');throw Error('이 업무에 접근할 권한이 없습니다.');}
   return user;
 }
@@ -146,14 +144,14 @@ function staffLoginVerify(payload) {
     cache.remove('otp_'+base);cache.remove('bad_'+base);
   }finally{lock.releaseLock();}
   const token=Utilities.getUuid()+Utilities.getUuid()+Utilities.getUuid();
-  cache.put('session_'+bw17Hash_(token),email,BW17.SESSION_SECONDS);
+  cache.put('session_'+bw17Hash_(token),bw30PackSession_(email),BW17.SESSION_SECONDS);
   bw17Audit_(user,'로그인','직원 포털','성공','이메일 일회용 번호');
   return {ok:true,token:token,user:{email:user.email,name:user.name,role:user.role,canContact:user.canContact,permissions:bw24Permissions_(user)},expiresInMinutes:60};
 }
 function staffCurrentUser(token) {
-  const user=bw17Authorized_(token);return {email:user.email,name:user.name,role:user.role,classes:user.classes,canContact:user.canContact,permissions:bw24Permissions_(user),expiresInMinutes:60};
+  const user=bw30SessionUser_(token,true);return {email:user.email,name:user.name,role:user.role,classes:user.classes,canContact:user.canContact,mustChange:bw30AccountState_(user.email).mustChange,permissions:bw24Permissions_(user),expiresInMinutes:60};
 }
-function staffLogout(token){try{bw17Authorized_(token);CacheService.getScriptCache().remove('session_'+bw17Hash_(token));}catch(_){ }return {ok:true};}
+function staffLogout(token){if(typeof token==='string'&&/^([a-f0-9-]{36}){3}$/.test(token))try{CacheService.getScriptCache().remove('session_'+bw17Hash_(token));}catch(_){ }return {ok:true};}
 function staffDashboard(token) {
   const u=bw24Authorized_(token,'home','read');
   const cache=CacheService.getScriptCache(),stamp=JSON.stringify(bw24Permissions_(u));
@@ -1182,9 +1180,10 @@ function bw23GetCred_(email){
 }
 function bw23IssueSession_(user) {
   const token=Utilities.getUuid()+Utilities.getUuid()+Utilities.getUuid();
-  CacheService.getScriptCache().put('session_'+bw17Hash_(token),user.email,BW17.SESSION_SECONDS);
-  bw17Audit_(user,'비밀번호 로그인','직원 포털','성공','BW23 Google-only');
-  return {ok:true,token:token,user:{email:user.email,name:user.name,role:user.role,canContact:user.canContact,permissions:bw24Permissions_(user)},expiresInMinutes:60};
+  const authState=bw30AccountState_(user.email);
+  CacheService.getScriptCache().put('session_'+bw17Hash_(token),bw30PackSession_(user.email),BW17.SESSION_SECONDS);
+  bw17Audit_(user,'비밀번호 로그인','직원 포털','성공','개별 이메일 계정');
+  return {ok:true,token:token,user:{email:user.email,name:user.name,role:user.role,canContact:user.canContact,mustChange:authState.mustChange,permissions:bw24Permissions_(user)},expiresInMinutes:60};
 }
 function setupBridgeWonderV23() {
   bw24RequireEditorOwner_();
@@ -1225,6 +1224,7 @@ function staff23PasswordCompleteEnrollment(p) {
     if(mode==='setup'&&bw23GetCred_(email))throw Error('이미 등록된 계정입니다.');
     PropertiesService.getScriptProperties().setProperty(bw23CredentialKey_(email),JSON.stringify(next||{v:1,salt:salt,hash:digest,rounds:BW23_PASSWORD_ROUNDS_,updatedAt:new Date().toISOString()}));
     PropertiesService.getScriptProperties().deleteProperty(bw23LockKey_(email));
+    bw30ReviseAccount_(email,false);
     bw17Audit_(user,mode==='reset'?'비밀번호 재설정':'비밀번호 최초 설정','직원 포털','성공','이메일 OTP 확인');
   } finally {lock.releaseLock();}
   // Clean the now-unused OTP-created session and require a fresh password login.
@@ -1235,7 +1235,7 @@ function staff23PasswordLogin(p) {
   const started=Date.now();
   const email=bw17Email_(p&&p.email),pwd=p&&p.password,proof=p&&p.proof;
   const invalid='이메일 또는 비밀번호가 올바르지 않습니다.';
-  if(!email||typeof pwd!=='string'||pwd.length>100)throw Error(invalid);
+  if(!email||!bw23PasswordValid_(pwd))throw Error(invalid);
   const user=bw17User_(email),cred=bw23GetCred_(email);
   if(!user || user.status!=='사용' || !cred)throw Error(invalid);
   const props=PropertiesService.getScriptProperties(),k=bw23LockKey_(email);
@@ -1393,4 +1393,118 @@ function bw24FastProof_(pwd){
   const key=Utilities.newBlob(bw23Pepper_()).getBytes();
   const result=Utilities.computeHmacSha256Signature(Utilities.newBlob(String(pwd)).getBytes(),key);
   return bw23Hex_(result);
+}
+
+
+/* Bridge Wonder V30 — email accounts, owner-issued temporary credentials,
+ * mandatory first-login change, self-service password rotation.
+ * User profiles/roles remain in private Google Sheets; verifiers & session
+ * revisions remain in Apps Script Script Properties. Never store raw passwords.
+ */
+function bw30AccountStateKey_(email) {
+  return 'BW30_AUTH_' + bw17Hash_(String(email).trim().toLowerCase()).slice(0,40);
+}
+function bw30AccountState_(email) {
+  const raw=PropertiesService.getScriptProperties().getProperty(bw30AccountStateKey_(email));
+  if(!raw)return {revision:0,mustChange:false};
+  try {
+    const state=JSON.parse(raw);
+    if(state && Number.isSafeInteger(state.revision) && state.revision>=0 &&
+       state.revision<1000000000 && typeof state.mustChange==='boolean')
+      return {revision:state.revision,mustChange:state.mustChange};
+  } catch (_) {}
+  throw Error('계정 보안 설정을 확인할 수 없습니다. 관리자에게 문의해 주세요.');
+}
+// Call only while holding ScriptLock for account mutations.
+function bw30ReviseAccount_(email,mustChange) {
+  const state=bw30AccountState_(email);
+  const next={revision:state.revision+1,mustChange:mustChange===true,updatedAt:new Date().toISOString()};
+  PropertiesService.getScriptProperties().setProperty(bw30AccountStateKey_(email),JSON.stringify(next));
+  return next;
+}
+function bw30PackSession_(email) {
+  const state=bw30AccountState_(email);
+  return JSON.stringify({email:email,revision:state.revision});
+}
+function bw30SessionUser_(token,allowPasswordChange) {
+  if(typeof token!=='string'||!/^([a-f0-9-]{36}){3}$/.test(token))throw Error('로그인이 필요합니다.');
+  const key='session_'+bw17Hash_(token);
+  const stored=CacheService.getScriptCache().get(key);
+  if(!stored)throw Error('접속 시간이 만료되었습니다. 다시 로그인해 주세요.');
+  let email=stored,revision=0;
+  if(stored.charAt(0)==='{'){
+    let entry;
+    try {entry=JSON.parse(stored);}catch(_){throw Error('로그인 정보가 올바르지 않습니다.');}
+    email=bw17Email_(entry&&entry.email);
+    revision=entry&&entry.revision;
+    if(!Number.isSafeInteger(revision)||revision<0)throw Error('로그인 정보가 올바르지 않습니다.');
+  }
+  email=bw17Email_(email);
+  if(!email)throw Error('로그인 정보가 올바르지 않습니다.');
+  const account=bw30AccountState_(email);
+  if(revision!==account.revision){
+    CacheService.getScriptCache().remove(key);
+    throw Error('로그인 정보가 변경되었습니다. 다시 로그인해 주세요.');
+  }
+  const user=bw17User_(email);
+  if(!user||user.status!=='사용')throw Error('사용 권한이 중지되었습니다.');
+  if(account.mustChange && allowPasswordChange!==true)
+    throw Error('임시 비밀번호를 먼저 변경해야 이용할 수 있습니다.');
+  return user;
+}
+function staff30IssueTemporaryPassword(token,p) {
+  const actor=bw17Authorized_(token,['owner']);
+  const email=bw17Email_(p&&p.email),proof=p&&p.proof;
+  if(!email||email===bw17Config_().owner||!bw29ValidProof_(proof))
+    throw Error('비밀번호를 발급할 선생님 계정을 확인해 주세요.');
+  const user=bw17User_(email);
+  if(!user||user.status!=='사용'||!['teacher','frontdesk','director'].includes(user.role))
+    throw Error('사용 중인 직원 계정만 비밀번호를 발급할 수 있습니다.');
+  // Ensure pepper creation never tries to acquire ScriptLock inside the main lock.
+  const next=JSON.stringify(bw29Credential_(email,proof,null));
+  const lock=LockService.getScriptLock();lock.waitLock(15000);
+  try {
+    // A successful issuance revokes all existing sessions for this employee.
+    const current=bw17User_(email);
+    if(!current||current.status!=='사용')throw Error('계정 사용 상태가 변경되었습니다.');
+    PropertiesService.getScriptProperties().setProperty(bw23CredentialKey_(email),next);
+    PropertiesService.getScriptProperties().deleteProperty(bw23LockKey_(email));
+    bw30ReviseAccount_(email,true);
+  } finally {lock.releaseLock();}
+  bw17Audit_(actor,'직원 임시 비밀번호 발급',email,'성공','첫 로그인 비밀번호 변경 필수');
+  return {ok:true,email:email,mustChange:true};
+}
+function staff30ChangeOwnPassword(token,p) {
+  const user=bw30SessionUser_(token,true),email=user.email;
+  const oldPassword=p&&p.currentPassword,oldProof=p&&p.currentProof;
+  const nextPassword=p&&p.newPassword,nextProof=p&&p.newProof;
+  if(!bw23PasswordValid_(oldPassword)||!bw23PasswordValid_(nextPassword)||
+     !bw29ValidProof_(nextProof)||oldPassword===nextPassword)
+    throw Error('현재 비밀번호와 12자 이상인 새 비밀번호를 확인해 주세요.');
+  const existing=bw23GetCred_(email);
+  if(!existing)throw Error('비밀번호가 등록되어 있지 않습니다.');
+  let correct=false;
+  if(existing.v===2){
+    if(!bw29ValidProof_(oldProof))throw Error('현재 비밀번호를 확인해 주세요.');
+    correct=bw23Equals_(bw29ProofHash_(email,oldProof),existing.hash);
+    if(bw23Equals_(oldProof,nextProof))throw Error('기존 비밀번호와 다른 비밀번호를 사용해 주세요.');
+  } else {
+    correct=bw23Equals_(bw23Pbkdf2_(oldPassword,existing.salt,existing.rounds),existing.hash);
+  }
+  if(!correct)throw Error('현재 비밀번호가 올바르지 않습니다.');
+  // Precompute HMAC outside the script lock.
+  const next=JSON.stringify(bw29Credential_(email,nextProof,null));
+  const lock=LockService.getScriptLock();lock.waitLock(15000);
+  try {
+    // Fail closed when password was reset concurrently by the owner or OTP.
+    const current=bw23GetCred_(email);
+    if(JSON.stringify(current)!==JSON.stringify(existing))throw Error('계정 정보가 변경되었습니다. 다시 로그인해 주세요.');
+    const stored=PropertiesService.getScriptProperties();
+    stored.setProperty(bw23CredentialKey_(email),next);
+    stored.deleteProperty(bw23LockKey_(email));
+    bw30ReviseAccount_(email,false);
+  } finally {lock.releaseLock();}
+  CacheService.getScriptCache().remove('session_'+bw17Hash_(token));
+  bw17Audit_(user,'본인 비밀번호 변경',email,'성공','기존 세션 모두 종료');
+  return {ok:true,message:'비밀번호가 변경되었습니다. 새 비밀번호로 다시 로그인해 주세요.'};
 }
