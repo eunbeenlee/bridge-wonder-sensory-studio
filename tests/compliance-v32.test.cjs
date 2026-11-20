@@ -105,7 +105,7 @@ test('Korean statutory categories and unverified state cannot masquerade as appr
   const f=fixture(),c=f.ctx;
   assert.equal(c.staff32ListCompliance('owner').length,0);
   assert.throws(()=>c.staff32SaveCompliance('owner',{code:'REG01',status:'내부확인',applies:'적용',due:'',checkedAt:'',evidence:'',revision:0}),/확인일/);
-  assert.throws(()=>c.staff32SaveCompliance('owner',{code:'REG01',status:'내부확인',applies:'해당없음',note:'not applicable',checkedAt:'2026-11-20',evidence:'private'},revision:0),/적용/);
+  assert.throws(()=>c.staff32SaveCompliance('owner',{code:'REG01',status:'내부확인',applies:'해당없음',note:'not applicable',checkedAt:'2026-11-20',evidence:'private',revision:0}),/적용/);
   assert.throws(()=>c.staff32SaveCompliance('owner',{code:'UNKNOWN',status:'미확인',applies:'확인필요',revision:0}),/지원하지 않는/);
   const p={code:'REG01',status:'내부확인',applies:'적용',checkedAt:'2026-11-20',evidence:'비공개 목록',note:'본인 확인',revision:0};
   assert.equal(c.staff32SaveCompliance('owner',p).revision,1);
