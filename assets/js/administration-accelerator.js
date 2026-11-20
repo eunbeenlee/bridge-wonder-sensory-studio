@@ -1,7 +1,7 @@
 /* Bridge Wonder V26: bounded Google RPC reads, short memory cache, no write retry. */
 (function (global) {
   'use strict';
-  const READ_METHODS=new Set(['staffCurrentUser','staffDashboard','staffListClasses','staffListInquiries','staffListRegistrations','staffListRoster','staffListAttendance','staffListUsers','staffListAudit','staffListOperations','staffListTuition','staffListDailyChecks','staffListHandoffs','staffListStaffCompliance','staff22GetCourseSettings','staff20Capacity','staff20Waitlist','staff20Makeups','staff20Themes','staff20ActionCenter','staffDocTypes','staffDocSources','staffDocPreview','staffDocHistory','staffDocDownload']);
+  const READ_METHODS=new Set(['staffCurrentUser','staffDashboard','staffListClasses','staffListInquiries','staffListRegistrations','staffListRoster','staffListAttendance','staffListUsers','staffListAudit','staffListOperations','staffListTuition','staffListDailyChecks','staffListHandoffs','staffListStaffCompliance','staff22GetCourseSettings','staff20Capacity','staff20Waitlist','staff20Makeups','staff20Themes','staff37ListStudents','staff37ListExperiences','staff20ActionCenter','staffDocTypes','staffDocSources','staffDocPreview','staffDocHistory','staffDocDownload']);
   const TTL_MS=Object.freeze({staffDashboard:10000,staffListClasses:20000,staff20Capacity:12000,staff20Themes:16000,staff20ActionCenter:8000});
   const VIEW_CANCELED='BW24_STALE_VIEW';
   const errorOf=e=>e instanceof Error?e:Error(e?.message?String(e.message):String(e));
