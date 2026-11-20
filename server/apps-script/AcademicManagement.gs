@@ -59,8 +59,10 @@ function bw37CleanText_(value,limit,required) {
   return text;
 }
 function bw37StudentPhone_(value) {
-  const str=String(value||'').replace(/[-()\s]/g,'');
-  if(!/^\d{9,12}$/.test(str))throw Error('보호자 연락처를 확인해 주세요.');
+  let str=String(value||'').replace(/[^0-9]/g,'');
+  if(/^8210\d{8}$/.test(str))str='0'+str.slice(2);
+  if(!/^01(?:0\d{8}|[16789]\d{7,8})$/.test(str))
+    throw Error('보호자 휴대전화번호를 확인해 주세요. (예: 01012345678)');
   return str;
 }
 function bw37StudentKey_(child,birth,phone) {
@@ -227,10 +229,11 @@ function staff37SaveStudent(token,p){
       const counts=bw20Counts_().counts,caps=bw20Caps_();
       for(const classId of clean.classIds){
         const cap=caps[classId]||0;
+        if(cap<=0)throw Error('먼저 '+classId+' 반의 정원을 설정해 주세요.');
         const occupied=counts[classId]||0;
         const currently=old&&old.status==='재원'&&old.classIds.includes(classId)&&
           old.evidence&&old.verifiedAt?1:0;
-        if(cap>0&&occupied-currently>=cap)
+        if(occupied-currently>=cap)
           throw Error('선택한 수업반 '+classId+'의 정원이 찼습니다.');
       }
     }
