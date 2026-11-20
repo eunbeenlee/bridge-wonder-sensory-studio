@@ -77,7 +77,7 @@ test('Ctrl+K finds allowed tasks without additional requests or access bypass',(
 test('parent document button opens secure existing PDF flow with selected type',()=>{
   doc.getElementById('bw33PdfToggle').click();
   assert.equal(doc.getElementById('bw33PdfPanel').hidden,false);
-  assert.match(doc.getElementById('bw33PdfPanel').textContent,/법정 영수증/);
+  assert.match(doc.getElementById('bw33PdfPanel').textContent,/교습비 영수증/);
   doc.querySelector('#bw33DocShortcuts [data-bw33doc="contract"]').click();
   assert.equal(state.page,'documents');
   assert.equal(doc.getElementById('bw33PdfPanel').hidden,true);
