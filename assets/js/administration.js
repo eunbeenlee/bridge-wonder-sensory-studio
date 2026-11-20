@@ -214,7 +214,22 @@
       const v=(d.rows||[]).find(x=>x.code==='BW-SENSORY')||{code:'BW-SENSORY',name:'Bridge Wonder Sensory Play Studio',fee:'',extras:'0',refund:'',business:'',license:'',retention:'',location:'',makeup:'',accompaniment:'',materials:'',safety:'',status:'중지'};
       const labels=[['name','과정 이름','text'],['fee','교습비 (원)','number'],['extras','기타 경비 (원)','number'],['business','법정 상호','text'],['license','학원 등록번호','text'],['location','수업 장소','text'],['retention','개인정보 보유 기간','text'],['refund','교습비 반환 기준','textarea'],['makeup','결석·보강 기준','textarea'],['accompaniment','보호자 동반 기준','textarea'],['materials','재료·준비물 안내','textarea'],['safety','수업 안전 안내','textarea']];
       const fields=labels.map(([key,label,type])=>`<div class="form-item"><label for="bw23Course_${key}">${label}</label>${type==='textarea'?`<textarea id="bw23Course_${key}" rows="3">${h(v[key]||'')}</textarea>`:`<input id="bw23Course_${key}" type="${type}" value="${h(v[key]||'')}" ${type==='number'?'min="0" max="100000000" step="1"':''}>`}</div>`).join('');
-      $('pageBody').innerHTML=head('수강조건 설정','정규 수업은 50분 1회 30,000원, 체험 프로모션은 50분 1회 25,000원 기준으로 안내합니다.')+panel('Bridge Wonder · Sensory Play Studio','아래 교습비는 실제 계약에 적용할 금액입니다. 1회 안내가격을 그대로 월 교습비로 입력하지 말고, 수업횟수와 교습기간을 확인한 뒤 등록·게시 금액에 맞게 입력하세요. 체험 프로모션과 형제·자매 할인은 별도 조건으로 관리합니다.',`<form id="bw23CourseForm"><div class="cols">${fields}</div><div class="form-item spaced"><label for="bw23Course_status">운영 상태</label><select id="bw23Course_status"><option value="중지" ${v.status==='중지'?'selected':''}>중지</option><option value="활성" ${v.status==='활성'?'selected':''}>활성</option></select></div><div class="row spaced"><button type="submit" class="btn btn-primary">수강조건 저장</button><span id="bw23CourseStatus" class="inline-status"></span></div></form>`);
+      $('pageBody').innerHTML=head('수강조건 설정','정규 수업은 50분 1회 30,000원, 체험 프로모션은 50분 1회 25,000원 기준으로 안내합니다.')+panel('Bridge Wonder · Sensory Play Studio','아래 교습비는 실제 계약에 적용할 금액입니다. 1회 안내가격을 그대로 월 교습비로 입력하지 말고, 수업횟수와 교습기간을 확인한 뒤 등록·게시 금액에 맞게 입력하세요. 체험 프로모션과 형제·자매 할인은 별도 조건으로 관리합니다.',`<form id="bw23CourseForm"><div class="cols">${fields}</div><div class="form-item spaced"><label for="bw23Course_status">운영 상태</label><select id="bw23Course_status"><option value="중지" ${v.status==='중지'?'selected':''}>중지</option><option value="활성" ${v.status==='활성'?'selected':''}>활성</option></select></div><div class="row spaced"><button type="submit" class="btn btn-primary">수강조건 저장</button><span id="bw23CourseStatus" class="inline-status"></span></div></form>
+      <div class="form-item spaced" role="group" aria-label="정규 수업 회차별 교습비 계산">
+        <strong>회차별 교습비 미리 계산</strong>
+        <p class="help">정규 수업은 50분 1회 30,000원이며, 체험은 프로모션으로 50분 1회 25,000원입니다.</p>
+        <label for="bw38SessionCount">상담 후 확정할 정규 수업 회차</label>
+        <input type="number" id="bw38SessionCount" min="1" max="60" step="1" placeholder="예: 6" inputmode="numeric" style="max-width:190px">
+        <output id="bw38SessionFee" for="bw38SessionCount" aria-live="polite">회차를 입력하면 예상 교습비가 표시됩니다.</output>
+        <p class="help">이 계산은 상담 참고용입니다. 위 계약 교습비는 자동 변경되지 않으며, 실제 수강기간·회차·할인 및 신고된 교습비를 확인한 뒤 별도로 저장해야 합니다.</p>
+      </div>`);
+      const feeCount=$('bw38SessionCount'),feeOutput=$('bw38SessionFee');
+      if(feeCount&&feeOutput)feeCount.addEventListener('input',()=>{
+        const n=Number(feeCount.value);
+        feeOutput.textContent=feeCount.value&&Number.isSafeInteger(n)&&n>=1&&n<=60
+          ?'정규 수업 '+n+'회 × 30,000원 = '+(n*30000).toLocaleString('ko-KR')+'원 (참고)'
+          :'정규 수업 회차를 1~60회에서 입력해 주세요.';
+      });
       const f=$('bw23CourseForm');
       f.onsubmit=async e=>{e.preventDefault();setBusy(f,true);
         const p={code:'BW-SENSORY'};
