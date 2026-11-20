@@ -814,8 +814,8 @@ function bw26LoadPayroll(){
     return bw26PayrollLoads[id];
   }
   bw26PayrollAssets=Promise.all([
-    asset('bw26PayrollCSS','link',base+'css/administration-payroll.css?v=34.0.0','급여 화면 스타일'),
-    asset('bw26PayrollJS','script',base+'js/administration-payroll.js?v=34.0.0','급여 화면')
+    asset('bw26PayrollCSS','link',base+'css/administration-payroll.css?v=38.0.0','급여 화면 스타일'),
+    asset('bw26PayrollJS','script',base+'js/administration-payroll.js?v=38.0.0','급여 화면')
   ]).catch(e=>{bw26PayrollAssets=null;throw e;});
   return bw26PayrollAssets;
 }
