@@ -42,7 +42,7 @@ check('native group dropdown only exposes allowed routes',()=>{
  assert.equal(d.querySelectorAll('.bw31-nav-group').length,1);
  const select=d.getElementById('bw31TaskSelect');
  assert.equal(select.options.length,3);
- assert.ok([...select.querySelectorAll('optgroup')].some(g=>g.label==='수업·출결'));
+ assert.ok([...select.querySelectorAll('optgroup')].some(g=>g.label==='클래스 운영'));
  assert.ok(!select.textContent.includes('급여관리'));
  assert.ok(!select.textContent.includes('선생님 계정'));
 });
@@ -57,7 +57,7 @@ check('every authorized staff page provides a short instruction',()=>{
  state.page='attendance';
  d.getElementById('pageBody').innerHTML='<h2 class="page-title">출결</h2><p class="page-description">수강생 출결</p><section class="panel"></section>';
  w.BW31UX.onPageRendered('attendance');
- assert.match(d.getElementById('bw31Guide').textContent,/명단 불러오기/);
+ assert.match(d.getElementById('bw31Guide').textContent,/아이 명단을 불러온 뒤/);
  w.BW31UX.onPageRendered('attendance');
  assert.equal(d.querySelectorAll('#bw31Guide').length,1);
 });
@@ -105,7 +105,7 @@ check('operations status filter hides nonmatching cards without deleting data',(
 check('staff UX remains frontend-only and does not send hidden data to GitHub',()=>{
  assert.doesNotMatch(script,/fetch\s*\(|localStorage\.|sessionStorage\.|SPREADSHEET_ID|OWNER_EMAIL|BW23_PRIVATE_PEPPER/);
  assert.match(app,/BW31UX\?\.onPageRendered/);
- assert.ok(html.includes('staff-ux-v31.js?v=38.0.0'));
+ assert.ok(html.includes('staff-ux-v31.js?v=39.0.0'));
 });
 console.log(JSON.stringify({suite:'V31 GitHub staff UX',passed:checks}));
 dom.window.close();

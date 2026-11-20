@@ -36,7 +36,7 @@ test('helper text has legible consistent size instead of tiny low-contrast footn
 });
 test('administration and payroll instructions use direct, natural language',()=>{
   assert.match(admin,/실제 수납·환불 내역을 확인한 뒤 기록해 주세요/);
-  assert.match(admin,/발급한 PDF는 학원 전용 문서함에 보관됩니다/);
+  assert.match(admin,/발급한 PDF는 스튜디오 전용 문서함에 보관됩니다/);
   assert.match(admin,/보호자는 학원 인계 절차에 따라 확인하고/);
   assert.doesNotMatch(admin,/저장 즉시 Google Sheets에 반영됩니다/);
   assert.doesNotMatch(admin,/현재 Apps Script는 접속 IP 주소를 별도로 확보하지 못합니다/);
@@ -47,17 +47,19 @@ test('administration and payroll instructions use direct, natural language',()=>
 test('plain-language guidance preserves critical contract/receipt distinction',()=>{
   assert.match(admin,/등록 확인서와 납부 내역 안내서는 계약서나 영수증을 대신할 수 없습니다/);
   assert.match(portal,/납부 내역 안내서는 교습비 영수증과 다릅니다/);
-  assert.match(help,/출결 기록/);
-  assert.match(help,/명단 불러오기를 누른 뒤/);
+  assert.match(help,/클래스 출결/);
+  assert.match(help,/아이 명단을 불러온 뒤/);
   assert.doesNotMatch(portal,/PARENT DOCUMENT SERVICE/);
 });
 test('polish stylesheet and fresh cache versions load in all staff entrypoints',()=>{
   const staticPages=files.map(read);
-  for(const html of staticPages)assert.match(html,/staff-polish-v34\.css\?v=38\.0\.0/);
+  for(const html of staticPages.slice(0,2))assert.match(html,/staff-polish-v34\.css\?v=39\.0\.0/);
+  // The separate Apps Script /exec page stays on V38 until the owner redeploys it.
+  assert.match(staticPages[2],/staff-polish-v34\.css\?v=38\.0\.0/);
   const index=staticPages[0];
   for(const script of ['staff-google-bridge.js','administration-accelerator.js','staff-native-kdf.js','staff-account-management.js','staff-ux-v31.js','staff-enterprise-v33.js','administration.js']){
-    assert.ok(index.includes(script+'?v=38.0.0'),script);
+    assert.ok(index.includes(script+'?v=39.0.0'),script);
   }
-  assert.match(admin,/administration-payroll\.js\?v=38\.0\.0/);
+  assert.match(admin,/administration-payroll\.js\?v=39\.0\.0/);
 });
 console.log(JSON.stringify({suite:'V34 staff text and overlap prevention',passed}));
