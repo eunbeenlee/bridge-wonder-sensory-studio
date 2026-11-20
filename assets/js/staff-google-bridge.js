@@ -26,7 +26,9 @@
   let bridgeVerified = false;
   let healthPromise = null;
   function checkHealth(force=false) {
-    if (bridgeVerified && !force) return Promise.resolve(true);
+    // A manual recheck must revalidate, not reuse a prior verified state.
+    if(force)bridgeVerified=false;
+    if (bridgeVerified) return Promise.resolve(true);
     if (healthPromise) return healthPromise;
     healthPromise = request('bridgeHealth',[]).then(()=>true).finally(()=>{healthPromise=null;});
     return healthPromise;

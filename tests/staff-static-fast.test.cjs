@@ -39,9 +39,11 @@ function harness(fetchMock){
     assert.equal(result.token,'test-token');assert.deepEqual(calls,['bridgeHealth','staff23PasswordLogin']);
   });
   await run('Static dashboard updates only while session and navigation match',()=>{
-    const part=admin.slice(admin.indexOf('async function renderHome(){'),admin.indexOf('async function renderInquiries(){'));
-    assert.ok(part.indexOf("$('pageBody').innerHTML")<part.indexOf("await call('staffDashboard'"));
-    assert.match(part,/nav!==state\.navigationSeq\|\|token!==state\.token/);
+    const start=admin.indexOf('function renderHome(){'),end=admin.indexOf('async function renderInquiries(){');
+    assert.ok(start>0&&end>start);
+    const part=admin.slice(start,end);
+    assert.ok(part.indexOf("$('pageBody').innerHTML")<part.indexOf("call('staffDashboard'"));
+    assert.match(part,/epoch===bw282HomeEpoch/);
     assert.match(part,/r\[key\]===null\|\|r\[key\]===undefined/);
   });
   console.log(JSON.stringify({passed:passes,total:4}));

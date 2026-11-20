@@ -125,33 +125,37 @@
     function loading(){return `<div class="panel bw24-loading"><span class="bw24-pulse" aria-hidden="true"></span><p class="muted" role="status">자료를 불러오는 중입니다. 다른 업무 화면으로 이동할 수 있습니다.</p></div>`;}
     async function showPage(page){if(!state.user||!bw24Can(page))return;if(state.page==='payroll'&&window.BWPayroll?.beforeLeave()===false)return;window.BWPayroll?.dispose();state.page=page;const seq=++state.navigationSeq;bw25Accel?.setNavigation(seq);renderNav();const m=MENU.find(x=>x[0]===page);$('topTitle').textContent=m[2];$('pageBody').innerHTML=loading();try{document.scrollingElement?.scrollTo({top:0,behavior:'auto'});if(page==='home')await renderHome();if(page==='inquiries')await renderInquiries();if(page==='registrations')await renderRegistrations();if(page==='classes')await renderClasses();if(page==='courseSettings')await renderCourseSettings();if(page==='roster')await renderRoster();if(page==='attendance')await renderAttendance();if(page==='operations')await renderOperations();if(page==='tuition')await renderTuition();if(page==='safety')await renderSafety();if(page==='handoff')await renderHandoff();if(page==='staffCompliance')await renderStaffCompliance();if(page==='users')await renderUsers();if(page==='security')await renderSecurity();if(page==='documents')await renderDocuments();if(page==='capacity')await renderCapacity();if(page==='waitlist')await renderWaitlist();if(page==='makeups')await renderMakeups();if(page==='themes')await renderThemes();if(page==='payroll')await renderPayroll();if(seq===state.navigationSeq)bw24ApplyReadonly(page);}catch(e){if(seq!==state.navigationSeq||e.message==='BW24_STALE_VIEW')return;if(/로그인이 필요|접속 시간이 만료|사용 권한이 중지/.test(e.message)){await logout();toast('로그인 상태를 다시 확인해 주세요.',true);}else $('pageBody').innerHTML=head(m[2],'')+panel('자료를 불러오지 못했습니다.','',`<p class="danger">${h(e.message)}</p><button id="retryPage" class="btn btn-outline spaced">다시 시도</button>`),$('retryPage').onclick=()=>showPage(page);}}
     // V27.1: paint safe quick links immediately; live counts arrive asynchronously.
-    async function renderHome(){
-  const nav=state.navigationSeq,token=state.token;
-  const defaults=window.BWStaffDefaults||{};
-  const order=defaults.home?.quickOrder||[];
-  const shortcuts=MENU.filter(x=>bw24Can(x[0])&&!['home','security'].includes(x[0]))
-    .sort((a,b)=>((order.indexOf(a[0])<0?999:order.indexOf(a[0]))-(order.indexOf(b[0])<0?999:order.indexOf(b[0]))));
-  const metrics=[['classCount',state.user?.role==='teacher'?'내 담당 반':'운영 중인 수강반']];
-  if(bw24Can('inquiries'))metrics.push(['newInquiries','새로운 상담 문의']);
-  if(bw24Can('registrations'))metrics.push(['pendingEnrollments','확인 필요한 등록']);
-  $('pageBody').innerHTML=head('오늘의 업무','필요한 일부터 빠르게 확인하고 바로 처리하세요.')+
-    `<div class="metric-grid">${metrics.map(([key,title])=>`<article class="metric"><div class="metric-name">${h(title)}</div><div class="metric-value" id="bw271Metric_${key}" aria-live="polite">—</div></article>`).join('')}</div>`+
-    panel('업무 바로가기','필요한 메뉴를 바로 선택할 수 있습니다. 권한이 없는 업무는 표시되지 않습니다.',
-      `<div class="cards-list">${shortcuts.map(x=>`<button type="button" data-goto="${x[0]}" class="btn btn-outline">${h(x[2])}</button>`).join('')}</div>`)+
-    panel('운영 현황','실제 수치만 Google 운영 서버에서 확인합니다.',
-      `<div class="row" style="align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap"><span class="inline-status" id="bw271HomeStatus" role="status" aria-live="polite">최신 운영 현황을 확인하고 있습니다…</span><button type="button" id="bw271RefreshHome" class="btn btn-outline btn-small">현황 새로고침</button></div>`);
-  $('pageBody').querySelectorAll('[data-goto]').forEach(b=>b.onclick=()=>showPage(b.dataset.goto));
-  $('bw271RefreshHome').onclick=()=>{bw24ClearCache();renderHome();};
-  try{
-    const r=await call('staffDashboard',token);
-    if(nav!==state.navigationSeq||token!==state.token||state.page!=='home')return;
-    for(const [key] of metrics){const el=$('bw271Metric_'+key);if(el)el.textContent=r[key]===null||r[key]===undefined?'—':String(r[key]);}
-    const status=$('bw271HomeStatus');if(status)status.textContent='최근 조회: '+String(r.updatedAt||'방금');
-  }catch(e){
-    if(nav!==state.navigationSeq||token!==state.token||state.page!=='home'||e?.message==='BW24_STALE_VIEW')return;
-    const status=$('bw271HomeStatus');if(status)status.textContent='현황 조회가 지연되고 있습니다. 새로고침으로 다시 확인할 수 있습니다.';
-  }
-}
+    // V28.2: static-first paint; metrics are updated asynchronously without blocking navigation.
+    let bw282HomeEpoch=0;
+    function renderHome(){
+      const epoch=++bw282HomeEpoch;
+      const nav=state.navigationSeq,token=state.token;
+      const isCurrent=()=>state.page==='home'&&nav===state.navigationSeq&&token===state.token&&epoch===bw282HomeEpoch;
+      const defaults=window.BWStaffDefaults||{};
+      const order=defaults.home?.quickOrder||[];
+      const shortcuts=MENU.filter(x=>bw24Can(x[0])&&!['home','security'].includes(x[0]))
+        .sort((a,b)=>((order.indexOf(a[0])<0?999:order.indexOf(a[0]))-(order.indexOf(b[0])<0?999:order.indexOf(b[0]))));
+      const metrics=[['classCount',state.user?.role==='teacher'?'내 담당 반':'운영 중인 수강반']];
+      if(bw24Can('inquiries'))metrics.push(['newInquiries','새로운 상담 문의']);
+      if(bw24Can('registrations'))metrics.push(['pendingEnrollments','확인 필요한 등록']);
+      $('pageBody').innerHTML=head('오늘의 업무','필요한 일부터 빠르게 확인하고 바로 처리하세요.')+
+        `<div class="metric-grid">${metrics.map(([key,title])=>`<article class="metric"><div class="metric-name">${h(title)}</div><div class="metric-value" id="bw271Metric_${key}" aria-live="polite">—</div></article>`).join('')}</div>`+
+        panel('업무 바로가기','필요한 메뉴를 바로 선택할 수 있습니다. 권한이 없는 업무는 표시되지 않습니다.',
+          `<div class="cards-list">${shortcuts.map(x=>`<button type="button" data-goto="${x[0]}" class="btn btn-outline">${h(x[2])}</button>`).join('')}</div>`)+
+        panel('운영 현황','실제 수치만 Google 운영 서버에서 확인합니다.',
+          `<div class="row" style="align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap"><span class="inline-status" id="bw271HomeStatus" role="status" aria-live="polite">최신 운영 현황을 확인하고 있습니다…</span><button type="button" id="bw271RefreshHome" class="btn btn-outline btn-small">현황 새로고침</button></div>`);
+      $('pageBody').querySelectorAll('[data-goto]').forEach(b=>b.onclick=()=>showPage(b.dataset.goto));
+      $('bw271RefreshHome').onclick=()=>{bw24ClearCache();renderHome();};
+      // Private details stay on Google. Missing metrics remain unknown (—), never an invented zero.
+      call('staffDashboard',token).then(r=>{
+        if(!isCurrent())return;
+        for(const [key] of metrics){const el=$('bw271Metric_'+key);if(el)el.textContent=r[key]===null||r[key]===undefined?'—':String(r[key]);}
+        const status=$('bw271HomeStatus');if(status)status.textContent='최근 조회: '+String(r.updatedAt||'방금');
+      }).catch(e=>{
+        if(!isCurrent()||e?.message==='BW24_STALE_VIEW')return;
+        const status=$('bw271HomeStatus');if(status)status.textContent='현황 조회가 지연되고 있습니다. 새로고침으로 다시 확인할 수 있습니다.';
+      });
+    }
     async function renderInquiries(){state.inquiries=await call('staffListInquiries',state.token);if(state.page!=='inquiries')return;
       $('pageBody').innerHTML=head('상담 문의','보호자가 남긴 문의를 확인하고 연락 진행 상태를 기록하세요.')+
       panel('상담 접수 내역','연락이 완료되면 상태를 변경해 주세요.',`<div class="toolbar"><input id="inqSearch" type="search" placeholder="이름·연락처·접수번호 검색" aria-label="상담 내역 검색"><span class="pill">최근 ${state.inquiries.length}건</span></div><div id="inquiryRows"></div>`);
@@ -611,10 +615,22 @@ async function renderThemes(){
  if(edit){$('bw20ThemeReset').onclick=()=>{$('bw20ThemeForm').reset();};$('pageBody').querySelectorAll('[data-bw20theme]').forEach(b=>b.onclick=()=>{const x=rows.find(v=>v.month===b.dataset.bw20theme);if(!x)return;const vals={bw20ThemeMonth:x.month,bw20ThemeStatus:x.status,bw20ThemeName:x.theme,bw20ThemeBook:x.book,bw20ThemeSong:x.song,bw20ThemeActivity:x.activity};Object.entries(vals).forEach(([k,v])=>$(k).value=v||'');x.methods.forEach((v,i)=>$('bw20ThemeMethod'+i).value=v||'');$('bw20ThemeForm').scrollIntoView({behavior:'smooth',block:'start'});});$('bw20ThemeForm').onsubmit=async e=>{e.preventDefault();const f=e.currentTarget;setBusy(f,true);try{await call('staff20SaveTheme',state.token,{month:$('bw20ThemeMonth').value,status:$('bw20ThemeStatus').value,theme:$('bw20ThemeName').value,book:$('bw20ThemeBook').value,song:$('bw20ThemeSong').value,activity:$('bw20ThemeActivity').value,methods:labels.map((_,i)=>$('bw20ThemeMethod'+i).value)});toast('월간 주제를 저장했습니다.');await renderThemes();}catch(e){toast(e.message,true);}finally{setBusy(f,false);}};}
 }
 const bw20PreviousRenderHome=renderHome;
-renderHome=async function(){await bw20PreviousRenderHome();if(state.page!=='home')return;try{const r=await call('staff20ActionCenter',state.token);if(state.page!=='home')return;const host=document.createElement('section');host.className='panel';host.innerHTML='<h3>오늘 확인할 업무</h3><p class="panel-desc">개인정보를 표시하지 않고, 확인이 필요한 건수만 모았습니다.</p><div class="bw20-quick">'+(r.items||[]).map(x=>`<button class="bw20-quick-card" data-bw20goto="${h(x.page)}"><strong>${h(x.count)}</strong><span>${h(x.label)}</span></button>`).join('')+'</div>';const tgt=$('pageBody');tgt.insertBefore(host,tgt.querySelector('.metric-grid')||tgt.children[2]||null);host.querySelectorAll('[data-bw20goto]').forEach(b=>b.onclick=()=>showPage(b.dataset.bw20goto));}catch(e){/* Core dashboard remains usable if optional workflow tab is not ready. */}};
+renderHome=function(){
+  bw20PreviousRenderHome();
+  if(state.page!=='home')return;
+  const nav=state.navigationSeq,token=state.token,epoch=bw282HomeEpoch;
+  call('staff20ActionCenter',token).then(r=>{
+    if(state.page!=='home'||nav!==state.navigationSeq||token!==state.token||epoch!==bw282HomeEpoch)return;
+    const host=document.createElement('section');host.className='panel';
+    host.innerHTML='<h3>오늘 확인할 업무</h3><p class="panel-desc">개인정보를 표시하지 않고, 확인이 필요한 건수만 모았습니다.</p><div class="bw20-quick">'+(r.items||[]).filter(x=>bw24Can(x.page)).map(x=>`<button class="bw20-quick-card" data-bw20goto="${h(x.page)}"><strong>${h(x.count)}</strong><span>${h(x.label)}</span></button>`).join('')+'</div>';
+    const tgt=$('pageBody');if(!tgt)return;
+    tgt.insertBefore(host,tgt.querySelector('.metric-grid')||tgt.children[2]||null);
+    host.querySelectorAll('[data-bw20goto]').forEach(b=>b.onclick=()=>showPage(b.dataset.bw20goto));
+  }).catch(()=>{/* Optional summary cannot block static work menu. */});
+};
 
 const bw20OldRenderNav=renderNav;
-renderNav=function(){bw20OldRenderNav();const el=$('bw20PageSelect');if(!el)return;const allowed=MENU.filter(m=>bw24Can(m[0]));el.innerHTML=allowed.map(m=>`<option value="${h(m[0])}">${h(m[2])}</option>`).join('');el.value=state.page;el.onchange=()=>showPage(el.value);};
+renderNav=function(){bw20OldRenderNav();const el=$('bw20PageSelect');if(!el)return;const allowed=MENU.filter(m=>bw24Can(m[0]));const signature=allowed.map(m=>m[0]).join('|');if(el.dataset.bw282Menu!==signature){el.innerHTML=allowed.map(m=>`<option value="${h(m[0])}">${h(m[2])}</option>`).join('');el.dataset.bw282Menu=signature;}el.value=state.page;el.onchange=()=>showPage(el.value);};
 
 // Payroll assets are loaded only when the owner opens the module.
 let bw26PayrollAssets=null;
