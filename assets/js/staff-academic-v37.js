@@ -169,6 +169,13 @@
       }finally{button.disabled=false;}
     };
     reset();list();
+    if(context.prefillReceipt){
+      const match=inquiries.find(x=>x.receipt===context.prefillReceipt);
+      if(match){
+        $('bw37ConsultSelect').value=match.receipt;
+        $('bw37ImportInquiry').click();
+      }
+    }
   }
   const imageOptions=value=>opts(imageChoices.map(x=>({value:x[0],label:x[1]})),value);
   function themeEditor(){
