@@ -1,0 +1,476 @@
+/* BRIDGE WONDER V35 — illustration-safe editorial layout + Instagram story feed.
+   This is a complementary layer; do not change the original brand palette.
+   Forest #40543a / Sage #99a682 / Cream #fbf8f2 / Paper #fffdf8.
+*/
+.page-wonder .wonder-hero-grid,
+.page-wonder .intro-grid,
+.page-wonder .wonder-social-grid,
+.page-wonder .material-layout,
+.page-wonder .subhero-grid {
+  min-width:0;
+}
+.page-wonder .wonder-hero-grid > *,
+.page-wonder .intro-grid > *,
+.page-wonder .wonder-social-grid > *,
+.page-wonder .material-layout > *,
+.page-wonder .subhero-grid > * {
+  min-width:0;
+}
+/* Important: logo and decorative pictures occupy SEPARATE grid rows. */
+.page-wonder .hero-visual {
+  box-sizing:border-box;
+  height:auto;
+  min-height:525px;
+  max-width:100%;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);
+  grid-template-rows:auto minmax(175px,1fr) auto auto;
+  column-gap:12px;
+  row-gap:14px;
+  align-items:center;
+  justify-items:center;
+  align-content:center;
+  padding:47px 24px 32px;
+  overflow:hidden;
+}
+.page-wonder .hero-visual::after {display:none;}
+.page-wonder .hero-mini-label {
+  position:relative;
+  inset:auto;
+  grid-column:1/-1;
+  grid-row:1;
+  font-size:11px;
+  letter-spacing:.07em;
+  line-height:1.55;
+  text-align:center;
+  margin:0;
+  z-index:2;
+}
+.page-wonder .hero-visual-logo {
+  position:relative;
+  grid-column:1/-1;
+  grid-row:2;
+  z-index:2;
+  width:min(100%,400px);
+  max-width:83%;
+  margin:0 auto;
+  transform:none;
+  align-self:center;
+  justify-self:center;
+}
+.page-wonder .hero-visual-logo img {
+  display:block;
+  width:100%;
+  max-width:100%;
+  max-height:270px;
+  height:auto;
+  object-fit:contain;
+  margin:0 auto;
+}
+.page-wonder .hero-floating {
+  position:relative;
+  inset:auto;
+  bottom:auto;
+  left:auto;
+  right:auto;
+  z-index:1;
+  display:block;
+  margin:0;
+  transform:none;
+  width:min(100%,148px);
+  pointer-events:none;
+}
+.page-wonder .hero-floating-left {grid-column:1;grid-row:3;justify-self:start;}
+.page-wonder .hero-floating-right {grid-column:3;grid-row:3;justify-self:end;}
+.page-wonder .hero-floating img {
+  display:block;
+  max-height:116px;
+  width:100%;
+  height:auto;
+  object-fit:contain;
+}
+.page-wonder .hero-visual-bottom {
+  position:relative;
+  inset:auto;
+  grid-column:1/-1;
+  grid-row:4;
+  width:100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:4px;
+  margin:0;
+  text-align:center;
+  padding:1px 8px 0;
+}
+.page-wonder .hero-visual-bottom span {
+  max-width:100%;
+  overflow-wrap:break-word;
+  word-break:keep-all;
+}
+.page-wonder .hero-visual-bottom span:first-child {
+  letter-spacing:.06em;
+  font-size:11px;
+  line-height:1.5;
+}
+.page-wonder .hero-visual-bottom span:last-child {
+  font-size:13px;
+  line-height:1.6;
+}
+/* The two story cards were previously positioned over each other.
+   Keep the original illustrations, backgrounds and corners, but no occlusion. */
+.page-wonder .intro-collage {
+  position:relative;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:15px;
+  width:100%;
+  height:auto;
+  min-height:0;
+  align-items:stretch;
+}
+.page-wonder .intro-collage .collage-card {
+  position:relative;
+  inset:auto;
+  top:auto;
+  left:auto;
+  right:auto;
+  bottom:auto;
+  transform:none;
+  min-width:0;
+  width:100%;
+  max-width:100%;
+  height:auto;
+  min-height:335px;
+  border-radius:23px;
+  padding:22px 17px;
+}
+.page-wonder .collage-cream {gap:10px;justify-content:center;}
+.page-wonder .collage-cream .tiny-label {
+  position:relative;
+  top:auto;
+  left:auto;
+  align-self:flex-start;
+  line-height:1.5;
+  letter-spacing:.07em;
+  font-size:11px;
+}
+.page-wonder .collage-cream img {
+  display:block;
+  width:100%;
+  max-width:220px;
+  max-height:198px;
+  height:auto;
+  flex:0 1 auto;
+  object-fit:contain;
+}
+.page-wonder .collage-cream > span:last-child {
+  font-size:14px;
+  line-height:1.55;
+  text-align:center;
+  white-space:normal;
+  letter-spacing:0;
+  word-break:keep-all;
+}
+.page-wonder .collage-sage {
+  justify-content:space-between;
+  gap:12px;
+}
+.page-wonder .collage-sage .hand-line {
+  align-self:stretch;
+  max-width:100%;
+  font-size:clamp(18px,2vw,25px);
+  line-height:1.25;
+  overflow-wrap:break-word;
+}
+.page-wonder .collage-sage img {
+  width:min(100%,190px);
+  height:auto;
+  max-height:195px;
+  flex:0 1 auto;
+  object-fit:contain;
+}
+.page-wonder .collage-sage .tiny-label {
+  font-size:10px;
+  line-height:1.5;
+  letter-spacing:.07em;
+  text-align:center;
+}
+/* Instagram intro photos sit next to each other instead of rotating
+   over the next photo, caption or profile handle. */
+.page-wonder .wonder-social-visual {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  grid-template-rows:minmax(0,1fr) auto;
+  justify-items:stretch;
+  align-items:center;
+  gap:13px;
+  min-height:0;
+  padding:30px;
+}
+.page-wonder .social-preview {
+  width:100%;
+  height:auto;
+  min-width:0;
+  max-width:none;
+  aspect-ratio:4/5;
+  border-radius:19px;
+  transform:none;
+  padding:0;
+  justify-self:stretch;
+  align-self:stretch;
+  position:relative;
+}
+.page-wonder .social-preview-one,
+.page-wonder .social-preview-two {transform:none;}
+.page-wonder .social-preview img {
+  display:block;
+  width:100%;
+  height:100%;
+  max-width:100%;
+  padding:12px;
+  object-fit:contain;
+}
+.page-wonder .social-handle {
+  position:relative;
+  inset:auto;
+  grid-column:1/-1;
+  grid-row:2;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  max-width:100%;
+  margin:0;
+  z-index:2;
+  font-size:13px;
+  white-space:normal;
+  overflow-wrap:anywhere;
+}
+.page-wonder .material-tile,
+.page-wonder .theme-card,
+.page-wonder .stage-content,
+.page-wonder .experience-card {
+  min-width:0;
+}
+.page-wonder .material-tile h3,
+.page-wonder .material-tile p,
+.page-wonder .theme-card h3,
+.page-wonder .theme-card p {overflow-wrap:break-word;word-break:keep-all;}
+.page-wonder .material-tile img {display:block;width:100%;max-width:100%;height:178px;object-fit:contain;}
+.page-wonder .material-disclaimer,
+.page-wonder .age-caption {
+  font-size:12.5px;
+  line-height:1.8;
+  color:#566b55;
+  letter-spacing:0;
+  word-break:keep-all;
+}
+.page-wonder .story-logo-scene img,
+.page-wonder .shared-topic-visual img,
+.page-wonder .mission-feature img {
+  display:block;
+  max-width:100%;
+  height:auto;
+  object-fit:contain;
+}
+.page-wonder .bw-open-card {
+  max-width:min(510px,calc(100% - 16px));
+  max-height:min(90dvh,790px);
+  overflow-x:hidden;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+}
+.page-wonder .bw-open-logo {max-height:95px;object-fit:contain;}
+.page-wonder .bw-open-description,
+.page-wonder .bw-open-subline {
+  line-height:1.75;
+  letter-spacing:0;
+  word-break:keep-all;
+}
+/* Real feed. No imitation posts: renders only authenticated Instagram data
+   synchronized into same-origin image files by GitHub Actions. */
+.page-wonder .bw-instagram-feed-section {
+  background:#fffdf9;
+  border-top:1px solid #ebe8db;
+}
+.page-wonder .bw-instagram-feed-heading {
+  display:flex;
+  align-items:end;
+  justify-content:space-between;
+  gap:22px;
+  margin-bottom:28px;
+}
+.page-wonder .bw-instagram-feed-heading > * {min-width:0;}
+.page-wonder .bw-instagram-feed-heading .section-title {margin-bottom:9px;}
+.page-wonder .bw-instagram-feed-heading p {
+  margin:0;
+  max-width:700px;
+  color:#60715e;
+  font-size:14px;
+  line-height:1.85;
+}
+.page-wonder .bw-instagram-feed-heading .text-link {flex:none;white-space:nowrap;}
+.page-wonder .bw-instagram-grid {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:16px;
+}
+.page-wonder .bw-instagram-post {
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+  height:100%;
+  overflow:hidden;
+  background:var(--paper);
+  border:1px solid #e5e5d7;
+  border-radius:20px;
+  color:var(--forest);
+  box-shadow:0 10px 30px rgba(60,76,53,.035);
+  transition:transform .2s ease,box-shadow .2s ease;
+}
+.page-wonder .bw-instagram-post:hover {
+  transform:translateY(-3px);
+  box-shadow:0 18px 36px rgba(60,76,53,.09);
+}
+.page-wonder .bw-instagram-post-media {
+  width:100%;
+  aspect-ratio:1/1;
+  background:#f3f2ea;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+.page-wonder .bw-instagram-post-media img {
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
+.page-wonder .bw-instagram-post-copy {display:flex;flex-direction:column;gap:5px;padding:15px 18px 18px;min-width:0;}
+.page-wonder .bw-instagram-post-meta {font-size:11px;font-weight:700;color:#7b9277;}
+.page-wonder .bw-instagram-post-title {
+  margin:0;
+  min-height:2.7em;
+  font-size:14px;
+  font-weight:650;
+  line-height:1.55;
+  color:#415743;
+  display:-webkit-box;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:2;
+  overflow:hidden;
+  overflow-wrap:break-word;
+  word-break:keep-all;
+}
+.page-wonder .bw-instagram-empty {
+  border:1px solid #e1e6d9;
+  background:#f3f6ef;
+  border-radius:24px;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  gap:30px;
+  padding:32px 34px;
+}
+.page-wonder .bw-instagram-empty .bw-instagram-empty-head {
+  display:flex;
+  align-items:center;
+  gap:18px;
+  min-width:0;
+}
+.page-wonder .bw-instagram-empty img {
+  width:96px;
+  max-height:70px;
+  height:auto;
+  flex:none;
+  object-fit:contain;
+}
+.page-wonder .bw-instagram-empty strong {
+  font-size:18px;
+  font-weight:750;
+  color:var(--forest);
+  display:block;
+}
+.page-wonder .bw-instagram-empty p {font-size:13px;color:#667963;line-height:1.8;margin:9px 0 0;}
+.page-wonder .bw-instagram-empty .btn {flex:none;}
+.page-wonder .bw-instagram-story-link {
+  display:inline-flex;
+  gap:10px;
+  align-items:center;
+  margin-top:22px;
+  font-size:13px;
+  font-weight:700;
+  color:var(--forest);
+  text-decoration:underline;
+  text-underline-offset:4px;
+}
+@media(max-width:1020px) {
+  .page-wonder .hero-visual{min-height:465px;padding:36px 22px 26px;}
+  .page-wonder .hero-floating img{max-height:96px;}
+  .page-wonder .intro-collage .collage-card{min-height:310px;}
+}
+@media(max-width:840px) {
+  .page-wonder .hero-visual{min-height:430px;max-width:610px;}
+  .page-wonder .intro-collage{max-width:600px;margin-inline:auto;}
+  .page-wonder .wonder-social-visual{min-height:0;}
+  .page-wonder .bw-instagram-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .page-wonder .bw-instagram-feed-heading{align-items:flex-start;flex-direction:column;gap:12px;}
+}
+@media(max-width:600px) {
+  .page-wonder .hero-visual {
+    height:auto;
+    min-height:348px;
+    padding:31px 16px 20px;
+    grid-template-rows:auto minmax(118px,1fr) auto auto;
+    gap:6px 8px;
+  }
+  .page-wonder .hero-visual-logo {width:min(100%,290px);max-width:78%;}
+  .page-wonder .hero-visual-logo img {max-height:150px;}
+  .page-wonder .hero-mini-label {font-size:10px;letter-spacing:.035em;}
+  .page-wonder .hero-floating {width:min(100%,105px);}
+  .page-wonder .hero-floating img{max-height:72px;}
+  .page-wonder .hero-visual-bottom{padding:0 2px;}
+  .page-wonder .hero-visual-bottom span:first-child{font-size:10px;}
+  .page-wonder .hero-visual-bottom span:last-child{font-size:11px;}
+  .page-wonder .intro-collage{gap:10px;}
+  .page-wonder .intro-collage .collage-card{
+    min-height:270px;
+    padding:17px 12px;
+    border-radius:18px;
+  }
+  .page-wonder .collage-cream img{max-height:155px;}
+  .page-wonder .collage-cream > span:last-child{font-size:12px;}
+  .page-wonder .collage-sage .hand-line{font-size:17px;}
+  .page-wonder .collage-sage img{max-height:120px;}
+  .page-wonder .wonder-social-visual{padding:18px;gap:9px;}
+  .page-wonder .social-preview{border-radius:15px;}
+  .page-wonder .social-preview img{padding:8px;}
+  .page-wonder .material-composition{grid-template-columns:minmax(0,1fr);gap:13px;}
+  .page-wonder .material-disclaimer{grid-column:1;margin:0;}
+  .page-wonder .material-tile img{height:175px;}
+  .page-wonder .material-tile h3{font-size:18px;}
+  .page-wonder .material-tile p{font-size:13px;}
+  .page-wonder .bw-instagram-feed-heading .section-title{font-size:clamp(28px,7vw,37px);}
+  .page-wonder .bw-instagram-empty{grid-template-columns:1fr;gap:18px;padding:22px;}
+  .page-wonder .bw-instagram-empty .bw-instagram-empty-head{gap:12px;}
+  .page-wonder .bw-instagram-empty img{width:72px;max-height:60px;}
+  .page-wonder .bw-instagram-empty strong{font-size:16px;}
+  .page-wonder .bw-instagram-empty .btn{justify-self:stretch;}
+  .page-wonder .bw-instagram-grid{gap:10px;}
+  .page-wonder .bw-instagram-post{border-radius:13px;}
+  .page-wonder .bw-instagram-post-copy{padding:12px 11px 14px;}
+  .page-wonder .bw-instagram-post-title{font-size:12px;}
+  .page-wonder .bw-instagram-post-meta{font-size:10px;}
+}
+@media(max-width:360px){
+  .page-wonder .intro-collage{grid-template-columns:minmax(0,1fr);gap:12px;}
+  .page-wonder .intro-collage .collage-card{min-height:205px;}
+  .page-wonder .collage-sage img{max-height:125px;}
+  .page-wonder .bw-instagram-grid{grid-template-columns:minmax(0,1fr);}
+}
+@media(prefers-reduced-motion:reduce){
+  .page-wonder .bw-instagram-post{transition:none;}
+  .page-wonder .bw-instagram-post:hover{transform:none;}
+}
