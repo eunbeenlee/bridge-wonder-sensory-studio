@@ -5,10 +5,10 @@
   <meta name="robots" content="noindex,nofollow,noarchive,nosnippet">
   <meta name="referrer" content="strict-origin">
   <meta name="theme-color" content="#fbf8f2">
-  <title>Bridge Wonder | 선생님 운영공간 · GitHub 독립 화면 검증</title>
+  <title>Bridge Wonder | 선생님 운영공간</title>
   <link rel="icon" href="../assets/img/favicon.png">
-  <link rel="stylesheet" href="../assets/css/administration.css?v=27.0.0">
-  <style>#bw27-server-status{position:fixed;z-index:60;bottom:12px;left:12px;right:12px;max-width:440px;margin:0 auto;border:1px solid #e8dcc8;border-radius:12px;background:#fffdf8;padding:10px 13px;color:#40543a;box-shadow:0 8px 24px #40543a14;font:12px/1.7 system-ui,-apple-system,'Noto Sans KR',sans-serif}#bw27-server-status[hidden]{display:none}</style>
+  <link rel="stylesheet" href="../assets/css/administration.css?v=27.1.0">
+  <style>#bw27-server-status{position:fixed;z-index:60;bottom:12px;left:12px;right:12px;max-width:440px;margin:0 auto;border:1px solid #e8dcc8;border-radius:12px;background:#fffdf8;padding:10px 13px;color:#40543a;box-shadow:0 8px 24px #40543a14;font:12px/1.7 system-ui,-apple-system,'Noto Sans KR',sans-serif}#bw27-server-status[hidden]{display:none} .bw271-login-tools{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin-top:15px}.bw271-login-tools .inline-link{font-size:12px;color:#40543a;text-underline-offset:3px}.bw271-login-tools a{align-self:center}</style>
 </head><body>
 <!-- BW25_UI_START -->
 <main id="loginScreen" class="login-shell">
@@ -45,6 +45,7 @@
         </div>
         <div id="loginFeedback" class="inline-status" role="status" aria-live="polite" style="margin-top:15px"></div>
         <div class="login-note">승인된 직원만 사용할 수 있습니다. 모든 정보는 업무 목적에 한해 조회하세요.</div>
+        <div class="bw271-login-tools"><button id="bw27-check-server" type="button" class="inline-link">서버 연결 다시 확인</button><a class="inline-link" href="https://script.google.com/macros/s/AKfycbwQVKOruJFxxUHVrsrsDvIpv95jz-ag5SbozlJcJ9mDNrpdGFyYp-uIsT2y2_-3n-xa/exec" rel="noopener noreferrer" target="_blank">Google 직접 접속</a></div>
       </section>
     </div>
   </main>
@@ -54,10 +55,10 @@
   </div>
   <div id="toast" role="status" aria-live="polite" style="position:fixed;bottom:18px;right:18px;z-index:50;max-width:min(380px,calc(100vw - 36px));background:#354f33;color:#fff;padding:12px 17px;border-radius:12px;box-shadow:0 12px 30px #21372030;display:none;font-size:12px"></div>
 <!-- BW25_UI_END -->
-<button id="bw27-check-server" type="button" style="position:fixed;bottom:91px;left:50%;transform:translateX(-50%);border:1px solid #40543a;border-radius:10px;background:#fffdf8;color:#40543a;padding:8px 13px;font:12px system-ui;cursor:pointer;z-index:61">Google 서버 연결 검사</button>
-<p style="position:fixed;top:10px;left:10px;right:10px;max-width:520px;margin:0 auto;padding:6px 12px;border-radius:9px;background:#fff2ea;color:#8c4428;z-index:62;text-align:center;font:12px/1.7 system-ui">검증용 관리자 화면입니다. 실제 로그인 전에 Google 서버 연결 검사를 실행하세요.</p>
+<p style="position:fixed;top:10px;left:10px;right:10px;max-width:520px;margin:0 auto;padding:6px 12px;border-radius:9px;background:#fff2ea;color:#8c4428;z-index:62;text-align:center;font:12px/1.7 system-ui">검증용 접속 화면입니다. Google 서버 연결 상태를 확인할 수 있습니다.</p>
 <p id="bw27-server-status" role="status" aria-live="polite">Google 서버 연결 상태를 확인할 수 있습니다. 서버 연결에 실패해도 이 로그인 화면은 유지됩니다.</p>
-<script src="../assets/js/staff-google-bridge.js?v=27.0.0" defer></script>
+<script src="../assets/js/staff-static-defaults.js?v=27.1.0" defer></script>
+<script src="../assets/js/staff-google-bridge.js?v=27.1.0" defer></script>
 <script src="../assets/js/administration-accelerator.js?v=26.0.0" defer></script>
-<script src="../assets/js/administration.js?v=26.0.0" defer></script>
+<script src="../assets/js/administration.js?v=27.1.0" defer></script>
 </body></html>
