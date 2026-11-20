@@ -77,3 +77,6 @@ jobs:
       - name: student intake and monthly experiences V37 tests
         if: always()
         run: node tests/academic-management-v37.test.cjs
+      - name: unified V32 compliance and inspection readiness PDF tests
+        if: always()
+        run: node tests/compliance-v32.test.cjs
