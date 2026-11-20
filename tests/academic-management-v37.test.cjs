@@ -127,11 +127,16 @@ check('save basic profile without a scheduled day or birth date, not enrolled ye
   assert.deepEqual([...list[0].classIds],[]);
   assert.equal(ctx.bw37ManualRoster_({role:'owner',classes:[],canContact:true}).length,0);
 });
-check('no duplicate consultations and no premature 2x weekly enrollment',()=>{
+check('no duplicate consultations or premature weekly enrollment; classrooms require capacity',()=>{
   assert.throws(()=>ctx.staff37SaveStudent('owner',{...common,revision:0}),/같은 이름|이미.*등록/);
-  assert.throws(()=>ctx.staff37SaveStudent('owner',{...common,id,revision:1,
-    status:'재원',birth:'2025-01-20',classIds:['BW-MON'],evidence:'private approved',
-    verifiedAt:'2026-03-02'}),/수업횟수|두 수업반/);
+  const base={...common,id,revision:1,status:'재원',birth:'2025-01-20',
+    evidence:'private approved',verifiedAt:'2026-03-02'};
+  assert.throws(()=>ctx.staff37SaveStudent('owner',{...base,classIds:['BW-MON']}),/수업횟수|두 수업반/);
+  assert.throws(()=>ctx.staff37SaveStudent('owner',{...base,phone:'129-555-1111',classIds:['BW-MON','BW-THU']}),/휴대전화/);
+  const caps=ctx.bw20Caps_;
+  ctx.bw20Caps_=()=>({'BW-MON':0,'BW-THU':4});
+  assert.throws(()=>ctx.staff37SaveStudent('owner',{...base,classIds:['BW-MON','BW-THU']}),/정원/);
+  ctx.bw20Caps_=caps;
 });
 check('after guardian confirmation, two classes appear independently in attendance roster',()=>{
   const result=ctx.staff37SaveStudent('owner',{...common,id,revision:1,
@@ -164,6 +169,31 @@ check('monthly experience publication is owner-only and public payload contains 
   assert.doesNotMatch(publicJs,/김보호|01012345678|가상아이|private approved file/);
   assert.throws(()=>ctx.staff37SaveExperience('owner',{month:'2027-03',heading:'덮어쓰기',
     intro:'변경',cards,status:'공개',revision:0}),/수정/);
+});
+check('public monthly theme keeps hero illustrations synchronized and private details out',()=>{
+  const dom=new JSDOM('<!doctype html><html lang="ko"><head></head><body>'+
+    '<section class="experience-hero"><div class="eyebrow"></div><h1>old</h1><p>old</p>'+
+    '<div class="scene-welcome"><img src="welcome.webp"></div>'+
+    '<div class="scene-snow"><img src="snowy.webp"></div>'+
+    '<div class="scene-colors"><img src="colors.webp"></div></section>'+
+    '<section class="experience-themes"><div class="eyebrow"></div>'+
+    '<h2 class="section-title"></h2><div class="experience-cards"></div></section>'+
+    '</body></html>',{url:'https://bridgewonder.bridgeacademy.co.kr/sensory-studio/experience/',runScripts:'outside-only'});
+  const w=dom.window;
+  w.eval(publicExperience);
+  w.BWPublicExperience.receive({ok:true,theme:{
+    month:'2027-03',heading:'봄과 만나는 원더',intro:'새싹을 만나봐요',
+    cards:[
+      {title:'봄의 촉감',description:'새싹',tags:'촉감',image:'teddy'},
+      {title:'색 탐험',description:'색의 발견',tags:'색',image:'colors'},
+      {title:'봄비',description:'봄비 소리',tags:'소리',image:'story-book'}
+    ]
+  }});
+  assert.equal(w.document.querySelectorAll('.experience-cards article').length,3);
+  assert.match(w.document.querySelector('.scene-welcome img').src,/teddy\.webp$/);
+  assert.match(w.document.querySelector('.scene-colors img').src,/story-book\.webp$/);
+  assert.equal(w.document.querySelector('.experience-hero h1').textContent,'봄과 만나는 원더');
+  dom.window.close();
 });
 check('new public form collects guardian and weekly frequency without mandatory schedule',()=>{
   const publicForm=from('sensory-studio/visit/index.html');
