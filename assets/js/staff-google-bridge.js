@@ -24,8 +24,16 @@
   }
   let count = 0;
   let bridgeVerified = false;
+  let healthPromise = null;
+  function checkHealth(force=false) {
+    if (bridgeVerified && !force) return Promise.resolve(true);
+    if (healthPromise) return healthPromise;
+    healthPromise = request('bridgeHealth',[]).then(()=>true).finally(()=>{healthPromise=null;});
+    return healthPromise;
+  }
   async function request(name, args) {
-    if (name !== 'bridgeHealth' && !bridgeVerified) throw Error('Google 서버 연결 검사를 먼저 실행해 주세요. 서버 연결 전에는 계정 정보가 전송되지 않습니다.');
+    // Never send credentials, student data or payroll before the server identity is verified.
+    if (name !== 'bridgeHealth' && !bridgeVerified) await checkHealth();
     if (!Array.isArray(args)) throw Error('요청 형식 오류');
     const body = JSON.stringify({protocol:PROTOCOL,method:name,args});
     if (body.length > 350000) throw Error('요청이 너무 큽니다. 입력 데이터를 확인해 주세요.');
@@ -87,17 +95,20 @@
     });
   }
   global.google = Object.assign(global.google || {}, {script:Object.assign((global.google||{}).script || {},{run:runner(null,null,null)})});
-  global.BW27Bridge = Object.freeze({request,version:'27.0.0',mode:'github-standalone-google-api'});
+  global.BW27Bridge = Object.freeze({request,checkHealth,version:'27.1.0',mode:'github-standalone-google-api'});
   const check = document.getElementById('bw27-check-server');
   if (check) check.addEventListener('click', async () => {
     check.disabled=true;
-    msg('Google 서버 통신을 검사하고 있습니다…',false);
+    msg('Google 서버 통신을 확인하고 있습니다…',false);
     try {
-      const result=await request('bridgeHealth',[]);
-      if (result && result.transport==='google-apps-script') msg('Google 직원 서버 연결에 성공했습니다. 이제 계정 로그인과 업무 권한을 확인할 수 있습니다.',false);
-      else msg('Google 응답을 받았지만 예상 버전과 다릅니다. 배포 내용을 확인해 주세요.',true);
-    } catch (_) { /* request() already displays the actionable diagnostic. */ }
+      await checkHealth(true);
+      msg('Google 직원 서버 연결이 확인되었습니다. 로그인할 수 있습니다.',false);
+    } catch (_) { /* Error already reported by request(). */ }
     finally { check.disabled=false; }
   });
-  msg('독립 관리자 화면이 준비되었습니다. Google 서버 연결 검사 버튼으로 상태를 확인할 수 있습니다.',false);
+  msg('Google 서버 연결을 자동으로 확인하고 있습니다…',false);
+  // No password or private data is sent by this one-time anonymous health probe.
+  Promise.resolve().then(()=>checkHealth()).then(()=>{
+    msg('Google 직원 서버 연결 확인 완료 · 로그인할 수 있습니다.',false);
+  }).catch(()=>{});
 })(window);
