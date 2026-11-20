@@ -29,7 +29,7 @@
     if (body.length > 350000) throw Error('요청이 너무 큽니다. 입력 데이터를 확인해 주세요.');
     const controller = new AbortController();
     // Existing login verifier may require a longer server time than read-only requests.
-    const timeout = (name === 'staff23PasswordLogin') ? 55000 : 46000;
+    const timeout = (name === 'bridgeHealth') ? 15000 : ((name === 'staff23PasswordLogin') ? 55000 : 46000);
     const timer = setTimeout(() => controller.abort(), timeout);
     count += 1;
     try {
@@ -82,5 +82,16 @@
   }
   global.google = Object.assign(global.google || {}, {script:Object.assign((global.google||{}).script || {},{run:runner(null,null,null)})});
   global.BW27Bridge = Object.freeze({request,version:'27.0.0',mode:'github-standalone-google-api'});
-  msg('독립 관리자 화면이 준비되었습니다. Google 서버 연결은 로그인 시 확인됩니다.',false);
+  const check = document.getElementById('bw27-check-server');
+  if (check) check.addEventListener('click', async () => {
+    check.disabled=true;
+    msg('Google 서버 통신을 검사하고 있습니다…',false);
+    try {
+      const result=await request('bridgeHealth',[]);
+      if (result && result.transport==='google-apps-script') msg('Google 직원 서버 연결에 성공했습니다. 이제 계정 로그인과 업무 권한을 확인할 수 있습니다.',false);
+      else msg('Google 응답을 받았지만 예상 버전과 다릅니다. 배포 내용을 확인해 주세요.',true);
+    } catch (_) { /* request() already displays the actionable diagnostic. */ }
+    finally { check.disabled=false; }
+  });
+  msg('독립 관리자 화면이 준비되었습니다. Google 서버 연결 검사 버튼으로 상태를 확인할 수 있습니다.',false);
 })(window);
