@@ -233,6 +233,20 @@ check('public monthly theme keeps hero illustrations synchronized and private de
   assert.equal(w.document.querySelector('.experience-hero h1').textContent,'봄과 만나는 원더');
   dom.window.close();
 });
+check('published prices distinguish regular tuition from trial promotion without mutating contracts',()=>{
+  const home=from('sensory-studio/index.html');
+  const visit=from('sensory-studio/visit/index.html');
+  const experience=from('sensory-studio/experience/index.html');
+  const programs=from('sensory-studio/programs/index.html');
+  assert.match(home,/체험 프로모션 · 50분 1회[\\s\\S]*25,000/);
+  assert.match(home,/정규 수업 50분 1회 30,000원/);
+  assert.match(visit,/체험 50분 · 1회[\\s\\S]*25,000/);
+  assert.match(visit,/정규 수업 · 50분 1회[\\s\\S]*30,000원/);
+  assert.match(experience,/정규 수업은 50분 1회 30,000원/);
+  assert.match(programs,/정규 수업은 50분 1회 30,000원/);
+  assert.match(app,/1회 안내가격을 그대로 월 교습비로 입력하지 말고/);
+  assert.doesNotMatch(academic,/25000|30000|25,000|30,000/);
+});
 check('new public form collects guardian and weekly frequency without mandatory schedule',()=>{
   const publicForm=from('sensory-studio/visit/index.html');
   assert.match(publicForm,/name="guardian"/);
