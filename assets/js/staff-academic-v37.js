@@ -24,7 +24,7 @@
       '<label>아이 이름 <input id="bw37Child" maxlength="45" required placeholder="아이 이름"></label>'+
       '<label>생년월일 <span class="bw37-optional">재원 확정 시 필수</span><input id="bw37Birth" type="date"></label>'+
       '<label>보호자 성함 <input id="bw37Guardian" maxlength="45" required placeholder="보호자 성함"></label>'+
-      '<label>보호자 관계 <select id="bw37Relation">'+opts(['모','부','조부모','법정대리인','기타 보호자'].map(x=>({value:x,label:x})),'모')+'</select></label>'+
+      '<label>보호자 관계 <select id="bw37Relation">'+opts(['미확인','모','부','조부모','법정대리인','기타 보호자'].map(x=>({value:x,label:x})),'미확인')+'</select></label>'+
       '<label>보호자 연락처 <input id="bw37Phone" type="tel" maxlength="18" required placeholder="01012345678"></label>'+
       '<label>보호자 이메일 <span class="bw37-optional">선택</span><input id="bw37Email" type="email" maxlength="180"></label>'+
       '<label>최초 접수일 <input id="bw37Joined" type="date" required></label>'+
@@ -92,7 +92,7 @@
     function reset(){
       $('bw37StudentForm').reset();$('bw37StudentId').value='';$('bw37StudentRevision').value='0';
       $('bw37InquiryReceipt').value='';$('bw37Joined').value=today();
-      $('bw37Status').value='임시등록';$('bw37Weekly').value='미정';
+      $('bw37Status').value='임시등록';$('bw37Weekly').value='미정';$('bw37Relation').value='미확인';
       $('bw37Class1').value='';$('bw37Class2').value='';
       $('bw37StudentFeedback').textContent='';$('bw37StudentEditor').open=true;
     }
