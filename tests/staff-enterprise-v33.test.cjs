@@ -37,7 +37,7 @@ api.sync();
 test('fully horizontal header appears with only role-allowed grouped items',()=>{
   assert.ok(doc.getElementById('workspace').classList.contains('bw33-ready'));
   assert.ok(doc.getElementById('bw33Navigation'));
-  assert.equal(doc.querySelectorAll('#bw33NavGroups [data-bw33group-trigger]').length,2);
+  assert.equal(doc.querySelectorAll('#bw33NavGroups [data-bw33group-trigger]').length,3);
   assert.equal(doc.querySelectorAll('.bw33-menu-panel [data-bw33go]').length,4);
   assert.equal(doc.querySelector('[data-bw33go="users"]'),null);
   assert.equal(doc.querySelector('[data-bw33go="payroll"]'),null);
@@ -46,14 +46,14 @@ test('fully horizontal header appears with only role-allowed grouped items',()=>
   assert.match(doc.getElementById('bw33Breadcrumb').textContent,/운영 홈/);
 });
 test('top-level parent menu shows second-level sections and click navigates',()=>{
-  const group=doc.querySelector('[data-bw33group-trigger="parents"]');
+  const group=doc.querySelector('[data-bw33group-trigger="consult"]');
   assert.ok(group);
   group.click();
   assert.equal(group.getAttribute('aria-expanded'),'true');
-  const panel=doc.getElementById('bw33Panel-parents');
+  const panel=doc.getElementById('bw33Panel-consult');
   assert.equal(panel.hidden,false);
-  assert.match(panel.textContent,/상담 관리/);
-  assert.match(panel.textContent,/요청 서류·PDF/);
+  assert.match(panel.textContent,/문의와 대기/);
+  assert.match(panel.textContent,/체험·클래스 상담/);
   panel.querySelector('[data-bw33go="inquiries"]').click();
   assert.equal(state.page,'inquiries');
   assert.equal(panel.hidden,true);
@@ -113,7 +113,7 @@ test('role denial hides PDF shortcut and inaccessible groups',()=>{
   access.delete('documents');access.delete('inquiries');
   state.page='home';api.sync();
   assert.equal(doc.getElementById('bw33PdfToggle').hidden,true);
-  assert.equal(doc.querySelector('[data-bw33group-trigger="parents"]'),null);
+  assert.equal(doc.querySelector('[data-bw33group-trigger="consult"]'),null);
   assert.equal(doc.querySelectorAll('.bw33-menu-panel [data-bw33go="documents"]').length,0);
   const before=routes.length;
   api.openDocument('contract');
@@ -123,7 +123,7 @@ test('client never calls network, writes secrets or stores guardian data',()=>{
   assert.doesNotMatch(script,/fetch\s*\(|localStorage|sessionStorage|SPREADSHEET_ID|OWNER_EMAIL|PRIVATE_PEPPER/);
   assert.match(style,/\.bw33-ready/);
   assert.match(style,/\.sidebar\{display:none!important/);
-  assert.match(html,/staff-enterprise-v33\.js\?v=38\.0\.0/);
+  assert.match(html,/staff-enterprise-v33\.js\?v=39\.0\.0/);
   assert.match(app,/BW33Enterprise\?\.sync/);
   assert.match(app,/BW33Enterprise\?\.pageReady/);
 });
