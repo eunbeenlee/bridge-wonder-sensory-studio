@@ -12,7 +12,7 @@ const BW37=Object.freeze({
   STUDENT_HEADERS:[
     '학생번호','아동 이름','생년월일','보호자 성명','보호자 관계','보호자 연락처',
     '보호자 이메일','등록 수업반','등록일','운영 상태','보호자 확인 증빙 참조',
-    '보호자 확인일','업무 메모','수정자','수정시각','개정번호'
+    '보호자 확인일','희망 수업횟수','상담 접수번호','업무 메모','수정자','수정시각','개정번호'
   ],
   EXPERIENCE_HEADERS:[
     '적용 월','상단 제목','월간 소개',
@@ -71,11 +71,13 @@ function bw37StudentObject_(r){
   return {
     id:String(r[0]||''),child:String(r[1]||''),birth:String(r[2]||''),
     guardian:String(r[3]||''),relation:String(r[4]||''),phone:String(r[5]||''),
-    email:String(r[6]||''),classId:String(r[7]||''),joined:String(r[8]||''),
+    email:String(r[6]||''),classId:String(r[7]||'').split(',')[0]||'',
+    classIds:String(r[7]||'').split(',').filter(Boolean),joined:String(r[8]||''),
     status:String(r[9]||'임시등록'),evidence:String(r[10]||''),
-    verifiedAt:String(r[11]||''),note:String(r[12]||''),
-    editor:String(r[13]||''),updated:String(r[14]||''),
-    revision:Number(r[15])||0,source:'직접 등록'
+    verifiedAt:String(r[11]||''),weekly:String(r[12]||'미정'),
+    inquiryReceipt:String(r[13]||''),note:String(r[14]||''),
+    editor:String(r[15]||''),updated:String(r[16]||''),
+    revision:Number(r[17])||0,source:'직접 등록'
   };
 }
 function bw37ManualStudents_(){
@@ -94,55 +96,77 @@ function bw37SignedKeys_(){
 }
 function bw37ManualActive_(user,duplicates){
   const signed=duplicates||bw37SignedKeys_();
-  const rows=bw37ManualStudents_().filter(s=>s.status==='재원'&&s.evidence&&s.verifiedAt&&s.classId);
+  const rows=bw37ManualStudents_().filter(s=>s.status==='재원'&&s.evidence&&s.verifiedAt&&s.birth&&s.classIds.length);
   return rows.filter(s=>(user.role!=='teacher'||user.classes.includes(s.classId)) &&
     !signed.has(bw37StudentKey_(s.child,s.birth,s.phone)));
 }
 function bw37ManualRoster_(user,duplicates){
-  return bw37ManualActive_(user,duplicates).map(s=>({
-    receipt:s.id,child:s.child,birth:s.birth.slice(0,7),
-    classId:s.classId,course:'영어 오감놀이',
-    guardian:user.role==='teacher'&&!user.canContact?'':s.guardian,
-    phone:user.role==='teacher'&&!user.canContact?'':s.phone,
-    source:'직접 등록'
-  }));
+  return bw37ManualActive_(user,duplicates).flatMap(s=>s.classIds
+    .filter(id=>user.role!=='teacher'||user.classes.includes(id))
+    .map(id=>({
+      receipt:s.id,child:s.child,birth:s.birth.slice(0,7),
+      classId:id,course:'영어 오감놀이',
+      guardian:user.role==='teacher'&&!user.canContact?'':s.guardian,
+      phone:user.role==='teacher'&&!user.canContact?'':s.phone,
+      source:'직접 등록'
+    })));
 }
-function bw37ManualStudent_(id) {
+function bw37ManualStudent_(id,originalDate) {
   if(!/^BW-S-[A-F0-9]{12}$/.test(String(id||'')))return null;
   const found=bw37ManualStudents_().find(s=>s.id===id);
   if(!found||found.status!=='재원'||!found.evidence||!found.verifiedAt)
     throw Error('재원 상태와 보호자 확인 증빙을 먼저 확인해 주세요.');
-  return {receipt:found.id,child:found.child,classId:found.classId};
+  if(!found.classIds.length)throw Error('배정된 반을 찾을 수 없습니다.');
+  let classId=found.classIds[0];
+  if(found.classIds.length>1){
+    const date=bw18Date_(originalDate,false),
+      day=BW20.DAYS[new Date(date+'T12:00:00+09:00').getUTCDay()];
+    const matched=bw20ClassData_().filter(c=>found.classIds.includes(c.id)&&c.day===day);
+    if(matched.length!==1)throw Error('원래 수업일과 일치하는 반을 확인해 주세요.');
+    classId=matched[0].id;
+  }
+  return {receipt:found.id,child:found.child,classId};
 }
 function bw37ValidateStudent_(p){
   const id=String(p&&p.id||'').trim().toUpperCase();
   if(id&&!/^BW-S-[A-F0-9]{12}$/.test(id))throw Error('수정할 학생번호를 확인해 주세요.');
   const child=bw37CleanText_(p&&p.child,45,true),
-    birth=bw18Date_(p&&p.birth,false),
+    birth=bw18Date_(p&&p.birth,true),
     guardian=bw37CleanText_(p&&p.guardian,45,true),
     relation=String(p&&p.relation||'').trim(),
     phone=bw37StudentPhone_(p&&p.phone),
     email=String(p&&p.email||'').trim().toLowerCase(),
-    classId=String(p&&p.classId||'').trim().toUpperCase(),
+    classIds=Array.isArray(p&&p.classIds)
+      ?p.classIds.map(x=>String(x||'').trim().toUpperCase()).filter(Boolean)
+      :String(p&&p.classId||'').split(',').map(x=>x.trim().toUpperCase()).filter(Boolean),
     joined=bw18Date_(p&&p.joined,false),
     status=String(p&&p.status||'임시등록').trim(),
     evidence=bw37CleanText_(p&&p.evidence,160,false),
     verifiedAt=bw18Date_(p&&p.verifiedAt,true),
+    weekly=String(p&&p.weekly||'미정'),
+    inquiryReceipt=String(p&&p.inquiryReceipt||'').trim().toUpperCase(),
     note=bw37CleanText_(p&&p.note,240,false),
     revision=bw37Version_(p&&p.revision);
   if(!['모','부','조부모','법정대리인','기타 보호자'].includes(relation))
     throw Error('보호자 관계를 목록에서 선택해 주세요.');
   if(email&&!bw17Email_(email))throw Error('보호자 이메일을 확인해 주세요.');
   if(!BW37.STATES.includes(status))throw Error('학생 운영 상태를 선택해 주세요.');
-  if(birth>joined)throw Error('생년월일은 등록일보다 앞서야 합니다.');
+  if(birth&&birth>joined)throw Error('생년월일은 등록일보다 앞서야 합니다.');
+  if(!['미정','주 1회','주 2회'].includes(weekly))throw Error('희망 수업횟수를 선택해 주세요.');
+  if(classIds.length>2||new Set(classIds).size!==classIds.length)
+    throw Error('수업반은 중복 없이 최대 두 개까지 배정할 수 있습니다.');
+  classIds.forEach(bw20Class_);
+  if(inquiryReceipt&&!/^BW-[A-Z0-9]{10,18}$/.test(inquiryReceipt))
+    throw Error('상담 접수번호를 확인해 주세요.');
   if(joined>Utilities.formatDate(new Date(),'Asia/Seoul','yyyy-MM-dd').slice(0,4)+'-12-31')
     throw Error('등록일을 확인해 주세요.');
-  if(classId)bw20Class_(classId);
-  if(status==='재원'&&(!classId||!evidence||!verifiedAt))
-    throw Error('재원 처리 전에 수업반과 보호자 확인 증빙·확인일을 입력해 주세요.');
+  if(status==='재원'&&(!birth||!classIds.length||!evidence||!verifiedAt))
+    throw Error('재원 확정 전에 생년월일·수업반·보호자 확인 증빙과 확인일을 입력해 주세요.');
+  if(status==='재원'&&weekly==='주 2회'&&classIds.length!==2)
+    throw Error('주 2회로 확정하려면 서로 다른 두 수업반을 배정해 주세요.');
   if(verifiedAt&&!evidence)throw Error('보호자 확인일을 기록하려면 증빙 참조를 입력해 주세요.');
-  return {id,child,birth,guardian,relation,phone,email,classId,joined,status,
-    evidence,verifiedAt,note,revision};
+  return {id,child,birth,guardian,relation,phone,email,classId:classIds[0]||'',
+    classIds,joined,status,evidence,verifiedAt,weekly,inquiryReceipt,note,revision};
 }
 function staff37ListStudents(token){
   const user=bw24Authorized_(token,'students','read',['owner','director']);
@@ -153,8 +177,19 @@ function staff37ListStudents(token){
     status:'온라인 등록확정',source:'보호자 온라인 신청',editable:false
   }));
   const classes=bw20ClassData_().map(s=>({id:s.id,day:s.day,time:s.time}));
+  // Pre-fill an unsigned draft from an existing consultation. No automatic enrollment.
+  const inquiry=bw17Read_(bw17Book_().getSheetByName(BW17.INQUIRIES),2000);
+  const inquiries=inquiry.rows.slice().reverse().map(r=>{
+    const rawNote=String(r[7]||'');
+    const extract=(key)=>{const m=rawNote.match(new RegExp('\\['+key+':([^\\]]{1,65})\\]'));return m?m[1]:'';};
+    return {receipt:String(r[1]||''),child:bw17Field_(inquiry.headers,r,'아이 이름'),
+      guardian:extract('보호자')||String(r[2]||''),phone:String(r[3]||''),
+      months:String(r[4]||''),weekly:extract('희망횟수')||'미정',
+      status:String(r[8]||'')};
+  }).filter(x=>/^BW-[A-Z0-9]{10,18}$/.test(x.receipt)&&x.child&&x.phone)
+    .slice(0,150);
   bw17Audit_(user,'학생 기본정보 조회',BW37.STUDENTS,'성공','직접 '+manual.length+' / 온라인 '+online.length);
-  return {manual,online,classes};
+  return {manual,online,classes,inquiries};
 }
 function staff37SaveStudent(token,p){
   const user=bw24Authorized_(token,'students','write',['owner','director']);
@@ -172,22 +207,36 @@ function staff37SaveStudent(token,p){
       throw Error('같은 이름·생년월·연락처의 직접 등록 학생이 있습니다.');
     if(bw37SignedKeys_().has(key))
       throw Error('이미 온라인 등록이 확정된 학생입니다. 기존 온라인 학생 명단을 확인해 주세요.');
+    if(clean.inquiryReceipt){
+      const found=bw17Read_(bw17Book_().getSheetByName(BW17.INQUIRIES),15000);
+      const source=found.rows.find(r=>String(r[1])===clean.inquiryReceipt);
+      if(!source||String(bw17Field_(found.headers,source,'아이 이름')).trim()!==clean.child||
+         String(source[3]||'').replace(/\D/g,'')!==clean.phone)
+        throw Error('상담 접수와 학생 이름·연락처가 일치하지 않습니다.');
+      if(rows.some((r,i)=>i!==index&&String(r[13])===clean.inquiryReceipt))
+        throw Error('이 상담 접수번호로 이미 학생 기본정보를 등록했습니다.');
+    }
     if(clean.status==='재원'){
-      const counts=bw20Counts_().counts,cap=bw20Caps_()[clean.classId]||0;
-      const occupied=counts[clean.classId]||0;
-      const currentIsCounted=old&&old.status==='재원'&&old.classId===clean.classId&&old.evidence&&old.verifiedAt?1:0;
-      if(cap>0&&occupied-currentIsCounted>=cap)
-        throw Error('수업반 정원이 찼습니다. 다른 수업반을 확인해 주세요.');
+      const counts=bw20Counts_().counts,caps=bw20Caps_();
+      for(const classId of clean.classIds){
+        const cap=caps[classId]||0;
+        const occupied=counts[classId]||0;
+        const currently=old&&old.status==='재원'&&old.classIds.includes(classId)&&
+          old.evidence&&old.verifiedAt?1:0;
+        if(cap>0&&occupied-currently>=cap)
+          throw Error('선택한 수업반 '+classId+'의 정원이 찼습니다.');
+      }
     }
     const id=old?old.id:'BW-S-'+Utilities.getUuid().replace(/-/g,'').slice(0,12).toUpperCase();
     const row=index>=0?index+2:sheet.getLastRow()+1;
     sheet.getRange(row,1,1,BW37.STUDENT_HEADERS.length).setValues([[
       id,clean.child,clean.birth,clean.guardian,clean.relation,
-      clean.phone,clean.email,clean.classId,clean.joined,clean.status,
-      clean.evidence,clean.verifiedAt,clean.note,user.email,new Date(),revision+1
+      clean.phone,clean.email,clean.classIds.join(','),clean.joined,clean.status,
+      clean.evidence,clean.verifiedAt,clean.weekly,clean.inquiryReceipt,clean.note,
+      user.email,new Date(),revision+1
     ]]);
     bw17Audit_(user,'학생 기본정보 '+(old?'수정':'등록'),id,'성공',
-      clean.status+' / '+clean.classId);
+      clean.status+' / '+clean.classIds.join(','));
     return {ok:true,id,revision:revision+1};
   }finally{lock.releaseLock();}
 }
