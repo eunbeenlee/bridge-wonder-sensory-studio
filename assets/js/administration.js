@@ -2,8 +2,8 @@
 'use strict';
     const $=id=>document.getElementById(id), h=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const ROLE_NAMES={owner:'원장',director:'관리자',teacher:'선생님',frontdesk:'상담 담당자'};
-    const MENU=[['home','⌂','오늘의 업무',['owner','director','teacher','frontdesk']],['classes','▦','수업 시간표',['owner','director','teacher','frontdesk']],['roster','♧','우리 반 아이들',['owner','director','teacher']],['attendance','✓','출석 체크',['owner','director','teacher']],['makeups','▤','결석·보강 관리',['owner','director','teacher']],['safety','♧','수업 준비·안전',['owner','director','teacher']],['handoff','✓','보호자 인계 기록',['owner','director','teacher']],['themes','♧','이달의 수업 주제',['owner','director','teacher','frontdesk']],['capacity','▣','반별 정원',['owner','director','teacher','frontdesk']],['inquiries','◷','상담 접수',['owner','director','frontdesk']],['waitlist','◷','대기 상담',['owner','director','frontdesk']],['registrations','▤','수강 신청 확인',['owner','director']],['tuition','₩','수납·환불 기록',['owner','director']],['documents','▣','안내문·확인서',['owner','director','teacher','frontdesk']],['operations','☷','개원·운영 체크리스트',['owner','director']],['courseSettings','◈','학원 운영정보',['owner','director']],['staffCompliance','◈','선생님 준수 사항',['owner']],['users','♙','선생님 계정·권한',['owner']],['payroll','₩','직원 급여관리',['owner']],['security','⌘','이용 기록·백업',['owner']]];
-    const BW24_CAPS={"home":{"label":"오늘의 업무","read":["owner","director","teacher","frontdesk"],"write":[]},"inquiries":{"label":"상담 접수","read":["owner","director","frontdesk"],"write":["owner","director","frontdesk"]},"registrations":{"label":"수강 신청 확인","read":["owner","director"],"write":[]},"classes":{"label":"수업 시간표","read":["owner","director","teacher","frontdesk"],"write":["owner","director"]},"courseSettings":{"label":"학원 운영정보","read":["owner","director"],"write":["owner","director"]},"roster":{"label":"우리 반 아이들","read":["owner","director","teacher"],"write":[]},"attendance":{"label":"출석 체크","read":["owner","director","teacher"],"write":["owner","director","teacher"]},"operations":{"label":"개원·운영 체크리스트","read":["owner","director"],"write":["owner","director"]},"tuition":{"label":"수납·환불 기록","read":["owner","director"],"write":["owner","director"]},"safety":{"label":"수업 준비·안전","read":["owner","director","teacher"],"write":["owner","director","teacher"]},"handoff":{"label":"보호자 인계 기록","read":["owner","director","teacher"],"write":["owner","director","teacher"]},"staffCompliance":{"label":"선생님 준수 사항","read":["owner"],"write":["owner"]},"users":{"label":"선생님 계정·권한","read":["owner"],"write":["owner"]},"documents":{"label":"안내문·확인서","read":["owner","director","teacher","frontdesk"],"write":["owner","director","teacher","frontdesk"]},"capacity":{"label":"반별 정원","read":["owner","director","teacher","frontdesk"],"write":["owner","director"]},"waitlist":{"label":"대기 상담","read":["owner","director","frontdesk"],"write":["owner","director","frontdesk"]},"makeups":{"label":"결석·보강 관리","read":["owner","director","teacher"],"write":["owner","director","teacher"]},"themes":{"label":"이달의 수업 주제","read":["owner","director","teacher","frontdesk"],"write":["owner","director"]},"security":{"label":"이용 기록·백업","read":["owner"],"write":["owner"]},"payroll":{"label":"직원 급여관리","read":["owner"],"write":["owner"]}};
+    const MENU=[['home','⌂','오늘의 업무',['owner','director','teacher','frontdesk']],['classes','▦','수업 시간표',['owner','director','teacher','frontdesk']],['roster','♧','우리 반 아이들',['owner','director','teacher']],['attendance','✓','출석 체크',['owner','director','teacher']],['makeups','▤','결석·보강 관리',['owner','director','teacher']],['safety','♧','수업 준비·안전',['owner','director','teacher']],['handoff','✓','보호자 인계 기록',['owner','director','teacher']],['themes','♧','이달의 수업 주제',['owner','director','teacher','frontdesk']],['capacity','▣','반별 정원',['owner','director','teacher','frontdesk']],['inquiries','◷','상담 접수',['owner','director','frontdesk']],['waitlist','◷','대기 상담',['owner','director','frontdesk']],['registrations','▤','수강 신청 확인',['owner','director']],['tuition','₩','수납·환불 기록',['owner','director']],['documents','▣','안내문·확인서',['owner','director','teacher','frontdesk']],['operations','☷','개원·운영 체크리스트',['owner','director']],['compliance','▤','법정·행정 관리',['owner','director']],['courseSettings','◈','학원 운영정보',['owner','director']],['staffCompliance','◈','선생님 준수 사항',['owner']],['users','♙','선생님 계정·권한',['owner']],['payroll','₩','직원 급여관리',['owner']],['security','⌘','이용 기록·백업',['owner']]];
+    const BW24_CAPS={"home":{"label":"오늘의 업무","read":["owner","director","teacher","frontdesk"],"write":[]},"inquiries":{"label":"상담 접수","read":["owner","director","frontdesk"],"write":["owner","director","frontdesk"]},"registrations":{"label":"수강 신청 확인","read":["owner","director"],"write":[]},"classes":{"label":"수업 시간표","read":["owner","director","teacher","frontdesk"],"write":["owner","director"]},"courseSettings":{"label":"학원 운영정보","read":["owner","director"],"write":["owner","director"]},"roster":{"label":"우리 반 아이들","read":["owner","director","teacher"],"write":[]},"attendance":{"label":"출석 체크","read":["owner","director","teacher"],"write":["owner","director","teacher"]},"operations":{"label":"개원·운영 체크리스트","read":["owner","director"],"write":["owner","director"]},"compliance":{"label":"법정·행정 관리","read":["owner","director"],"write":["owner","director"]},"tuition":{"label":"수납·환불 기록","read":["owner","director"],"write":["owner","director"]},"safety":{"label":"수업 준비·안전","read":["owner","director","teacher"],"write":["owner","director","teacher"]},"handoff":{"label":"보호자 인계 기록","read":["owner","director","teacher"],"write":["owner","director","teacher"]},"staffCompliance":{"label":"선생님 준수 사항","read":["owner"],"write":["owner"]},"users":{"label":"선생님 계정·권한","read":["owner"],"write":["owner"]},"documents":{"label":"안내문·확인서","read":["owner","director","teacher","frontdesk"],"write":["owner","director","teacher","frontdesk"]},"capacity":{"label":"반별 정원","read":["owner","director","teacher","frontdesk"],"write":["owner","director"]},"waitlist":{"label":"대기 상담","read":["owner","director","frontdesk"],"write":["owner","director","frontdesk"]},"makeups":{"label":"결석·보강 관리","read":["owner","director","teacher"],"write":["owner","director","teacher"]},"themes":{"label":"이달의 수업 주제","read":["owner","director","teacher","frontdesk"],"write":["owner","director"]},"security":{"label":"이용 기록·백업","read":["owner"],"write":["owner"]},"payroll":{"label":"직원 급여관리","read":["owner"],"write":["owner"]}};
     function bw24Can(page,mode='read'){
       if(!state.user||!BW24_CAPS[page])return false;
       if(!BW24_CAPS[page][mode==='write'?'write':'read'].includes(state.user.role))return false;
@@ -149,7 +149,7 @@
     function table(columns,rows){if(!rows.length)return `<div class="empty">표시할 기록이 없습니다.</div>`;return `<div class="table-scroll"><table class="data-table"><thead><tr>${columns.map(x=>`<th scope="col">${x}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div>`;}
     function tag(s){return `<span class="tag ${/실패|중지|결석/.test(s)?'off':/대기|신규|확인전/.test(s)?'waiting':''}">${h(s||'미확인')}</span>`;}
     function loading(){return `<div class="panel bw24-loading"><span class="bw24-pulse" aria-hidden="true"></span><p class="muted" role="status">자료를 불러오는 중입니다. 다른 업무 화면으로 이동할 수 있습니다.</p></div>`;}
-    async function showPage(page){if(!state.user||!bw24Can(page))return;if(state.page==='payroll'&&window.BWPayroll?.beforeLeave()===false)return;window.BWPayroll?.dispose();state.page=page;const seq=++state.navigationSeq;bw25Accel?.setNavigation(seq);renderNav();window.BW31UX?.decorateNav();const m=MENU.find(x=>x[0]===page);$('topTitle').textContent=m[2];$('pageBody').innerHTML=loading();try{document.scrollingElement?.scrollTo({top:0,behavior:'auto'});if(page==='home')await renderHome();if(page==='inquiries')await renderInquiries();if(page==='registrations')await renderRegistrations();if(page==='classes')await renderClasses();if(page==='courseSettings')await renderCourseSettings();if(page==='roster')await renderRoster();if(page==='attendance')await renderAttendance();if(page==='operations')await renderOperations();if(page==='tuition')await renderTuition();if(page==='safety')await renderSafety();if(page==='handoff')await renderHandoff();if(page==='staffCompliance')await renderStaffCompliance();if(page==='users')await renderUsers();if(page==='security')await renderSecurity();if(page==='documents')await renderDocuments();if(page==='capacity')await renderCapacity();if(page==='waitlist')await renderWaitlist();if(page==='makeups')await renderMakeups();if(page==='themes')await renderThemes();if(page==='payroll')await renderPayroll();if(seq===state.navigationSeq){bw24ApplyReadonly(page);window.BW31UX?.onPageRendered(page);}}catch(e){if(seq!==state.navigationSeq||e.message==='BW24_STALE_VIEW')return;if(/로그인이 필요|접속 시간이 만료|사용 권한이 중지/.test(e.message)){await logout();toast('로그인 상태를 다시 확인해 주세요.',true);}else $('pageBody').innerHTML=head(m[2],'')+panel('자료를 불러오지 못했습니다.','',`<p class="danger">${h(e.message)}</p><button id="retryPage" class="btn btn-outline spaced">다시 시도</button>`),$('retryPage').onclick=()=>showPage(page);}}
+    async function showPage(page){if(!state.user||!bw24Can(page))return;if(state.page==='payroll'&&window.BWPayroll?.beforeLeave()===false)return;window.BWPayroll?.dispose();state.page=page;const seq=++state.navigationSeq;bw25Accel?.setNavigation(seq);renderNav();window.BW31UX?.decorateNav();const m=MENU.find(x=>x[0]===page);$('topTitle').textContent=m[2];$('pageBody').innerHTML=loading();try{document.scrollingElement?.scrollTo({top:0,behavior:'auto'});if(page==='home')await renderHome();if(page==='inquiries')await renderInquiries();if(page==='registrations')await renderRegistrations();if(page==='classes')await renderClasses();if(page==='courseSettings')await renderCourseSettings();if(page==='roster')await renderRoster();if(page==='attendance')await renderAttendance();if(page==='operations')await renderOperations();if(page==='compliance')await renderCompliance();if(page==='tuition')await renderTuition();if(page==='safety')await renderSafety();if(page==='handoff')await renderHandoff();if(page==='staffCompliance')await renderStaffCompliance();if(page==='users')await renderUsers();if(page==='security')await renderSecurity();if(page==='documents')await renderDocuments();if(page==='capacity')await renderCapacity();if(page==='waitlist')await renderWaitlist();if(page==='makeups')await renderMakeups();if(page==='themes')await renderThemes();if(page==='payroll')await renderPayroll();if(seq===state.navigationSeq){bw24ApplyReadonly(page);window.BW31UX?.onPageRendered(page);}}catch(e){if(seq!==state.navigationSeq||e.message==='BW24_STALE_VIEW')return;if(/로그인이 필요|접속 시간이 만료|사용 권한이 중지/.test(e.message)){await logout();toast('로그인 상태를 다시 확인해 주세요.',true);}else $('pageBody').innerHTML=head(m[2],'')+panel('자료를 불러오지 못했습니다.','',`<p class="danger">${h(e.message)}</p><button id="retryPage" class="btn btn-outline spaced">다시 시도</button>`),$('retryPage').onclick=()=>showPage(page);}}
     // V27.1: paint safe quick links immediately; live counts arrive asynchronously.
     // V28.2: static-first paint; metrics are updated asynchronously without blocking navigation.
     let bw282HomeEpoch=0;
@@ -478,6 +478,15 @@
         try{const result=await call('staffAppendTuition',state.token,payload);pendingTuition=null;toast(result.auditWarning?'수납 기록을 저장했습니다. 감사 이력은 별도로 확인해 주세요.':result.replayed?'이미 저장된 수납 기록을 확인했습니다.':'수납 관리 기록을 추가했습니다.');if(state.page==='tuition')await renderTuition();}
         catch(err){toast(err.message,true);}finally{setBusy(f,false);}
       };
+      // V32: refund deadlines have a separate ledger; existing tuition records remain unchanged.
+      const nav=state.navigationSeq,token=state.token;
+      bw32LoadModule().then(()=>{
+        if(nav!==state.navigationSeq||token!==state.token||state.page!=='tuition')return;
+        window.BW32Compliance?.appendRefunds($('pageBody'),{
+          token,call,isCurrent:()=>state.page==='tuition'&&nav===state.navigationSeq&&token===state.token,
+          toast
+        },d.students||[]);
+      }).catch(error=>{console.info('[Bridge Wonder] refund register unavailable:',String(error?.message||error));});
     }
     async function renderSafety(){
       const cls=await getClasses();const d=await call('staffListDailyChecks',state.token,{});if(state.page!=='safety')return;
@@ -653,6 +662,47 @@ const bw20OldRenderNav=renderNav;
 renderNav=function(){bw20OldRenderNav();const el=$('bw20PageSelect');if(!el)return;const allowed=MENU.filter(m=>bw24Can(m[0]));const signature=allowed.map(m=>m[0]).join('|');if(el.dataset.bw282Menu!==signature){el.innerHTML=window.BW31UX?.groupedOptions(allowed)||allowed.map(m=>`<option value="${h(m[0])}">${h(m[2])}</option>`).join('');el.dataset.bw282Menu=signature;}el.value=state.page;el.onchange=()=>showPage(el.value);};
 
 // Payroll assets are loaded only when the owner opens the module.
+
+ // V32 is lazy-loaded to keep attendance/login on the fast path.
+ let bw32ModulePromise=null;
+ function bw32LoadModule(){
+   if(window.BW32Compliance)return Promise.resolve(window.BW32Compliance);
+   if(bw32ModulePromise)return bw32ModulePromise;
+   const base='https://bridgewonder.bridgeacademy.co.kr/assets/';
+   const load=(tag,url,id)=>{
+     const previous=document.getElementById(id);
+     if(previous){if(previous.dataset.ready==='true')return Promise.resolve();previous.remove();}
+     return new Promise((resolve,reject)=>{
+       const element=document.createElement(tag);element.id=id;let done=false;
+       const finish=error=>{if(done)return;done=true;clearTimeout(timer);element.onload=null;element.onerror=null;
+         if(error){element.remove();reject(error);}
+         else{element.dataset.ready='true';resolve();}
+       };
+       const timer=setTimeout(()=>finish(Error('법정 관리 화면을 불러오지 못했습니다. 새로고침해 주세요.')),20000);
+       element.onload=()=>finish();
+       element.onerror=()=>finish(Error('법정 관리 파일 로딩에 실패했습니다.'));
+       if(tag==='link'){element.rel='stylesheet';element.href=url;document.head.appendChild(element);}
+       else{element.src=url;element.async=false;document.body.appendChild(element);}
+     });
+   };
+   bw32ModulePromise=Promise.all([
+     load('link',base+'css/staff-compliance-v32.css?v=32.0.0','bw32ComplianceStyle'),
+     load('script',base+'js/staff-compliance-v32.js?v=32.0.0','bw32ComplianceScript')
+   ]).then(()=>{
+     if(!window.BW32Compliance)throw Error('법정 관리 화면 초기화에 실패했습니다.');
+     return window.BW32Compliance;
+   }).catch(error=>{bw32ModulePromise=null;throw error;});
+   return bw32ModulePromise;
+ }
+ async function renderCompliance(){
+   const token=state.token,nav=state.navigationSeq;
+   await bw32LoadModule();
+   if(token!==state.token||nav!==state.navigationSeq||state.page!=='compliance')return;
+   await window.BW32Compliance.render($('pageBody'),{
+     token,call,toast,navigate:showPage,
+     isCurrent:()=>token===state.token&&nav===state.navigationSeq&&state.page==='compliance'
+   });
+ }
 let bw26PayrollAssets=null;
 const bw26PayrollLoads={};
 function bw26LoadPayroll(){
