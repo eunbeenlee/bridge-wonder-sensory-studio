@@ -64,11 +64,19 @@
       e.preventDefault();const form=e.currentTarget;setBusy(form,true);
       $('loginFeedback').textContent='안전한 비밀번호 확인을 준비하고 있습니다…';
       try{
+        const authStarted=performance.now();
         const email=$('passwordEmail').value.trim(),password=$('passwordInput').value;
         // WebCrypto runs in the browser's native engine. Do not store or log this proof.
         const proof=window.BW29KDF?await window.BW29KDF.derive(email,password):null;
+        const nativeKdfMs=Math.max(0,Math.round(performance.now()-authStarted));
         $('loginFeedback').textContent='계정 정보를 확인하고 있습니다…';
+        const serverStarted=performance.now();
         const r=await call('staff23PasswordLogin',{email,password,proof});
+        // Timing-only diagnostics: do not expose the password, native proof or session token.
+        window.BW29LastLoginTiming=Object.freeze({
+          nativeKdfMs,googleAuthMs:Math.max(0,Math.round(performance.now()-serverStarted)),
+          totalMs:Math.max(0,Math.round(performance.now()-authStarted))
+        });
         state.token=r.token;state.user=r.user;
         $('passwordInput').value='';
         try{sessionStorage.setItem('bw17_staff_session',state.token);}catch(_){}
@@ -111,7 +119,17 @@
       if(token)call('staffLogout',token).catch(()=>{});
     }
     $('logoutBtn').onclick=logout;$('logoutMobile').onclick=logout;
-    async function startApp(){if(!state.user){try{state.user=await call('staffCurrentUser',state.token);}catch(e){await logout();return;}}$('loginScreen').hidden=true;$('workspace').hidden=false;$('staffName').textContent=state.user.name||'선생님';$('staffEmail').textContent=state.user.email||'';$('roleBadge').textContent=ROLE_NAMES[state.user.role]||'직원';renderNav();await showPage('home');}
+    async function startApp(){if(!state.user){try{state.user=await call('staffCurrentUser',state.token);}catch(e){await logout();return;}}$('loginScreen').hidden=true;$('workspace').hidden=false;$('staffName').textContent=state.user.name||'선생님';$('staffEmail').textContent=state.user.email||'';$('roleBadge').textContent=ROLE_NAMES[state.user.role]||'직원';renderNav();await showPage('home');bw29WarmOwnerPayrollAssets();}
+    function bw29WarmOwnerPayrollAssets(){
+      // Non-sensitive assets only, off the login critical path. No payroll data is fetched.
+      const token=state.token;
+      if(!token||state.user?.role!=='owner')return;
+      const network=navigator.connection;
+      if(network?.saveData||/2g/i.test(network?.effectiveType||''))return;
+      const warm=()=>{if(state.token!==token||state.user?.role!=='owner')return;bw26LoadPayroll().catch(()=>{});};
+      if(typeof requestIdleCallback==='function')requestIdleCallback(warm,{timeout:4000});
+      else setTimeout(warm,3000);
+    }
     function renderNav(){const allowed=MENU.filter(m=>bw24Can(m[0]));const signature=state.page+'|'+allowed.map(m=>m[0]).join(',');for(const id of ['sideNav','mobileNav']){const el=$(id);if(el.dataset.bw25NavSignature===signature)continue;el.innerHTML=allowed.map(m=>`<button type="button" data-page="${m[0]}" class="nav-btn ${m[0]===state.page?'active':''}"><i aria-hidden="true">${m[1]}</i>${m[2]}</button>`).join('');el.dataset.bw25NavSignature=signature;el.querySelectorAll('button[data-page]').forEach(b=>b.onclick=()=>showPage(b.dataset.page));}}
 
     function bw24ApplyReadonly(page){
