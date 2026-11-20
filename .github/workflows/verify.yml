@@ -74,3 +74,6 @@ jobs:
       - name: sensory theme and account-only Instagram profile V35 tests
         if: always()
         run: node tests/sensory-profile-v35.test.cjs
+      - name: student intake and monthly experiences V37 tests
+        if: always()
+        run: node tests/academic-management-v37.test.cjs
