@@ -71,3 +71,6 @@ jobs:
       - name: staff layout and copy polish V34 tests
         if: always()
         run: node tests/staff-polish-v34.test.cjs
+      - name: sensory theme and account-only Instagram profile V35 tests
+        if: always()
+        run: node tests/sensory-profile-v35.test.cjs
