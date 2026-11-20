@@ -5,8 +5,8 @@
 (function(global){
   'use strict';
   const GROUPS=[
-    {key:'daily',title:'수업·출결',items:['home','classes','students','roster','attendance','handoff','safety','makeups','capacity','themes','experiences']},
-    {key:'family',title:'상담·등록',items:['inquiries','waitlist','registrations','tuition','documents']},
+    {key:'daily',title:'수업·출결',items:['home','classes','roster','attendance','handoff','safety','makeups','capacity','themes','experiences']},
+    {key:'family',title:'상담·등록',items:['inquiries','waitlist','registrations','students','tuition','documents']},
     {key:'admin',title:'운영·직원 관리',items:['operations','courseSettings','staffCompliance','users','payroll','security']}
   ];
   const HELP={
