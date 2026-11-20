@@ -411,7 +411,7 @@ function staffListTuition(token) {
   // Manually verified students also appear in the accounting selection list.
   const registered=new Set(students.map(x=>x.receipt));
   for(const student of bw37ManualActive_({role:'owner',classes:[],canContact:true})){
-    if(!registered.has(student.id))students.push({receipt:student.id,name:student.child,classId:'공통등록:'+student.classId});
+    if(!registered.has(student.id))students.push({receipt:student.id,name:student.child,classId:student.classIds.join(',')});
   }
   bw17Audit_(u,'수납 기록 조회',BW18.PAYMENTS,'성공',records.length+'건');
   return {records:records,students:students};
@@ -898,7 +898,7 @@ function bw20Counts_(){
   }
   // Direct registrations count toward real class capacity only after verified activation.
   for(const student of bw37ManualActive_({role:'owner',classes:[],canContact:true})){
-    counts[student.classId]=(counts[student.classId]||0)+1;
+    for(const id of student.classIds)counts[id]=(counts[id]||0)+1;
   }
   return {counts:counts,legacy:legacy};
 }
@@ -943,8 +943,8 @@ function staff20SaveWaitlist(token,p){
    bw17Audit_(u,'대기자 '+(id?'변경':'등록'),key,'성공',status+' / '+classId);return {ok:true,id:key};
  }finally{lock.releaseLock();}
 }
-function bw20Student_(receipt){
-  if(/^BW-S-[A-F0-9]{12}$/.test(String(receipt||'')))return bw37ManualStudent_(receipt);
+function bw20Student_(receipt,originalDate){
+  if(/^BW-S-[A-F0-9]{12}$/.test(String(receipt||'')))return bw37ManualStudent_(receipt,originalDate);
   const d=bw17Read_(bw17Book_().getSheetByName(BW17.REGISTRATIONS),15000);
  const r=d.rows.slice().reverse().find(x=>bw17Field_(d.headers,x,'접수번호')===receipt);
  if(!r||bw17Field_(d.headers,r,'운영자 최종 등록 상태')!=='등록확정')throw Error('확정된 수강등록 번호를 확인해 주세요.');
@@ -968,8 +968,8 @@ function bw20TargetOK_(klass,date,ignoreId){
  return c.id;
 }
 function staff20SaveMakeup(token,p){
- const u=bw24Authorized_(token,'makeups','write',['owner','director','teacher']);const id=String(p&&p.id||'').trim(),receipt=String(p&&p.receipt||'').trim(),student=bw20Student_(receipt);
- const klass=bw17RequireClass_(u,student.classId),date=bw20Date_(p&&p.date,false),reason=String(p&&p.reason||''),status=String(p&&p.status||'접수'),
+ const u=bw24Authorized_(token,'makeups','write',['owner','director','teacher']);const id=String(p&&p.id||'').trim(),receipt=String(p&&p.receipt||'').trim(),date=bw20Date_(p&&p.date,false),student=bw20Student_(receipt,date);
+ const klass=bw17RequireClass_(u,student.classId),reason=String(p&&p.reason||''),status=String(p&&p.status||'접수'),
   targetClass=String(p&&p.targetClass||'').toUpperCase(),targetDate=bw20Date_(p&&p.targetDate,true),note=bw17Safe_(p&&p.note,180);
  if(!['결석','일정변경','기타'].includes(reason)||!BW20.MAKEUP_STATUSES.includes(status))throw Error('요청 구분이나 처리 상태를 확인해 주세요.');
  const original=bw20Class_(klass);if(BW20.DAYS[new Date(date+'T12:00:00+09:00').getUTCDay()]!==original.day)throw Error('원래 수업일은 해당 반의 수업 요일에 맞아야 합니다.');
