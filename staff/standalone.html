@@ -1,19 +1,27 @@
 <!doctype html>
-<html lang="ko"><head>
+<html lang="ko">
+<head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="robots" content="noindex,nofollow,noarchive,nosnippet">
   <meta name="referrer" content="strict-origin">
   <meta name="theme-color" content="#fbf8f2">
-  <title>Bridge Wonder | 선생님 운영공간 · GitHub 독립 화면 검증</title>
-  <link rel="icon" href="../assets/img/favicon.png">
-  <link rel="stylesheet" href="../assets/css/administration.css?v=27.0.0">
-  <style>#bw27-server-status{position:fixed;z-index:60;bottom:12px;left:12px;right:12px;max-width:440px;margin:0 auto;border:1px solid #e8dcc8;border-radius:12px;background:#fffdf8;padding:10px 13px;color:#40543a;box-shadow:0 8px 24px #40543a14;font:12px/1.7 system-ui,-apple-system,'Noto Sans KR',sans-serif}#bw27-server-status[hidden]{display:none}</style>
-</head><body>
+  <title>Bridge Wonder | 선생님 운영공간</title>
+  <link rel="icon" type="image/png" href="../assets/img/favicon.png">
+  <link rel="preconnect" href="https://script.google.com" crossorigin>
+  <link rel="stylesheet" href="../assets/css/administration.css?v=28.0.0">
+  <style>
+    .bw28-health{margin:20px 0 0;padding:14px 0 0;border-top:1px solid #e8dcc8;text-align:center}
+    .bw28-health p{margin:0 0 8px;color:#6e7c69;font:12px/1.6 system-ui,-apple-system,'Noto Sans KR',sans-serif}
+    .bw28-health .inline-link{margin:6px 8px;color:#40543a;font-size:12px}
+    .metric-value{font-variant-numeric:tabular-nums}
+  </style>
+</head>
+<body>
 <!-- BW25_UI_START -->
 <main id="loginScreen" class="login-shell">
     <div class="login-wrap">
-      <div class="login-brand"><img class="logo" alt="Bridge Wonder" src="https://bridgewonder.bridgeacademy.co.kr/assets/img/bridge-wonder-logo.png"><div class="eyebrow">원장·선생님 전용</div><div class="login-title">선생님 운영공간</div></div>
+      <div class="login-brand"><img class="logo" alt="Bridge Wonder" src="../assets/img/bridge-wonder-logo.png"><div class="eyebrow">원장·선생님 전용</div><div class="login-title">선생님 운영공간</div></div>
       <section class="login-card" aria-label="직원 로그인">
         <div id="loginStepPassword">
           <div class="bw23-badge">BRIDGE WONDER · STAFF</div>
@@ -45,19 +53,23 @@
         </div>
         <div id="loginFeedback" class="inline-status" role="status" aria-live="polite" style="margin-top:15px"></div>
         <div class="login-note">승인된 직원만 사용할 수 있습니다. 모든 정보는 업무 목적에 한해 조회하세요.</div>
+        <div class="bw28-health" aria-live="polite">
+          <p id="bw27-server-status" role="status">Google 서버 연결을 확인하고 있습니다…</p>
+          <button id="bw27-check-server" type="button" class="inline-link">연결 상태 다시 확인</button>
+          <a href="https://script.google.com/macros/s/AKfycbwQVKOruJFxxUHVrsrsDvIpv95jz-ag5SbozlJcJ9mDNrpdGFyYp-uIsT2y2_-3n-xa/exec" class="inline-link" target="_blank" rel="noopener noreferrer">Google 화면으로 직접 접속</a>
+        </div>
       </section>
     </div>
   </main>
   <div id="workspace" class="app" hidden>
-    <aside class="sidebar" aria-label="관리 메뉴"><img class="sidebar-logo" alt="Bridge Wonder" src="https://bridgewonder.bridgeacademy.co.kr/assets/img/bridge-wonder-logo.png"><div class="eyebrow" style="padding:0 13px">운영 메뉴</div><nav id="sideNav" class="sidebar-nav"></nav><div class="sidebar-bottom"><div class="sidebar-user" id="staffName"></div><div class="role-desc" id="staffEmail"></div><button class="btn btn-text btn-small" id="logoutBtn">로그아웃</button></div></aside>
-    <main class="main"><header class="topbar"><div class="bw21-topbar-lockup"><img class="bw21-topbar-mark" src="https://bridgewonder.bridgeacademy.co.kr/assets/img/staff-brand-mark.png" width="89" height="52" alt="" aria-hidden="true"><div><h1 id="topTitle">운영 대시보드</h1><div id="topSubtitle" class="topbar-sub">Bridge Wonder · Sensory Play Studio</div></div></div><div class="row"><span id="roleBadge" class="tag">직원</span><button id="logoutMobile" class="btn btn-outline btn-small logout-mobile">로그아웃</button></div></header><nav id="mobileNav" class="mobile-menu" aria-label="모바일 관리 메뉴"></nav><div class="bw20-mobile-switch"><label for="bw20PageSelect">업무 선택</label><select id="bw20PageSelect" aria-label="관리 메뉴 선택"></select></div><div id="pageBody" class="content" aria-live="polite"></div></main>
+    <aside class="sidebar" aria-label="관리 메뉴"><img class="sidebar-logo" alt="Bridge Wonder" src="../assets/img/bridge-wonder-logo.png"><div class="eyebrow" style="padding:0 13px">운영 메뉴</div><nav id="sideNav" class="sidebar-nav"></nav><div class="sidebar-bottom"><div class="sidebar-user" id="staffName"></div><div class="role-desc" id="staffEmail"></div><button class="btn btn-text btn-small" id="logoutBtn">로그아웃</button></div></aside>
+    <main class="main"><header class="topbar"><div class="bw21-topbar-lockup"><img class="bw21-topbar-mark" src="../assets/img/staff-brand-mark.png" width="89" height="52" alt="" aria-hidden="true"><div><h1 id="topTitle">운영 대시보드</h1><div id="topSubtitle" class="topbar-sub">Bridge Wonder · Sensory Play Studio</div></div></div><div class="row"><span id="roleBadge" class="tag">직원</span><button id="logoutMobile" class="btn btn-outline btn-small logout-mobile">로그아웃</button></div></header><nav id="mobileNav" class="mobile-menu" aria-label="모바일 관리 메뉴"></nav><div class="bw20-mobile-switch"><label for="bw20PageSelect">업무 선택</label><select id="bw20PageSelect" aria-label="관리 메뉴 선택"></select></div><div id="pageBody" class="content" aria-live="polite"></div></main>
   </div>
   <div id="toast" role="status" aria-live="polite" style="position:fixed;bottom:18px;right:18px;z-index:50;max-width:min(380px,calc(100vw - 36px));background:#354f33;color:#fff;padding:12px 17px;border-radius:12px;box-shadow:0 12px 30px #21372030;display:none;font-size:12px"></div>
 <!-- BW25_UI_END -->
-<button id="bw27-check-server" type="button" style="position:fixed;bottom:91px;left:50%;transform:translateX(-50%);border:1px solid #40543a;border-radius:10px;background:#fffdf8;color:#40543a;padding:8px 13px;font:12px system-ui;cursor:pointer;z-index:61">Google 서버 연결 검사</button>
-<p style="position:fixed;top:10px;left:10px;right:10px;max-width:520px;margin:0 auto;padding:6px 12px;border-radius:9px;background:#fff2ea;color:#8c4428;z-index:62;text-align:center;font:12px/1.7 system-ui">검증용 관리자 화면입니다. 실제 로그인 전에 Google 서버 연결 검사를 실행하세요.</p>
-<p id="bw27-server-status" role="status" aria-live="polite">Google 서버 연결 상태를 확인할 수 있습니다. 서버 연결에 실패해도 이 로그인 화면은 유지됩니다.</p>
-<script src="../assets/js/staff-google-bridge.js?v=27.0.0" defer></script>
+<script src="../assets/js/staff-static-defaults.js?v=28.0.0" defer></script>
+<script src="../assets/js/staff-google-bridge.js?v=28.0.0" defer></script>
 <script src="../assets/js/administration-accelerator.js?v=26.0.0" defer></script>
-<script src="../assets/js/administration.js?v=26.0.0" defer></script>
-</body></html>
+<script src="../assets/js/administration.js?v=28.0.0" defer></script>
+</body>
+</html>
