@@ -147,7 +147,7 @@ function bw37ValidateStudent_(p){
     inquiryReceipt=String(p&&p.inquiryReceipt||'').trim().toUpperCase(),
     note=bw37CleanText_(p&&p.note,240,false),
     revision=bw37Version_(p&&p.revision);
-  if(!['모','부','조부모','법정대리인','기타 보호자'].includes(relation))
+  if(!['미확인','모','부','조부모','법정대리인','기타 보호자'].includes(relation))
     throw Error('보호자 관계를 목록에서 선택해 주세요.');
   if(email&&!bw17Email_(email))throw Error('보호자 이메일을 확인해 주세요.');
   if(!BW37.STATES.includes(status))throw Error('학생 운영 상태를 선택해 주세요.');
@@ -162,8 +162,15 @@ function bw37ValidateStudent_(p){
     throw Error('등록일을 확인해 주세요.');
   if(status==='재원'&&(!birth||!classIds.length||!evidence||!verifiedAt))
     throw Error('재원 확정 전에 생년월일·수업반·보호자 확인 증빙과 확인일을 입력해 주세요.');
-  if(status==='재원'&&weekly==='주 2회'&&classIds.length!==2)
-    throw Error('주 2회로 확정하려면 서로 다른 두 수업반을 배정해 주세요.');
+  if(status==='재원'&&weekly==='미정')
+    throw Error('재원 확정 전에 주간 수업횟수를 협의해 주세요.');
+  if(status==='재원'&&relation==='미확인')
+    throw Error('재원 확정 전에 실제 보호자 관계를 확인해 주세요.');
+  if(status==='재원'&&((weekly==='주 1회'&&classIds.length!==1)||
+                         (weekly==='주 2회'&&classIds.length!==2)))
+    throw Error('확정된 주간 수업횟수와 배정한 수업반 수가 다릅니다.');
+  if(status==='재원'&&classIds.length===2&&bw20Class_(classIds[0]).day===bw20Class_(classIds[1]).day)
+    throw Error('주 2회 수업은 서로 다른 요일의 수업반을 선택해 주세요.');
   if(verifiedAt&&!evidence)throw Error('보호자 확인일을 기록하려면 증빙 참조를 입력해 주세요.');
   return {id,child,birth,guardian,relation,phone,email,classId:classIds[0]||'',
     classIds,joined,status,evidence,verifiedAt,weekly,inquiryReceipt,note,revision};
@@ -183,7 +190,7 @@ function staff37ListStudents(token){
     const rawNote=String(r[7]||'');
     const extract=(key)=>{const m=rawNote.match(new RegExp('\\['+key+':([^\\]]{1,65})\\]'));return m?m[1]:'';};
     return {receipt:String(r[1]||''),child:bw17Field_(inquiry.headers,r,'아이 이름'),
-      guardian:extract('보호자')||String(r[2]||''),phone:String(r[3]||''),
+      guardian:extract('보호자')||'',phone:String(r[3]||''),
       months:String(r[4]||''),weekly:extract('희망횟수')||'미정',
       status:String(r[8]||'')};
   }).filter(x=>/^BW-[A-Z0-9]{10,18}$/.test(x.receipt)&&x.child&&x.phone)
@@ -205,8 +212,8 @@ function staff37SaveStudent(token,p){
     const key=bw37StudentKey_(clean.child,clean.birth,clean.phone);
     if(rows.some((r,i)=>i!==index&&bw37StudentKey_(r[1],r[2],r[5])===key))
       throw Error('같은 이름·생년월·연락처의 직접 등록 학생이 있습니다.');
-    if(bw37SignedKeys_().has(key))
-      throw Error('이미 온라인 등록이 확정된 학생입니다. 기존 온라인 학생 명단을 확인해 주세요.');
+    if(bw37SignedKeys_().has(key)&&(!old||clean.status==='재원'))
+      throw Error('이미 온라인 등록이 확정된 학생입니다. 온라인 명단을 확인하고 직접 등록 상태를 정리해 주세요.');
     if(clean.inquiryReceipt){
       const found=bw17Read_(bw17Book_().getSheetByName(BW17.INQUIRIES),15000);
       const source=found.rows.find(r=>String(r[1])===clean.inquiryReceipt);
