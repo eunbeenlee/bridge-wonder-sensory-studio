@@ -16,7 +16,7 @@ const fixtureHTML='<!doctype html><html lang="ko"><body>'+
 const dom=new JSDOM(fixtureHTML,{url:'https://bridgewonder.bridgeacademy.co.kr/staff/',runScripts:'outside-only',pretendToBeVisual:true});
 const win=dom.window,doc=win.document;
 win.eval(script);
-let routes=[],toast=[],passed=0;
+let routes=[],toast=[],passed=0,typeChanges=0;
 const MENU=[
   ['home','⌂','오늘의 업무'],['classes','▦','수업 시간표'],['themes','♧','이달의 수업 주제'],
   ['attendance','✓','출석 체크'],['inquiries','◷','상담 접수'],['registrations','▤','수강 신청 확인'],
@@ -89,7 +89,7 @@ test('parent document button opens secure existing PDF flow with selected type',
     '<section class="panel"><div id="docPreview"></div></section>'+
     '<section class="panel"><div id="docResult"></div><button id="docDownloadBtn">다운로드</button></section>'+
     '<details class="bw31-history"><summary>발급 기록</summary><section class="panel"><div id="docHistory">이전 문서</div></section></details>';
-  let typeChanges=0;
+  typeChanges=0;
   doc.getElementById('docType').addEventListener('change',()=>typeChanges++);
   api.pageReady('documents');
   assert.equal(doc.getElementById('docType').value,'contract');
