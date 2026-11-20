@@ -18,10 +18,10 @@ const win=dom.window,doc=win.document;
 win.eval(script);
 let routes=[],toast=[],passed=0,typeChanges=0;
 const MENU=[
-  ['home','⌂','오늘의 업무'],['classes','▦','수업 시간표'],['themes','♧','이달의 수업 주제'],
-  ['attendance','✓','출석 체크'],['inquiries','◷','상담 접수'],['registrations','▤','수강 신청 확인'],
-  ['documents','▣','안내문·확인서'],['tuition','₩','수납·환불 기록'],['operations','☷','운영 점검'],
-  ['compliance','▤','법정·행정 관리'],['users','♙','직원 계정'],['payroll','₩','급여관리'],['security','⌘','이용 기록·백업']
+  ['home','⌂','스튜디오 홈'],['classes','▦','클래스 시간표'],['themes','♧','월간 오감놀이 계획'],
+  ['attendance','✓','출결 체크'],['inquiries','◷','체험·클래스 상담'],['registrations','▤','등록 서류 확인'],
+  ['documents','▣','보호자 문서·PDF'],['tuition','₩','수업비·환불 기록'],['operations','☷','시설·운영 점검'],
+  ['compliance','▤','운영 기준·법정 확인'],['users','♙','직원 계정'],['payroll','₩','직원 급여'],['security','⌘','이용 기록·백업']
 ];
 const access=new Set(['home','classes','attendance','inquiries','documents']);
 const state={page:'home',user:{email:'teacher@example.invalid',role:'teacher'}};
@@ -43,7 +43,7 @@ test('fully horizontal header appears with only role-allowed grouped items',()=>
   assert.equal(doc.querySelector('[data-bw33go="payroll"]'),null);
   assert.equal(doc.querySelector('[data-bw33go="security"]'),null);
   assert.ok(doc.getElementById('bw33PdfToggle'));
-  assert.match(doc.getElementById('bw33Breadcrumb').textContent,/운영 홈/);
+  assert.match(doc.getElementById('bw33Breadcrumb').textContent,/스튜디오 홈/);
 });
 test('top-level parent menu shows second-level sections and click navigates',()=>{
   const group=doc.querySelector('[data-bw33group-trigger="consult"]');
@@ -58,7 +58,7 @@ test('top-level parent menu shows second-level sections and click navigates',()=
   assert.equal(state.page,'inquiries');
   assert.equal(panel.hidden,true);
   api.sync();
-  assert.match(doc.getElementById('bw33Breadcrumb').textContent,/상담 접수/);
+  assert.match(doc.getElementById('bw33Breadcrumb').textContent,/체험·클래스 상담/);
 });
 test('Ctrl+K finds allowed tasks without additional requests or access bypass',()=>{
   const key=new win.KeyboardEvent('keydown',{key:'k',ctrlKey:true,bubbles:true,cancelable:true});
