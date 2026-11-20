@@ -30,7 +30,7 @@ test('every original authorized workflow remains in exactly one visible studio c
   assert.deepEqual([...grouped].sort(),[...pages].sort(),'lost or invented staff pages');
 });
 test('primary categories follow sensory studio operations instead of academy hierarchy',()=>{
-  assert.deepEqual(NAV.map(g=>g.label),[
+  assert.deepEqual(Array.from(NAV,g=>g.label),[
     '상담·등록','클래스 운영','오감놀이 준비','이용료·문서','스튜디오 관리'
   ]);
   assert.ok(NAV[0].sections.flatMap(s=>s.pages).includes('inquiries'));
