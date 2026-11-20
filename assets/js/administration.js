@@ -65,14 +65,14 @@
     $('bw23Reset').onclick=()=>bw23ShowEnrollment('reset');
     $('passwordLoginForm').addEventListener('submit',async e=>{
       e.preventDefault();const form=e.currentTarget;setBusy(form,true);
-      $('loginFeedback').textContent='안전한 비밀번호 확인을 준비하고 있습니다…';
+      $('loginFeedback').textContent='로그인 정보를 확인하고 있습니다…';
       try{
         const authStarted=performance.now();
         const email=$('passwordEmail').value.trim(),password=$('passwordInput').value;
         // WebCrypto runs in the browser's native engine. Do not store or log this proof.
         const proof=window.BW29KDF?await window.BW29KDF.derive(email,password):null;
         const nativeKdfMs=Math.max(0,Math.round(performance.now()-authStarted));
-        $('loginFeedback').textContent='계정 정보를 확인하고 있습니다…';
+        $('loginFeedback').textContent='로그인 중입니다…';
         const serverStarted=performance.now();
         const r=await call('staff23PasswordLogin',{email,password,proof});
         // Timing-only diagnostics: do not expose the password, native proof or session token.
@@ -88,7 +88,7 @@
     });
     $('emailForm').addEventListener('submit',async e=>{
       e.preventDefault();const form=e.currentTarget;setBusy(form,true);
-      $('loginFeedback').textContent='인증번호를 요청하는 중입니다.';
+      $('loginFeedback').textContent='인증번호를 보내고 있습니다.';
       try{
         const email=$('loginEmail').value.trim();
         const result=await call('staff23PasswordStartEnrollment',email);
@@ -100,7 +100,7 @@
     });
     $('otpForm').addEventListener('submit',async e=>{
       e.preventDefault();const form=e.currentTarget;setBusy(form,true);
-      $('loginFeedback').textContent='인증번호와 새 비밀번호를 확인하고 있습니다.';
+      $('loginFeedback').textContent='인증번호와 새 비밀번호를 확인하고 있습니다…';
       try{
         const pw=$('bw23NewPass').value;
         if(pw!==$('bw23ConfirmPass').value)throw Error('새 비밀번호가 일치하지 않습니다.');
@@ -150,7 +150,7 @@
     function table(columns,rows){if(!rows.length)return `<div class="empty">표시할 기록이 없습니다.</div>`;return `<div class="table-scroll"><table class="data-table"><thead><tr>${columns.map(x=>`<th scope="col">${x}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div>`;}
     function tag(s){return `<span class="tag ${/실패|중지|결석/.test(s)?'off':/대기|신규|확인전/.test(s)?'waiting':''}">${h(s||'미확인')}</span>`;}
     function loading(){return `<div class="panel bw24-loading"><span class="bw24-pulse" aria-hidden="true"></span><p class="muted" role="status">자료를 불러오고 있습니다.</p></div>`;}
-    async function showPage(page){if(!state.user||!bw24Can(page))return;if(state.page==='payroll'&&window.BWPayroll?.beforeLeave()===false)return;window.BWPayroll?.dispose();state.page=page;const seq=++state.navigationSeq;bw25Accel?.setNavigation(seq);renderNav();window.BW31UX?.decorateNav();window.BW33Enterprise?.sync();const m=MENU.find(x=>x[0]===page);$('topTitle').textContent=m[2];$('pageBody').innerHTML=loading();try{document.scrollingElement?.scrollTo({top:0,behavior:'auto'});if(page==='home')await renderHome();if(page==='inquiries')await renderInquiries();if(page==='registrations')await renderRegistrations();if(page==='classes')await renderClasses();if(page==='courseSettings')await renderCourseSettings();if(page==='roster')await renderRoster();if(page==='attendance')await renderAttendance();if(page==='operations')await renderOperations();if(page==='tuition')await renderTuition();if(page==='safety')await renderSafety();if(page==='handoff')await renderHandoff();if(page==='staffCompliance')await renderStaffCompliance();if(page==='users')await renderUsers();if(page==='security')await renderSecurity();if(page==='documents')await renderDocuments();if(page==='capacity')await renderCapacity();if(page==='waitlist')await renderWaitlist();if(page==='makeups')await renderMakeups();if(page==='themes')await renderThemes();if(page==='payroll')await renderPayroll();if(seq===state.navigationSeq){bw24ApplyReadonly(page);window.BW31UX?.onPageRendered(page);window.BW33Enterprise?.pageReady(page);}}catch(e){if(seq!==state.navigationSeq||e.message==='BW24_STALE_VIEW')return;if(/로그인이 필요|접속 시간이 만료|사용 권한이 중지/.test(e.message)){await logout();toast('로그인 상태를 다시 확인해 주세요.',true);}else $('pageBody').innerHTML=head(m[2],'')+panel('자료를 불러오지 못했습니다.','',`<p class="danger">${h(e.message)}</p><button id="retryPage" class="btn btn-outline spaced">다시 시도</button>`),$('retryPage').onclick=()=>showPage(page);}}
+    async function showPage(page){if(!state.user||!bw24Can(page))return;if(state.page==='payroll'&&window.BWPayroll?.beforeLeave()===false)return;window.BWPayroll?.dispose();state.page=page;const seq=++state.navigationSeq;bw25Accel?.setNavigation(seq);renderNav();window.BW31UX?.decorateNav();window.BW33Enterprise?.sync();const m=MENU.find(x=>x[0]===page);$('topTitle').textContent=m[2];$('pageBody').innerHTML=loading();try{document.scrollingElement?.scrollTo({top:0,behavior:'auto'});if(page==='home')await renderHome();if(page==='inquiries')await renderInquiries();if(page==='registrations')await renderRegistrations();if(page==='classes')await renderClasses();if(page==='courseSettings')await renderCourseSettings();if(page==='roster')await renderRoster();if(page==='attendance')await renderAttendance();if(page==='operations')await renderOperations();if(page==='tuition')await renderTuition();if(page==='safety')await renderSafety();if(page==='handoff')await renderHandoff();if(page==='staffCompliance')await renderStaffCompliance();if(page==='users')await renderUsers();if(page==='security')await renderSecurity();if(page==='documents')await renderDocuments();if(page==='capacity')await renderCapacity();if(page==='waitlist')await renderWaitlist();if(page==='makeups')await renderMakeups();if(page==='themes')await renderThemes();if(page==='payroll')await renderPayroll();if(seq===state.navigationSeq){bw24ApplyReadonly(page);window.BW31UX?.onPageRendered(page);window.BW33Enterprise?.pageReady(page);}}catch(e){if(seq!==state.navigationSeq||e.message==='BW24_STALE_VIEW')return;if(/로그인이 필요|접속 시간이 만료|사용 권한이 중지/.test(e.message)){await logout();toast('로그인 상태를 다시 확인해 주세요.',true);}else $('pageBody').innerHTML=head(m[2],'')+panel('자료를 불러오지 못했습니다. 다시 시도해 주세요.','',`<p class="danger">${h(e.message)}</p><button id="retryPage" class="btn btn-outline spaced">다시 시도</button>`),$('retryPage').onclick=()=>showPage(page);}}
     // V27.1: paint safe quick links immediately; live counts arrive asynchronously.
     // V28.2: static-first paint; metrics are updated asynchronously without blocking navigation.
     let bw282HomeEpoch=0;
@@ -529,20 +529,20 @@
       `<div class="stack" id="docStepForm"><div class="fields"><div class="form-item"><label for="docType">문서 종류</label><select id="docType">${types.map(t=>`<option value="${h(t.id)}">${h(t.label)}</option>`).join('')}</select></div><div class="form-item"><label for="docSource">기록 선택</label><select id="docSource"><option value="">자료를 불러오는 중입니다.</option></select></div></div><div class="form-item hidden" id="docCustomTitleBox"><label for="docCustomTitle">안내문 제목</label><input id="docCustomTitle" maxlength="95" placeholder="예: 3월 수업 준비물 안내"></div><div class="form-item hidden" id="docCustomNoteBox"><label for="docCustomNote">추가 안내 내용</label><textarea id="docCustomNote" maxlength="1600" rows="4" placeholder="보호자에게 전달할 내용을 간단히 적어 주세요."></textarea></div><div class="row"><button type="button" class="btn btn-outline" id="docPreviewBtn">내용 미리보기</button><small>내용을 확인한 후 PDF를 생성하세요.</small></div></div>`)+
       panel('2. 문서 확인','보호자·수업 정보가 맞는지 확인하세요.',`<div id="docPreview" class="empty">문서를 선택하고 미리보기를 눌러 주세요.</div><div class="row spaced"><button id="docGenerateBtn" type="button" class="btn btn-primary hidden">확인한 내용으로 PDF 생성</button></div>`)+
       panel('3. PDF 다운로드·메일 발송','PDF 생성 후 사용할 수 있습니다.',
-      `<div id="docResult" class="empty">아직 생성한 문서가 없습니다.</div><div id="docSendArea" class="hidden stack spaced"><div class="row"><button id="docDownloadBtn" type="button" class="btn btn-outline">PDF 내려받기</button><small>발급한 PDF는 학원 전용 문서함에 보관됩니다.</small></div><div class="fields"><div class="form-item"><label for="docRecipient">받는 사람 이메일</label><input type="email" id="docRecipient" autocomplete="off" placeholder="받는 분의 이메일 주소" maxlength="180"></div><div class="form-item"><label for="docConfirmEmail">이메일 다시 입력</label><input type="email" id="docConfirmEmail" autocomplete="off" placeholder="주소를 다시 입력해 주세요" maxlength="180"></div></div><div class="form-item"><label for="docMailNote">이메일에 덧붙일 안내 (선택)</label><textarea id="docMailNote" rows="2" maxlength="350" placeholder="예: 요청하신 안내서를 보내드립니다."></textarea></div><label class="row" style="font-size:12px;align-items:flex-start;gap:10px"><input id="docMailConfirm" type="checkbox" style="width:19px;min-height:19px;margin-top:2px;flex:none"><span>받는 분의 주소와 첨부 문서를 확인했습니다. 개인정보가 포함된 문서는 수신자에게 교부할 수 있는지 확인한 후 발송합니다.</span></label><div class="row"><button id="docSendBtn" type="button" class="btn btn-primary">PDF 이메일 보내기</button><small>발송 후에는 수신자에게 메일 도착 여부를 확인해 주세요.</small></div></div>`)+
+      `<div id="docResult" class="empty">발급한 문서가 없습니다.</div><div id="docSendArea" class="hidden stack spaced"><div class="row"><button id="docDownloadBtn" type="button" class="btn btn-outline">PDF 내려받기</button><small>발급한 PDF는 학원 전용 문서함에 보관됩니다.</small></div><div class="fields"><div class="form-item"><label for="docRecipient">받는 사람 이메일</label><input type="email" id="docRecipient" autocomplete="off" placeholder="받는 분의 이메일 주소" maxlength="180"></div><div class="form-item"><label for="docConfirmEmail">이메일 다시 입력</label><input type="email" id="docConfirmEmail" autocomplete="off" placeholder="주소를 다시 입력해 주세요" maxlength="180"></div></div><div class="form-item"><label for="docMailNote">이메일에 덧붙일 안내 (선택)</label><textarea id="docMailNote" rows="2" maxlength="350" placeholder="예: 요청하신 안내서를 보내드립니다."></textarea></div><label class="row" style="font-size:12px;align-items:flex-start;gap:10px"><input id="docMailConfirm" type="checkbox" style="width:19px;min-height:19px;margin-top:2px;flex:none"><span>받는 분의 주소와 첨부 문서를 확인했습니다. 개인정보가 포함된 문서는 수신자에게 교부할 수 있는지 확인한 후 발송합니다.</span></label><div class="row"><button id="docSendBtn" type="button" class="btn btn-primary">PDF 이메일 보내기</button><small>발송 후에는 수신자에게 메일 도착 여부를 확인해 주세요.</small></div></div>`)+
       panel('최근 발급 기록','기존 문서는 다시 생성하지 않고 내려받을 수 있습니다.',
       `<div id="docHistory">${docHistoryTable(history)}</div>`)+
       `<div class="footnote">교습비 영수증은 별도로 발행해야 합니다. 계약서와 발급 문서는 학원 보관 기준에 따라 원본과 백업을 관리해 주세요.</div>`;
       let preview=null,generated=null;
       function req(){return {type:$('docType').value,sourceId:$('docSource').value,title:$('docCustomTitle').value.trim(),note:$('docCustomNote').value.trim()};}
-      function resetPreview(){preview=null;generated=null;$('docPreview').className='empty';$('docPreview').textContent='내용을 선택하고 미리보기를 확인해 주세요.';$('docGenerateBtn').classList.add('hidden');$('docResult').className='empty';$('docResult').textContent='아직 생성한 문서가 없습니다.';$('docSendArea').classList.add('hidden');$('docMailConfirm').checked=false;}
+      function resetPreview(){preview=null;generated=null;$('docPreview').className='empty';$('docPreview').textContent='내용을 선택하고 미리보기를 확인해 주세요.';$('docGenerateBtn').classList.add('hidden');$('docResult').className='empty';$('docResult').textContent='발급한 문서가 없습니다.';$('docSendArea').classList.add('hidden');$('docMailConfirm').checked=false;}
       async function loadSources(){
         resetPreview();const type=$('docType').value;
         $('docCustomTitleBox').classList.toggle('hidden',type!=='notice');
         $('docCustomNoteBox').classList.toggle('hidden',!['notice','class'].includes(type));
         const select=$('docSource');select.innerHTML='<option value="">목록을 불러오고 있습니다.</option>';select.disabled=true;
         try{const sources=await call('staffDocSources',state.token,type);if(type!==$('docType').value)return;
-          select.innerHTML='<option value="">자료를 선택해 주세요</option>'+sources.map(x=>`<option value="${h(x.id)}">${h(x.label)}</option>`).join('');
+          select.innerHTML='<option value="">발급할 대상을 선택하세요</option>'+sources.map(x=>`<option value="${h(x.id)}">${h(x.label)}</option>`).join('');
           if(type==='notice')select.value='GENERAL';
           if(!sources.length)select.innerHTML='<option value="">발급 가능한 기록이 없습니다.</option>';
         }catch(e){select.innerHTML='<option value="">불러오기 실패</option>';toast(e.message,true);}finally{select.disabled=false;}
@@ -576,7 +576,7 @@
         try{const r=await call('staffDocDownload',state.token,docId),binary=atob(r.base64),data=new Uint8Array(binary.length);
           for(let i=0;i<binary.length;i++)data[i]=binary.charCodeAt(i);
           const url=URL.createObjectURL(new Blob([data],{type:'application/pdf'}));
-          const a=document.createElement('a');a.href=url;a.download=r.filename;a.style.display='none';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);toast('PDF 다운로드가 시작되었습니다.');
+          const a=document.createElement('a');a.href=url;a.download=r.filename;a.style.display='none';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);toast('PDF 파일을 내려받고 있습니다.');
         }catch(e){toast(e.message||'PDF 다운로드에 실패했습니다.',true);}
       }
       $('docDownloadBtn').onclick=()=>{if(generated)download(generated.id);};
@@ -676,8 +676,8 @@ function bw26LoadPayroll(){
     return bw26PayrollLoads[id];
   }
   bw26PayrollAssets=Promise.all([
-    asset('bw26PayrollCSS','link',base+'css/administration-payroll.css?v=26.0.0','급여 화면 스타일'),
-    asset('bw26PayrollJS','script',base+'js/administration-payroll.js?v=26.0.0','급여 화면')
+    asset('bw26PayrollCSS','link',base+'css/administration-payroll.css?v=34.0.0','급여 화면 스타일'),
+    asset('bw26PayrollJS','script',base+'js/administration-payroll.js?v=34.0.0','급여 화면')
   ]).catch(e=>{bw26PayrollAssets=null;throw e;});
   return bw26PayrollAssets;
 }
