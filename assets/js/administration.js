@@ -32,6 +32,8 @@
         }catch(e){reject(e);}});
       return result.then(value=>{if(token!==state.token||nav!==state.navigationSeq)throw Error('BW24_STALE_VIEW');return value;});
     }
+    window.BW30Accounts?.configure({state,call,logout,toast});
+    window.BW31UX?.configure({state,MENU,can:bw24Can,navigate:showPage});
     const bw25DisabledSnapshot=new WeakMap();
     function setBusy(form,busy){
       if(!form)return;
@@ -119,7 +121,7 @@
       if(token)call('staffLogout',token).catch(()=>{});
     }
     $('logoutBtn').onclick=logout;$('logoutMobile').onclick=logout;
-    async function startApp(){if(!state.user){try{state.user=await call('staffCurrentUser',state.token);}catch(e){await logout();return;}}$('loginScreen').hidden=true;$('workspace').hidden=false;$('staffName').textContent=state.user.name||'선생님';$('staffEmail').textContent=state.user.email||'';$('roleBadge').textContent=ROLE_NAMES[state.user.role]||'직원';renderNav();await showPage('home');bw29WarmOwnerPayrollAssets();}
+    async function startApp(){if(!state.user){try{state.user=await call('staffCurrentUser',state.token);}catch(e){await logout();return;}}$('loginScreen').hidden=true;$('workspace').hidden=false;$('staffName').textContent=state.user.name||'선생님';$('staffEmail').textContent=state.user.email||'';$('roleBadge').textContent=ROLE_NAMES[state.user.role]||'직원';renderNav();window.BW31UX?.decorateNav();if(state.user.mustChange){if(!window.BW30Accounts)throw Error('비밀번호 변경 화면을 불러오지 못했습니다.');window.BW30Accounts.openChange(true);return;}await showPage('home');bw29WarmOwnerPayrollAssets();}
     function bw29WarmOwnerPayrollAssets(){
       // Non-sensitive assets only, off the login critical path. No payroll data is fetched.
       const token=state.token;
@@ -147,7 +149,7 @@
     function table(columns,rows){if(!rows.length)return `<div class="empty">표시할 기록이 없습니다.</div>`;return `<div class="table-scroll"><table class="data-table"><thead><tr>${columns.map(x=>`<th scope="col">${x}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div>`;}
     function tag(s){return `<span class="tag ${/실패|중지|결석/.test(s)?'off':/대기|신규|확인전/.test(s)?'waiting':''}">${h(s||'미확인')}</span>`;}
     function loading(){return `<div class="panel bw24-loading"><span class="bw24-pulse" aria-hidden="true"></span><p class="muted" role="status">자료를 불러오는 중입니다. 다른 업무 화면으로 이동할 수 있습니다.</p></div>`;}
-    async function showPage(page){if(!state.user||!bw24Can(page))return;if(state.page==='payroll'&&window.BWPayroll?.beforeLeave()===false)return;window.BWPayroll?.dispose();state.page=page;const seq=++state.navigationSeq;bw25Accel?.setNavigation(seq);renderNav();const m=MENU.find(x=>x[0]===page);$('topTitle').textContent=m[2];$('pageBody').innerHTML=loading();try{document.scrollingElement?.scrollTo({top:0,behavior:'auto'});if(page==='home')await renderHome();if(page==='inquiries')await renderInquiries();if(page==='registrations')await renderRegistrations();if(page==='classes')await renderClasses();if(page==='courseSettings')await renderCourseSettings();if(page==='roster')await renderRoster();if(page==='attendance')await renderAttendance();if(page==='operations')await renderOperations();if(page==='tuition')await renderTuition();if(page==='safety')await renderSafety();if(page==='handoff')await renderHandoff();if(page==='staffCompliance')await renderStaffCompliance();if(page==='users')await renderUsers();if(page==='security')await renderSecurity();if(page==='documents')await renderDocuments();if(page==='capacity')await renderCapacity();if(page==='waitlist')await renderWaitlist();if(page==='makeups')await renderMakeups();if(page==='themes')await renderThemes();if(page==='payroll')await renderPayroll();if(seq===state.navigationSeq)bw24ApplyReadonly(page);}catch(e){if(seq!==state.navigationSeq||e.message==='BW24_STALE_VIEW')return;if(/로그인이 필요|접속 시간이 만료|사용 권한이 중지/.test(e.message)){await logout();toast('로그인 상태를 다시 확인해 주세요.',true);}else $('pageBody').innerHTML=head(m[2],'')+panel('자료를 불러오지 못했습니다.','',`<p class="danger">${h(e.message)}</p><button id="retryPage" class="btn btn-outline spaced">다시 시도</button>`),$('retryPage').onclick=()=>showPage(page);}}
+    async function showPage(page){if(!state.user||!bw24Can(page))return;if(state.page==='payroll'&&window.BWPayroll?.beforeLeave()===false)return;window.BWPayroll?.dispose();state.page=page;const seq=++state.navigationSeq;bw25Accel?.setNavigation(seq);renderNav();window.BW31UX?.decorateNav();const m=MENU.find(x=>x[0]===page);$('topTitle').textContent=m[2];$('pageBody').innerHTML=loading();try{document.scrollingElement?.scrollTo({top:0,behavior:'auto'});if(page==='home')await renderHome();if(page==='inquiries')await renderInquiries();if(page==='registrations')await renderRegistrations();if(page==='classes')await renderClasses();if(page==='courseSettings')await renderCourseSettings();if(page==='roster')await renderRoster();if(page==='attendance')await renderAttendance();if(page==='operations')await renderOperations();if(page==='tuition')await renderTuition();if(page==='safety')await renderSafety();if(page==='handoff')await renderHandoff();if(page==='staffCompliance')await renderStaffCompliance();if(page==='users')await renderUsers();if(page==='security')await renderSecurity();if(page==='documents')await renderDocuments();if(page==='capacity')await renderCapacity();if(page==='waitlist')await renderWaitlist();if(page==='makeups')await renderMakeups();if(page==='themes')await renderThemes();if(page==='payroll')await renderPayroll();if(seq===state.navigationSeq){bw24ApplyReadonly(page);window.BW31UX?.onPageRendered(page);}}catch(e){if(seq!==state.navigationSeq||e.message==='BW24_STALE_VIEW')return;if(/로그인이 필요|접속 시간이 만료|사용 권한이 중지/.test(e.message)){await logout();toast('로그인 상태를 다시 확인해 주세요.',true);}else $('pageBody').innerHTML=head(m[2],'')+panel('자료를 불러오지 못했습니다.','',`<p class="danger">${h(e.message)}</p><button id="retryPage" class="btn btn-outline spaced">다시 시도</button>`),$('retryPage').onclick=()=>showPage(page);}}
     // V27.1: paint safe quick links immediately; live counts arrive asynchronously.
     // V28.2: static-first paint; metrics are updated asynchronously without blocking navigation.
     let bw282HomeEpoch=0;
@@ -222,25 +224,18 @@
       const courses=(state.templates||[]).filter(x=>x.id);
       const commonCourse=courses.find(x=>x.id===(window.BWStaffDefaults?.classEditor?.courseCode||'BW-SENSORY'))||courses[0]||null;
       const courseOptions=courses.map(t=>option(t.id,`${t.course} (${t.id})`)).join('');
-      const dayField=principal
-        ? `<input id="classDay" list="bw241DayOptions" placeholder="예: 화요일 또는 화" autocomplete="off" required><datalist id="bw241DayOptions">${weekday.map(d=>`<option value="${h(d)}"></option>`).join('')}</datalist>`
-        : `<select id="classDay" required>${weekday.map(d=>option(d,d)).join('')}</select>`;
-      const courseField=principal
-        ? `<input id="classTemplate" list="bw241CourseOptions" placeholder="승인된 과정 코드" maxlength="40" autocomplete="off" required><datalist id="bw241CourseOptions">${courseOptions}</datalist>`
-        : `<select id="classTemplate" required><option value="">등록된 과정을 선택하세요</option>${courseOptions}</select>`;
-      const publishField=principal
-        ? `<input id="classPublic" list="bw241PublicOptions" value="비공개" required autocomplete="off"><datalist id="bw241PublicOptions"><option value="비공개"></option><option value="공개"></option></datalist>`
-        : `<select id="classPublic"><option value="비공개">비공개</option><option value="공개">공개</option></select>`;
-      const reviewField=principal
-        ? `<input id="classReview" list="bw241ReviewOptions" value="확인전" required autocomplete="off"><datalist id="bw241ReviewOptions"><option value="확인전"></option><option value="검토완료"></option></datalist>`
-        : `<select id="classReview"><option value="확인전">확인전</option><option value="검토완료">검토완료</option></select>`;
+      // V31 — controlled business values always use dropdowns (owner included).
+      const dayField=`<select id="classDay" required><option value="">수업 요일 선택</option>${weekday.map(d=>option(d,d)).join('')}</select>`;
+      const courseField=`<select id="classTemplate" required><option value="">수강 과정 선택</option>${courseOptions}</select>`;
+      const publishField=`<select id="classPublic"><option value="비공개">비공개 (기본)</option><option value="공개">공개 (홈페이지 표시)</option></select>`;
+      const reviewField=`<select id="classReview"><option value="확인전">확인 전</option><option value="검토완료">검토 완료</option></select>`;
       const times=[...new Set(state.classes.map(c=>String(c.time||'').trim()).filter(Boolean))].slice(0,5);
       const form=editable?panel('수업 시간표 만들기','한 가지 과정으로 운영합니다. 요일과 시간부터 입력하고, 나머지 정보는 확인 후 저장하세요.',`
         <form id="classForm" class="bw241-class-form" novalidate>
           <div class="bw241-form-intro"><div><strong id="bw241Mode">새 수업반 등록</strong><br><small>${principal?'원장 계정: 모든 항목을 직접 입력하거나 추천값을 선택할 수 있습니다.':'등록된 과정과 운영 정책 안에서 수업반을 관리합니다.'}</small></div><span class="bw241-badge">단일 과정 운영</span></div>
           <div class="bw241-step"><b>1</b>요일과 수업 시간</div>
           <div class="bw241-grid">
-            <div class="form-item"><label for="classDay">수업 요일</label>${dayField}<small class="bw241-help">${principal?'월 / 화요일처럼 직접 입력 가능':'요일을 선택해 주세요.'}</small></div>
+            <div class="form-item"><label for="classDay">수업 요일</label>${dayField}<small class="bw241-help">목록에서 요일을 선택해 주세요.</small></div>
             <div class="form-item"><label for="classTime">수업 시간</label><input id="classTime" class="bw241-selectable-time" type="text" placeholder="예: 11:30 또는 11:30–12:20" maxlength="50" inputmode="text" required><small class="bw241-help">24시간제로 입력하세요. 시작 시간만 넣어도 됩니다.</small>${times.length?`<div class="bw241-chip-row" aria-label="기존 수업 시간 추천">${times.map(t=>`<button class="bw241-chip" type="button" data-bw241-time="${h(t)}">${h(t)}</button>`).join('')}</div>`:''}</div>
           </div>
           <div class="bw241-step"><b>2</b>수업 상세 정보</div>
@@ -250,7 +245,7 @@
             <div class="form-item"><label for="classId">반 코드</label><div class="row" style="gap:6px;flex-wrap:nowrap"><input id="classId" type="text" placeholder="요일·시간 입력 시 자동 제안" maxlength="32" autocomplete="off" required>${principal?'<button type="button" id="bw241GenerateCode" class="btn btn-outline btn-small" style="flex:none">자동 제안</button>':''}</div><small class="bw241-help">신규 반은 직접 입력 가능. 기존 반 코드는 변경할 수 없습니다.</small></div>
           </div>
           <div class="bw241-grid bw241-grid--three" style="margin-top:15px">
-            <div class="form-item"><label for="classTemplate">수강 과정 코드</label>${courseField}<small class="bw241-help">${commonCourse?`기본 과정: ${h(commonCourse.course)} (${h(commonCourse.id)})`:'먼저 학원 운영정보에서 과정을 활성화해 주세요.'}</small></div>
+            <div class="form-item"><label for="classTemplate">수강 과정</label>${courseField}<small class="bw241-help">${commonCourse?`기본 과정: ${h(commonCourse.course)} (${h(commonCourse.id)})`:'먼저 학원 운영정보에서 과정을 활성화해 주세요.'}</small></div>
             <div class="form-item"><label for="classPublic">홈페이지 공개</label>${publishField}<small class="bw241-help">신규 반은 비공개가 기본값입니다.</small></div>
             <div class="form-item"><label for="classReview">운영자 검토</label>${reviewField}<small class="bw241-help">공개 전 검토완료 설정이 필요합니다.</small></div>
           </div>
@@ -349,13 +344,13 @@
         const starts=field('classDate').value,period=field('classPeriod').value.trim();
         const publicStatus=field('classPublic').value.trim(),review=field('classReview').value.trim();
         const fail=msg=>{feedback.textContent=msg;toast(msg,true);};
-        if(!weekday.includes(normalizedDay))return fail('요일은 월~일요일 중에서 입력해 주세요. (예: 화 / 화요일)');
+        if(!weekday.includes(normalizedDay))return fail('수업 요일을 목록에서 선택해 주세요.');
         if(!normalizedTime)return fail('시간은 11:30 또는 11:30–12:20 형식으로 입력해 주세요.');
         if(!/^20\d{2}-\d{2}-\d{2}$/.test(starts))return fail('수업 시작일을 선택해 주세요.');
         if(!period)return fail('교습 기간을 입력해 주세요.');
         if(!/^[A-Z0-9_-]{3,32}$/.test(id))return fail('반 코드는 영어 대문자·숫자·하이픈으로 3~32자 입력해 주세요.');
-        if(!courses.some(x=>x.id.toUpperCase()===template))return fail('학원 운영정보에 등록·활성화된 과정 코드만 입력할 수 있습니다.');
-        if(!['공개','비공개'].includes(publicStatus)||!['확인전','검토완료'].includes(review))return fail('공개 상태와 운영자 검토는 추천된 값 중에서 입력해 주세요.');
+        if(!courses.some(x=>x.id.toUpperCase()===template))return fail('운영 중인 수강 과정을 목록에서 선택해 주세요.');
+        if(!['공개','비공개'].includes(publicStatus)||!['확인전','검토완료'].includes(review))return fail('홈페이지 공개·검토 항목에서 값을 선택해 주세요.');
         if(publicStatus==='공개'&&review!=='검토완료')return fail('홈페이지에 공개하려면 운영자 검토를 완료해 주세요.');
         if(publicStatus==='공개'&&!confirm('학부모 등록 화면에 이 시간표를 공개하시겠습니까? 교습비·반환 기준이 실제 승인된 내용인지 확인해 주세요.'))return;
         const payload={id,template,starts,day:normalizedDay,time:normalizedTime,period,publicStatus,review};
@@ -381,10 +376,11 @@
     async function renderUsers(){const [people,cls]=await Promise.all([call('staffListUsers',state.token),getClasses()]);state.staff=people;if(state.page!=='users')return;
       $('pageBody').innerHTML=head('선생님 계정·권한','선생님별로 담당 반과 열람·수정 권한을 관리해요.')+
       panel('등록된 계정','담당 수업이나 업무가 바뀌면 권한을 조정하고, 퇴사 시 계정 사용을 중지해 주세요.',table(['이메일 · 이름','역할','담당 반','연락처 열람','상태','관리'],state.staff.map(x=>`<tr><td><b>${h(x.name)}</b><br><small>${h(x.email)}</small></td><td>${h(ROLE_NAMES[x.role])}</td><td>${h(x.classes.join(', ')||'—')}</td><td>${x.canContact?'허용':'차단'}</td><td>${tag(x.status)}</td><td>${x.locked?'원장 계정':`<button class="btn btn-outline btn-small" data-edit-user="${h(x.email)}">수정</button>`}</td></tr>`)))+
-      panel('선생님 계정 등록·수정','등록한 이메일 주소로 로그인 인증번호가 발송됩니다. 비밀번호를 공유할 필요가 없습니다.',`<form id="userForm" class="stack"><div class="fields"><div class="form-item"><label for="userEmail">직원 이메일</label><input type="email" id="userEmail" placeholder="teacher@example.com" required></div><div class="form-item"><label for="userName">이름</label><input id="userName" maxlength="40" required></div><div class="form-item"><label for="userRole">역할</label><select id="userRole"><option value="teacher">선생님</option><option value="director">관리자</option><option value="frontdesk">상담 담당자</option></select></div><div class="form-item"><label for="userStatus">사용 상태</label><select id="userStatus"><option value="사용">사용</option><option value="중지">중지</option></select></div></div><div><label>담당 수업반</label><div class="cols" id="userClasses">${state.classes.length?state.classes.map(c=>`<label class="admin-check"><input type="checkbox" value="${h(c.id)}"> ${h(c.id)} · ${h(c.day)} ${h(c.time)}</label>`).join(''):'<p class="help">현재 등록된 수업반이 없습니다. 먼저 수업반을 생성해 주세요.</p>'}</div></div><label class="admin-check"><input type="checkbox" id="userContact"> 담당 반 보호자 연락처 열람 허용</label><p class="help">선생님 계정은 기본적으로 보호자 연락처를 볼 수 없습니다. 업무상 필요한 경우에만 별도로 허용하세요.</p><div class="row"><button type="submit" class="btn btn-primary">계정 저장</button><button type="button" id="resetUser" class="btn btn-outline">새 직원 입력</button></div></form>`);
+      panel('선생님 계정 등록·수정','직원 이메일을 등록한 뒤 목록에서 임시 비밀번호를 발급할 수 있습니다. 직원은 최초 로그인 시 본인이 새 비밀번호로 변경합니다.',`<form id="userForm" class="stack"><div class="fields"><div class="form-item"><label for="userEmail">직원 이메일</label><input type="email" id="userEmail" placeholder="teacher@example.com" required></div><div class="form-item"><label for="userName">이름</label><input id="userName" maxlength="40" required></div><div class="form-item"><label for="userRole">역할</label><select id="userRole"><option value="teacher">선생님</option><option value="director">관리자</option><option value="frontdesk">상담 담당자</option></select></div><div class="form-item"><label for="userStatus">사용 상태</label><select id="userStatus"><option value="사용">사용</option><option value="중지">중지</option></select></div></div><div><label>담당 수업반</label><div class="cols" id="userClasses">${state.classes.length?state.classes.map(c=>`<label class="admin-check"><input type="checkbox" value="${h(c.id)}"> ${h(c.id)} · ${h(c.day)} ${h(c.time)}</label>`).join(''):'<p class="help">현재 등록된 수업반이 없습니다. 먼저 수업반을 생성해 주세요.</p>'}</div></div><label class="admin-check"><input type="checkbox" id="userContact"> 담당 반 보호자 연락처 열람 허용</label><p class="help">선생님 계정은 기본적으로 보호자 연락처를 볼 수 없습니다. 업무상 필요한 경우에만 별도로 허용하세요.</p><div class="row"><button type="submit" class="btn btn-primary">계정 저장</button><button type="button" id="resetUser" class="btn btn-outline">새 직원 입력</button></div></form>`);
       bw24MountPermissions();
+      window.BW30Accounts?.mountUsers();
       $('resetUser').onclick=()=>$('userForm').reset();$('pageBody').querySelectorAll('[data-edit-user]').forEach(el=>el.onclick=()=>{const x=state.staff.find(a=>a.email===el.dataset.editUser);if(!x)return;$('userEmail').value=x.email;$('userName').value=x.name;$('userRole').value=x.role;$('userStatus').value=x.status;$('userContact').checked=x.canContact;$('userClasses').querySelectorAll('input').forEach(i=>i.checked=x.classes.includes(i.value));$('userEmail').scrollIntoView({behavior:'smooth',block:'center'});});
-      $('userForm').onsubmit=async e=>{e.preventDefault();const f=e.currentTarget;setBusy(f,true);try{await call('staffSaveUser',state.token,{email:$('userEmail').value,name:$('userName').value,role:$('userRole').value,status:$('userStatus').value,canContact:$('userContact').checked,classes:[...$('userClasses').querySelectorAll('input:checked')].map(x=>x.value)});toast('선생님 계정을 저장했습니다.');await renderUsers();}catch(e){toast(e.message,true);}finally{setBusy(f,false);}};
+      $('userForm').onsubmit=async e=>{e.preventDefault();const f=e.currentTarget;setBusy(f,true);try{await call('staffSaveUser',state.token,{email:$('userEmail').value,name:$('userName').value,role:$('userRole').value,status:$('userStatus').value,canContact:$('userContact').checked,classes:[...$('userClasses').querySelectorAll('input:checked')].map(x=>x.value)});toast('계정을 저장했습니다. 임시 비밀번호가 필요한 경우 직원 목록에서 발급하세요.');await renderUsers();}catch(e){toast(e.message,true);}finally{setBusy(f,false);}};
     }
 
     function bw24MountPermissions(){
@@ -654,7 +650,7 @@ renderHome=function(){
 };
 
 const bw20OldRenderNav=renderNav;
-renderNav=function(){bw20OldRenderNav();const el=$('bw20PageSelect');if(!el)return;const allowed=MENU.filter(m=>bw24Can(m[0]));const signature=allowed.map(m=>m[0]).join('|');if(el.dataset.bw282Menu!==signature){el.innerHTML=allowed.map(m=>`<option value="${h(m[0])}">${h(m[2])}</option>`).join('');el.dataset.bw282Menu=signature;}el.value=state.page;el.onchange=()=>showPage(el.value);};
+renderNav=function(){bw20OldRenderNav();const el=$('bw20PageSelect');if(!el)return;const allowed=MENU.filter(m=>bw24Can(m[0]));const signature=allowed.map(m=>m[0]).join('|');if(el.dataset.bw282Menu!==signature){el.innerHTML=window.BW31UX?.groupedOptions(allowed)||allowed.map(m=>`<option value="${h(m[0])}">${h(m[2])}</option>`).join('');el.dataset.bw282Menu=signature;}el.value=state.page;el.onchange=()=>showPage(el.value);};
 
 // Payroll assets are loaded only when the owner opens the module.
 let bw26PayrollAssets=null;

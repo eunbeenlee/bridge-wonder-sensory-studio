@@ -28,7 +28,7 @@ EXCLUDED = {"node_modules", ".git", "__pycache__", ".venv", "venv", "outputs",
             "test-results", "inputs", "chat_files", "private", ".secrets"}
 SCRIPT_SUFFIXES = {".js", ".cjs", ".mjs", ".gs"}
 IMAGE_SUFFIXES = {".png", ".jpg", ".jpeg", ".webp", ".gif", ".svg", ".ico", ".avif"}
-ALLOWED_THEME_ADDITIONS = {"assets/css/administration-payroll.css", "assets/img/staff-brand-mark.png"}
+ALLOWED_THEME_ADDITIONS = {"assets/css/administration-payroll.css", "assets/css/staff-ux-v31.css", "assets/img/staff-brand-mark.png"}
 errors: list[str] = []
 stats: Counter = Counter()
 

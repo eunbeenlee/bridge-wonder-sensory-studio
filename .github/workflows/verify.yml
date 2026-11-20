@@ -56,3 +56,12 @@ jobs:
       - name: staff-v28-home tests
         if: always()
         run: node tests/staff-v28-home.test.cjs
+      - name: native-KDF tests
+        if: always()
+        run: node tests/native-kdf-login.test.cjs
+      - name: account issuance tests
+        if: always()
+        run: node tests/account-issuance.test.cjs
+      - name: staff UX V31 tests
+        if: always()
+        run: node tests/staff-ux-v31.test.cjs

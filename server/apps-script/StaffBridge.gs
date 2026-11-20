@@ -14,6 +14,8 @@ const BW27_METHODS_ = Object.freeze({
   staff23PasswordLogin: staff23PasswordLogin,
   staff23PasswordStartEnrollment: staff23PasswordStartEnrollment,
   staff23PasswordCompleteEnrollment: staff23PasswordCompleteEnrollment,
+  staff30IssueTemporaryPassword: staff30IssueTemporaryPassword,
+  staff30ChangeOwnPassword: staff30ChangeOwnPassword,
   staffCurrentUser: staffCurrentUser,
   staffLogout: staffLogout,
   staffDashboard: staffDashboard,

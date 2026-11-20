@@ -112,7 +112,7 @@ async function test(name,fn){try{await fn();passed++;console.log('PASS '+name);}
         w.setTimeout=(fn,ms,...args)=>{if(ms===8000){fallback=fn;return 900001;}return nativeTimer(fn,ms,...args);};
         w.clearTimeout=id=>{if(id===900001)cleared=true;else nativeClear(id);};
         const append=d.body.appendChild.bind(d.body);
-        d.body.appendChild=node=>{append(node);if(node.tagName==='SCRIPT'&&node.src.includes('administration-accelerator.js'))engineNode=node;if(node.tagName==='SCRIPT'&&node.src.includes('/administration.js')){appLoads++;w.eval(app);}return node;};
+        d.body.appendChild=node=>{append(node);if(node.tagName==='SCRIPT'&&node.src.includes('administration-accelerator.js'))engineNode=node;if(node.tagName==='SCRIPT'&&(node.src.includes('staff-ux-v31.js')||node.src.includes('staff-account-management.js')))node.onload(new w.Event('load'));if(node.tagName==='SCRIPT'&&node.src.includes('/administration.js')){appLoads++;w.eval(app);}return node;};
         w.eval(layout);assert.ok(d.getElementById('passwordLoginForm'));assert.equal(appLoads,0);assert.equal(typeof fallback,'function');
         if(mode==='error')engineNode.onerror(new w.Event('error'));else fallback();
         assert.equal(appLoads,1);assert.equal(cleared,true);engineNode.onload(new w.Event('load'));fallback();assert.equal(appLoads,1);
