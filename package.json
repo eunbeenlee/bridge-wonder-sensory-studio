@@ -1,6 +1,6 @@
 {
   "name": "bridge-wonder-sensory-studio",
-  "version": "30.0.0",
+  "version": "33.0.0",
   "private": true,
   "description": "Bridge Wonder public site and Google Apps Script staff workspace",
   "scripts": {
