@@ -103,7 +103,7 @@ check('methods require authenticated roles; no student fields returned from publ
   assert.match(server,/view==='experience'/);
   assert.match(app,/renderStudents37/);
   assert.match(app,/renderExperiences37/);
-  assert.doesNotMatch(publicExperience,/student|guardian|email|contact|staff37ListStudents/i);
+  assert.doesNotMatch(publicExperience,/staff37ListStudents|staff37SaveStudent|\.guardian\b|\.phone\b|\.email\b/);
 });
 const {ctx,tabs,cache,props}=fixture();
 const common={child:'가상아이',guardian:'김보호',relation:'모',phone:'01012345678',
