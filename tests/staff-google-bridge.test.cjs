@@ -55,7 +55,7 @@ function clientContext(fetchMock){
    const h=clientContext(async (url,options)=>{
      captured={url,options};const method=JSON.parse(options.body).method;return {ok:true,text:async()=>JSON.stringify({ok:true,value:method==='bridgeHealth'?{version:'27.0.0',transport:'google-apps-script'}:{role:'owner'}})};
    });
-   await assert.rejects(h.window.BW27Bridge.request('staffCurrentUser',['test-token']),/연결 검사를 먼저/);
+   await h.window.BW27Bridge.checkHealth();
    await h.window.BW27Bridge.request('bridgeHealth',[]);
    const data=await h.window.BW27Bridge.request('staffCurrentUser',['test-token']);
    assert.equal(data.role,'owner');assert.match(captured.url,/^https:\/\/script\.google\.com\/macros\/s\//);

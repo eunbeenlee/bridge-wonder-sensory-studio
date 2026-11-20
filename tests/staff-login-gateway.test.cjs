@@ -1,35 +1,19 @@
 'use strict';
-const assert = require('node:assert/strict');
-const fs = require('node:fs');
-const vm = require('node:vm');
-const js = fs.readFileSync(__dirname + '/../staff/portal.js','utf8');
-const html = fs.readFileSync(__dirname + '/../staff/index.html','utf8');
-const match = html.match(/<a class="button" id="open-staff-login" href="([^"]+)"/);
-assert.ok(match,'Direct login fallback link missing');
-const URL_TARGET = match[1];
-const tests=[];
-function harness({url='https://bridgewonder.bridgeacademy.co.kr/staff/',embedded=false,href=URL_TARGET}={}){
- const redirected=[],timers=[],cleared=[];
- const buttons={
-  'open-staff-login':{href,target:'_self',listeners:{},removeAttribute(k){if(k==='href')this.href='';},addEventListener(k,fn){this.listeners[k]=fn;}},
-  'connection-label':{textContent:''},
-  'manual-mode':{hidden:false}
- };
- const root={location:{href:url,replace(target){redirected.push(target)}},top:null,self:{},setTimeout(fn,ms){const t={fn,ms,cleared:false};timers.push(t);return t;},clearTimeout(t){if(t)t.cleared=true;cleared.push(t);},addEventListener(){}};
- root.top=embedded?{}:root.self;buttons['open-staff-login'].href=href;
- vm.runInNewContext(js,{window:root,document:{getElementById(k){return buttons[k]??null;}},URL}, {timeout:5000});
- return {buttons,root,timers,redirected,fire(){for(const t of timers)if(!t.cleared)t.fn()}};
-}
-let h=harness();
-assert.equal(h.timers.length,1);
-assert.equal(h.timers[0].ms,1200);
-h.fire();assert.deepEqual(h.redirected,[URL_TARGET]);tests.push('Direct top-level navigation after delay');
-h=harness({url:'https://bridgewonder.bridgeacademy.co.kr/staff/?manual=1'});
-assert.equal(h.timers.length,0);assert.equal(h.buttons['manual-mode'].hidden,true);assert.match(h.buttons['connection-label'].textContent,/버튼/);tests.push('Manual mode never auto-redirects');
-h=harness({embedded:true});assert.equal(h.timers.length,0);assert.equal(h.buttons['open-staff-login'].target,'_blank');tests.push('Nested environments do not auto-redirect');
-h=harness({href:'https://evil.example.com/x'});assert.equal(h.buttons['open-staff-login'].href,'');assert.equal(h.timers.length,0);tests.push('Untrusted login target blocked');
-h=harness();h.buttons['open-staff-login'].listeners.click();h.fire();assert.deepEqual(h.redirected,[]);tests.push('Click cancels automatic redirect');
-assert.doesNotMatch(html,/<iframe\b/i);tests.push('Cross-origin iframe removed');
-assert.match(html,/로그인 화면 열기/);assert.match(html,/\?manual=1/);tests.push('Accessible manual fallback present');
-assert.doesNotMatch(js,/google\.script\.run|SPREADSHEET_ID|OWNER_EMAIL/);tests.push('No hidden auth RPC or secrets in gateway');
-console.log(JSON.stringify({passed:tests.length,total:tests.length,tests},null,2));
+const assert=require('node:assert/strict');
+const fs=require('node:fs'),vm=require('node:vm');
+const html=fs.readFileSync(__dirname+'/../staff/index.html','utf8');
+const diag=fs.readFileSync(__dirname+'/../staff/standalone.html','utf8');
+const bridge=fs.readFileSync(__dirname+'/../assets/js/staff-google-bridge.js','utf8');
+const defaults=fs.readFileSync(__dirname+'/../assets/js/staff-static-defaults.js','utf8');
+const app=fs.readFileSync(__dirname+'/../assets/js/administration.js','utf8');
+let passed=0;
+function ok(name,check){check();passed++;console.log('PASS',name);}
+ok('GitHub owns the native login screen',()=>{assert.match(html,/id="loginScreen"/);assert.match(html,/id="passwordLoginForm"/);});
+ok('No Google iframe or top-level redirect needed',()=>{assert.doesNotMatch(html,/<iframe\b|window\.location\.replace/);assert.match(diag,/id="loginScreen"/);});
+ok('Direct Google link retained as optional recovery',()=>{assert.match(html,/Google 직접 접속/);assert.match(html,/script\.google\.com\/macros\/s\//);});
+ok('Static defaults load before Google bridge and app',()=>{const p=html.indexOf('staff-static-defaults.js'),b=html.indexOf('staff-google-bridge.js'),a=html.indexOf('administration.js');assert.ok(p>=0&&b>p&&a>b);});
+ok('No private data, credentials, or Sheets ID in defaults',()=>{assert.doesNotMatch(defaults,/SPREADSHEET_ID|OWNER_EMAIL|password|payrollCommand|studentPhone|secret|google\.com\/macros/);});
+ok('Class presets are reusable yet cannot grant permissions',()=>{const win={};vm.runInNewContext(defaults,{window:win,Object});assert.equal(win.BWStaffDefaults.classEditor.courseCode,'BW-SENSORY');assert.equal(win.BWStaffDefaults.classEditor.newClassVisibility,'비공개');assert.ok(Object.isFrozen(win.BWStaffDefaults.classEditor));});
+ok('Dashboard quicklinks paint before Google metric request',()=>{const r=app.slice(app.indexOf('async function renderHome(){'),app.indexOf('async function renderInquiries(){'));assert.ok(r.indexOf("$('pageBody').innerHTML")<r.indexOf("await call('staffDashboard'"));assert.match(r,/bw24Can\(x\[0\]\)/);});
+ok('Bridge never sends private requests before anonymous health succeeds',()=>{assert.match(bridge,/if \(name !== 'bridgeHealth' && !bridgeVerified\) await checkHealth\(\)/);assert.match(bridge,/Promise\.resolve\(\)\.then\(\(\)=>checkHealth\(\)\)/);});
+console.log(JSON.stringify({suite:'staff native login',passed,total:8}));
