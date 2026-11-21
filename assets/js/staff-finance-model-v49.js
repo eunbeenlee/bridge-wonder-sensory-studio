@@ -207,7 +207,7 @@
     const unitNetRevenue=c.regularFee*(taxable?1/1.1:1)*refundFactor;
     const unitFee=c.regularFee*refundFactor*c.cardFeePercent/100;
     const unitContribution=unitNetRevenue-c.materialPerChild-c.consumablePerChild-unitFee;
-    const trialContribution=c.trialCount*(c.trialFee*(taxable?1/1.1:1-c.cardFeePercent/100)-
+    const trialContribution=c.trialCount*(c.trialFee*(taxable?1/1.1:1)-
       c.materialPerChild-c.consumablePerChild-c.trialFee*c.cardFeePercent/100);
     const neededProfitCover=fixedBase+vatPaidNonDeductible+peopleTotal+c.ownerHealth+c.depreciation-trialContribution-otherGross*(taxable?1/1.1:1);
     const targetSeats=unitContribution>0?Math.max(0,neededProfitCover)/unitContribution:Infinity;
