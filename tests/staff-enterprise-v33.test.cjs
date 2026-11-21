@@ -123,7 +123,7 @@ test('client never calls network, writes secrets or stores guardian data',()=>{
   assert.doesNotMatch(script,/fetch\s*\(|localStorage|sessionStorage|SPREADSHEET_ID|OWNER_EMAIL|PRIVATE_PEPPER/);
   assert.match(style,/\.bw33-ready/);
   assert.match(style,/\.sidebar\{display:none!important/);
-  assert.match(html,/staff-enterprise-v33\.js\?v=39\.0\.0/);
+  assert.match(html,/staff-enterprise-v33\.js\?v=41\.0\.0/);
   assert.match(app,/BW33Enterprise\?\.sync/);
   assert.match(app,/BW33Enterprise\?\.pageReady/);
 });
