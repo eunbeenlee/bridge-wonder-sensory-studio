@@ -45,7 +45,7 @@ test('administration and payroll instructions use direct, natural language',()=>
   assert.doesNotMatch(payroll,/V26 서버 파일을 적용하고 급여관리 초기 설정을 실행/);
 });
 test('plain-language guidance preserves critical contract/receipt distinction',()=>{
-  assert.match(admin,/등록 확인서와 납부 내역 안내서는 계약서나 영수증을 대신할 수 없습니다/);
+  assert.match(admin,/새 스튜디오 이용동의서로 쓸 수 없으며 납부 안내서는 영수증이 아닙니다/);
   assert.match(portal,/납부 내역 안내서는 교습비 영수증과 다릅니다/);
   assert.match(help,/클래스 출결/);
   assert.match(help,/아이 명단을 불러온 뒤/);
