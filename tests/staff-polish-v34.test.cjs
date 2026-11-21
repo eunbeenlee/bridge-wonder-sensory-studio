@@ -58,7 +58,7 @@ test('polish stylesheet and fresh cache versions load in all staff entrypoints',
   assert.match(staticPages[2],/staff-polish-v34\.css\?v=38\.0\.0/);
   const index=staticPages[0];
   for(const script of ['staff-google-bridge.js','administration-accelerator.js','staff-native-kdf.js','staff-account-management.js','staff-ux-v31.js','staff-enterprise-v33.js','administration.js']){
-    assert.ok(index.includes(script+'?v='+(script==='administration.js'?'43.0.0':'41.0.0')),script);
+    assert.ok(index.includes(script+'?v='+(script==='administration.js'?'45.0.0':'41.0.0')),script);
   }
   assert.match(admin,/administration-payroll\.js\?v=39\.0\.0/);
 });
