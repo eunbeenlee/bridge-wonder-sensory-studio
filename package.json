@@ -5,7 +5,7 @@
   "description": "Bridge Wonder public site and Google Apps Script staff workspace",
   "scripts": {
     "build": "python3 tools/build-administration.py",
-    "test": "node tests/payroll.test.cjs && node tests/acceleration.test.cjs && node tests/security.test.cjs && node tests/payroll-ui.test.cjs && node tests/administration.test.cjs && node tests/staff-login-gateway.test.cjs && node tests/staff-google-bridge.test.cjs && node tests/staff-static-fast.test.cjs && node tests/staff-v28-home.test.cjs && node tests/native-kdf-login.test.cjs && node tests/account-issuance.test.cjs && node tests/staff-ux-v31.test.cjs && node tests/staff-enterprise-v33.test.cjs && node tests/staff-polish-v34.test.cjs && node tests/sensory-profile-v35.test.cjs && node tests/academic-management-v37.test.cjs && node tests/compliance-v32.test.cjs && node tests/staff-sensory-v39.test.cjs",
+    "test": "node tests/payroll.test.cjs && node tests/acceleration.test.cjs && node tests/security.test.cjs && node tests/payroll-ui.test.cjs && node tests/administration.test.cjs && node tests/staff-login-gateway.test.cjs && node tests/staff-google-bridge.test.cjs && node tests/staff-static-fast.test.cjs && node tests/staff-v28-home.test.cjs && node tests/native-kdf-login.test.cjs && node tests/account-issuance.test.cjs && node tests/staff-ux-v31.test.cjs && node tests/staff-enterprise-v33.test.cjs && node tests/staff-polish-v34.test.cjs && node tests/sensory-profile-v35.test.cjs && node tests/academic-management-v37.test.cjs && node tests/compliance-v32.test.cjs && node tests/staff-sensory-v39.test.cjs && node tests/staff-enterprise-v40.test.cjs",
     "check": "python3 tools/verify-release.py"
   },
   "devDependencies": {

@@ -5,7 +5,7 @@
   <meta name="robots" content="noindex,nofollow,noarchive,nosnippet">
   <meta name="referrer" content="strict-origin">
   <meta name="theme-color" content="#fbf8f2">
-  <title>Bridge Wonder | 선생님 운영공간</title>
+  <title>Bridge Wonder | Studio Operations</title>
   <link rel="icon" href="../assets/img/favicon.png">
   <link rel="preconnect" href="https://script.google.com" crossorigin>
   <link rel="dns-prefetch" href="//script.googleusercontent.com">
@@ -15,17 +15,32 @@
   <link rel="stylesheet" href="../assets/css/staff-polish-v34.css?v=39.0.0">
   <link rel="stylesheet" href="../assets/css/staff-sensory-v39.css?v=39.0.0">
   <link rel="stylesheet" href="../assets/css/staff-ux-v31.css?v=30.0.0">
+  <link rel="stylesheet" href="../assets/css/staff-enterprise-v40.css?v=40.0.0">
   <style>#bw27-server-status{margin:10px 0 0;padding:10px 12px;border:1px solid #e8dcc8;border-radius:10px;background:#fffdf8;color:#40543a;font:12px/1.7 system-ui,-apple-system,'Noto Sans KR',sans-serif} .bw271-login-tools{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin-top:15px}.bw271-login-tools .inline-link{font-size:12px;color:#40543a;text-underline-offset:3px}.bw271-login-tools a{align-self:center}</style>
 </head><body>
 <!-- BW25_UI_START -->
 <main id="loginScreen" class="login-shell">
-    <div class="login-wrap">
-      <div class="login-brand"><img class="logo" alt="Bridge Wonder" src="../assets/img/bridge-wonder-logo.png" decoding="async"><div class="eyebrow">원장·선생님 전용</div><div class="login-title">선생님 운영공간</div></div>
-      <section class="login-card" aria-label="직원 로그인">
+    <div class="login-wrap bw40-login-layout">
+      <section class="bw40-login-intro" aria-label="브릿지 원더 스튜디오 운영">
+        <div class="login-brand"><img class="logo" alt="Bridge Wonder" src="../assets/img/bridge-wonder-logo.png" decoding="async"><div class="eyebrow">BRIDGE WONDER · STAFF WORKSPACE</div></div>
+        <div class="bw40-intro-content">
+          <span class="bw40-intro-kicker">SENSORY PLAY STUDIO</span>
+          <h1>스튜디오 운영을<br>한곳에서.</h1>
+          <p>상담과 클래스 일정, 아이 기록, 재료 점검까지.<br>하루의 업무를 차분하게 관리합니다.</p>
+          <div class="bw40-intro-areas" aria-label="주요 업무 영역">
+            <div><span>01</span><strong>상담·등록</strong><small>문의부터 아이 기본정보까지</small></div>
+            <div><span>02</span><strong>클래스 운영</strong><small>일정·출결·보강 확인</small></div>
+            <div><span>03</span><strong>오감놀이 준비</strong><small>체험 테마·재료·안전 점검</small></div>
+          </div>
+        </div>
+        <p class="bw40-intro-footer">BRIDGE WONDER <span aria-hidden="true">/</span> OPERATIONS PORTAL</p>
+      </section>
+      <div class="bw40-login-panel">
+        <section class="login-card" aria-label="직원 로그인">
         <div id="loginStepPassword">
-          <div class="bw23-badge">BRIDGE WONDER · STAFF</div>
-          <h2>운영 관리 로그인</h2>
-          <p class="help">등록된 이메일 주소와 비밀번호를 입력하세요.</p>
+          <div class="bw23-badge">SECURE WORKSPACE</div>
+          <h2>직원 로그인</h2>
+          <p class="help">등록된 업무용 계정으로 접속해 주세요.</p>
           <form id="passwordLoginForm" autocomplete="on">
             <div><label for="passwordEmail">업무용 이메일</label><input id="passwordEmail" type="email" autocomplete="username" maxlength="180" placeholder="name@example.com" required></div>
             <div><label for="passwordInput">비밀번호</label><input id="passwordInput" type="password" autocomplete="current-password" maxlength="100" required></div>
@@ -38,12 +53,14 @@
           <div class="bw23-legal">처음 이용할 때는 발급받은 임시 비밀번호로 로그인하거나 이메일 인증 후 비밀번호를 설정하세요.</div>
         </div>
         <div id="loginStepEmail" hidden>
-          <h2>안녕하세요.</h2>
-          <p class="help">등록된 이메일 주소로 인증번호 6자리를 보내드립니다.</p>
+          <div class="bw23-badge">ACCOUNT VERIFICATION</div>
+          <h2>이메일 인증</h2>
+          <p class="help">등록된 업무용 이메일로 6자리 인증번호를 보내드립니다.</p>
           <form id="emailForm"><div><label for="loginEmail">업무용 이메일</label><input id="loginEmail" name="email" type="email" placeholder="name@example.com" autocomplete="email" maxlength="180" required></div><button type="submit" class="btn btn-primary w-full">인증번호 받기</button></form>
         </div>
         <div id="loginStepOtp" hidden>
-          <h2>이메일 인증 및 비밀번호 설정</h2><p class="help" id="sentTo"></p>
+          <div class="bw23-badge">SET UP ACCESS</div>
+          <h2>비밀번호 설정</h2><p class="help" id="sentTo"></p>
           <form id="otpForm"><div><label for="loginOtp">6자리 인증번호</label><input class="otp" id="loginOtp" name="otp" type="text" inputmode="numeric" autocomplete="one-time-code" placeholder="000000" pattern="[0-9]{6}" maxlength="6" required></div>
           <div><label for="bw23NewPass">새 비밀번호 (12자 이상)</label><input id="bw23NewPass" type="password" autocomplete="new-password" minlength="12" maxlength="100" required></div>
           <div><label for="bw23ConfirmPass">새 비밀번호 확인</label><input id="bw23ConfirmPass" type="password" autocomplete="new-password" minlength="12" maxlength="100" required></div>
@@ -51,9 +68,16 @@
           <button id="backToEmail" type="button" class="inline-link">로그인 화면으로 돌아가기</button>
         </div>
         <div id="loginFeedback" class="inline-status" role="status" aria-live="polite" style="margin-top:15px"></div>
-        <div class="login-note">직원 전용 페이지입니다. 업무에 필요한 정보만 확인해 주세요.</div>
-        <div class="bw271-login-tools"><button id="bw27-check-server" type="button" class="inline-link">서버 연결 다시 확인</button><a class="inline-link" href="https://script.google.com/macros/s/AKfycbwQVKOruJFxxUHVrsrsDvIpv95jz-ag5SbozlJcJ9mDNrpdGFyYp-uIsT2y2_-3n-xa/exec" rel="noopener noreferrer" target="_blank">Google 직접 접속</a></div><p id="bw27-server-status" role="status" aria-live="polite">Google 서버 연결을 확인하는 중입니다. 로그인 화면은 먼저 사용할 수 있습니다.</p>
-      </section>
+        <div class="login-note">직원 전용 시스템입니다. 계정 정보를 다른 사람과 공유하지 마세요.</div>
+        <div class="bw40-login-connection">
+          <p id="bw27-server-status" role="status" aria-live="polite">Google 서버 연결을 확인하는 중입니다. 로그인 화면은 먼저 사용할 수 있습니다.</p>
+          <details class="bw40-login-help">
+            <summary>연결 상태·접속 도움말</summary>
+            <div class="bw271-login-tools"><button id="bw27-check-server" type="button" class="inline-link">서버 연결 다시 확인</button><a class="inline-link" href="https://script.google.com/macros/s/AKfycbwQVKOruJFxxUHVrsrsDvIpv95jz-ag5SbozlJcJ9mDNrpdGFyYp-uIsT2y2_-3n-xa/exec" rel="noopener noreferrer" target="_blank">Google 직접 접속</a></div>
+          </details>
+        </div>
+        </section>
+      </div>
     </div>
   </main>
   <div id="workspace" class="app" hidden>

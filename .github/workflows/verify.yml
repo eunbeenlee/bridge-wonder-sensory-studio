@@ -83,6 +83,9 @@ jobs:
       - name: sensory-studio staff workflow V39 tests
         if: always()
         run: node tests/staff-sensory-v39.test.cjs
+      - name: executive staff layout V40 tests
+        if: always()
+        run: node tests/staff-enterprise-v40.test.cjs
       - name: Create staff Apps Script V38 installer ZIP
         if: success()
         run: python3 tools/build-gas-install-package.py
