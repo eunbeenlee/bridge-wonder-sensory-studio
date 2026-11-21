@@ -71,7 +71,7 @@ function clientContext(fetchMock){
  });
  await test('Google transport/CORS failure is shown without logging in',async()=>{
    const h=clientContext(async()=>{throw new TypeError('Failed to fetch');});
-   await assert.rejects(h.window.BW27Bridge.request('bridgeHealth',[]),/통신이 차단/);
+   await assert.rejects(h.window.BW27Bridge.request('bridgeHealth',[]),/연결하지 못했습니다/);
    assert.match(h.elements['bw27-server-status'].textContent,/운영 시스템과 연결하지 못했습니다/);
  });
  console.log(JSON.stringify({suite:'optional Shinjeon-style bridge offline',passed:tests.length,total:8}));
