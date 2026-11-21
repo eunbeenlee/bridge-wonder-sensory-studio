@@ -73,7 +73,7 @@ test('no public marketing, original PDF, user secrets or new privileged transpor
   assert.doesNotMatch(compliance,/fetch\s*\(|localStorage|sessionStorage|google\.script\.run/);
   assert.doesNotMatch(documentCatalog,/fetch\s*\(|localStorage|sessionStorage|google\.script\.run/);
   assert.match(read('staff/index.html'),/staff-documents-v42\.js\?v=43\.0\.0/);
-  assert.match(read('staff/standalone.html'),/staff-documents-v42\.js\?v=42\.0\.0/);
+  assert.match(read('staff/standalone.html'),/staff-documents-v42\.js\?v=43\.0\.0/);
 });
 dom.window.close();
 console.log(JSON.stringify({suite:'V43 education support + copy',passed}));
