@@ -86,6 +86,9 @@ jobs:
       - name: executive staff layout V40 tests
         if: always()
         run: node tests/staff-enterprise-v40.test.cjs
+      - name: top categories, four-color branding and Korean copy V41 tests
+        if: always()
+        run: node tests/staff-topnav-v41.test.cjs
       - name: Create staff Apps Script V38 installer ZIP
         if: success()
         run: python3 tools/build-gas-install-package.py
