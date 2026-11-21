@@ -91,7 +91,7 @@ function bw49SettingsInput_(payload){
   const src=payload.values;
   if(!src||typeof src!=='object'||Array.isArray(src))throw Error('운영 가정 내용을 확인해 주세요.');
   const keys=Object.keys(src);
-  if(keys.length>BW49.NUMERIC.length+3)throw Error('입력 항목 수를 확인해 주세요.');
+  if(keys.length>BW49.NUMERIC.length+Object.keys(BW49.ENUMS).length)throw Error('입력 항목 수를 확인해 주세요.');
   if(keys.some(k=>!BW49.NUMERIC.includes(k)&&!Object.prototype.hasOwnProperty.call(BW49.ENUMS,k)))
     throw Error('알 수 없는 재무 항목이 포함되어 있습니다.');
   const out={};
@@ -139,8 +139,8 @@ function bw49EntryInput_(p){
   const date=String(p.date||''),month=String(p.month||''),category=String(p.category||'');
   if(!/^20\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/.test(date)||
     date.slice(0,7)!==bw49Period_(month)||
-    !Number.isFinite(new Date(date+'T00:00:00').getTime())||
-    new Date(date+'T00:00:00').toISOString().slice(0,10)!==date)
+    !Number.isFinite(new Date(date+'T00:00:00Z').getTime())||
+    new Date(date+'T00:00:00Z').toISOString().slice(0,10)!==date)
     throw Error('거래 날짜와 연월을 확인해 주세요.');
   if(!BW49.CATEGORIES.includes(category))throw Error('거래 분류를 선택해 주세요.');
   const amount=Number(p.amount);
