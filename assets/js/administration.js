@@ -741,7 +741,7 @@ renderNav=function(){bw20OldRenderNav();const el=$('bw20PageSelect');if(!el)retu
    };
    bw32ModulePromise=Promise.all([
      load('link',base+'css/staff-compliance-v32.css?v=39.0.0','bw32ComplianceStyle'),
-     load('script',base+'js/staff-compliance-v32.js?v=43.0.0','bw32ComplianceScript')
+     load('script',base+'js/staff-compliance-v32.js?v=44.0.0','bw32ComplianceScript')
    ]).then(()=>{
      if(!window.BW32Compliance)throw Error('법정 관리 화면 초기화에 실패했습니다.');
      return window.BW32Compliance;
