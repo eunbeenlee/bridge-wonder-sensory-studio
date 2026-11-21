@@ -17,11 +17,14 @@
     food:'https://law.go.kr/lsLinkCommonInfo.do?chrClsCd=010202&lsJoLnkSeq=1026749099',
     consumer:'https://www.law.go.kr/admRulInfoP.do?admRulSeq=2100000270136',
     commerce:'https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=11300000006&HighCtg=',
+    classification:'https://indicode.kr/explanation/industry/11/85709',
     safety:'https://www.law.go.kr/LSW/lsInfoP.do?efYd=20260227&lsiSeq=283741',
-    childcare:'https://law.go.kr/LSW/lsLinkCommonInfo.do?lsJoLnkSeq=1022687647'
+    childcare:'https://law.go.kr/LSW/lsLinkCommonInfo.do?lsJoLnkSeq=1022687647',
+    labour:'https://www.law.go.kr/lsLinkCommonInfo.do?lsJoLnkSeq=1025589901',
+    childProtection:'https://law.go.kr/lsLinkCommonInfo.do?chrClsCd=010202&lsJoLnkSeq=1033125939'
   });
   const CATALOG=Object.freeze([
-    ['REG01','사업 형태','사업자등록 업종이 실제 운영과 맞는지 확인','관할 확인','교육지원 서비스업(85709)은 교육 지원업입니다. 직접 오감놀이 프로그램을 진행하는 경우에도 맞는 분류인지 세무서에 확인하세요.',LAW.vat],
+    ['REG01','사업 형태','사업자등록 업종이 실제 운영과 맞는지 확인','관할 확인','교육지원 서비스업(85709)은 교육 지원업입니다. 직접 오감놀이 프로그램을 진행하는 경우에도 맞는 분류인지 세무서에 확인하세요.',LAW.classification],
     ['REG02','사업 형태','학원·교습소 등록이 필요한지 확인','관할 확인','7~48개월 영유아 대상 영어 오감놀이의 진행 방식, 회당 50분, 주 1~2회, 동시 인원과 반복 기간을 정리해 북부교육지원청에 확인하세요.',LAW.academy],
     ['REG03','사업 형태','건축물 용도와 실제 사용 공간 확인','관할 확인','2층 상가의 건축물대장과 평면도를 기준으로 사용 용도, 소방·피난, 건물 관리규약을 확인하세요.',LAW.busan],
     ['REG04','사업 형태','정규·체험 가격 및 할인 조건 점검','운영 확인','정규 50분 30,000원, 체험 50분 25,000원 안내와 할인 조건·재료 포함 여부를 홈페이지 및 실제 결제 금액과 대조하세요.',LAW.consumer],
@@ -31,8 +34,8 @@
     ['FEE03','결제·환불','적용되는 환불 규정 확인','관할 확인','학원법, 계속거래 및 소비자분쟁해결기준 적용 여부를 먼저 확인하세요. 기존 화면의 5일 계산값을 새 서비스의 법정기한으로 쓰지 마세요.',LAW.consumer],
     ['FEE04','결제·환불','부가세와 과세·면세 여부 확인','관할 확인','교육지원 서비스업 등록만으로 부가세가 면제되지는 않습니다. 실제 업종과 제공 서비스에 따라 과세·면세를 확인하세요.',LAW.vat],
     ['FEE05','결제·환불','신청·결제·환불 기록 대조','운영 확인','신청 내용, 수납 내역, 환불 처리와 증빙 보관 위치가 서로 맞는지 확인하세요.',LAW.consumer],
-    ['STAFF01','직원 관리','근로계약·급여·보험 확인','법령 확인','직원별 고용 형태에 맞게 근로계약, 급여 및 사회보험 관련 기록을 관리하세요.',LAW.childcare],
-    ['STAFF02','직원 관리','성범죄·아동학대 취업제한 조회 대상 확인','관할 확인','실제 시설·사업 유형에 따라 취업제한 조회가 필요한지 관계기관에 확인하고, 조회 결과 원본은 별도 보관하세요.',LAW.childcare],
+    ['STAFF01','직원 관리','근로계약·급여·보험 확인','법령 확인','직원별 고용 형태에 맞게 근로계약, 급여 및 사회보험 관련 기록을 관리하세요.',LAW.labour],
+    ['STAFF02','직원 관리','성범죄·아동학대 취업제한 조회 대상 확인','관할 확인','실제 시설·사업 유형에 따라 취업제한 조회가 필요한지 관계기관에 확인하고, 조회 결과 원본은 별도 보관하세요.',LAW.childProtection],
     ['STAFF03','직원 관리','종사자 의무교육 대상 확인','관할 확인','아동학대 신고의무자 교육 등 직원에게 적용되는 교육을 확인하고 이수 기록을 보관하세요.',LAW.childcare],
     ['STAFF04','직원 관리','보호자 동반·인계 운영 원칙 정리','운영 확인','부모와 함께하는 활동인지, 보호자 없이 맡기는 시간은 없는지 명확히 정하고 직원에게 공유하세요.',LAW.childcare],
     ['PRIV01','개인정보','아동 개인정보의 보호자 동의 확인','법령 확인','동의가 필요한 아동 개인정보 처리에는 법정대리인의 동의와 확인 절차가 필요합니다.',LAW.privacy],
