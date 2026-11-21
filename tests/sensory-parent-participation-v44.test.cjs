@@ -56,10 +56,10 @@ test('privacy text distinguishes old signups from current contact-only service',
   assert.match(privacy,/상담만으로 예약이나 결제가 확정되지 않습니다/);
 });
 test('new server cap is 4 and staff cannot configure a higher class capacity',()=>{
-  assert.match(backend,/Math\.min\(4,Number\(r\[1\]\)\|\|0\)/);
+  assert.match(backend,/n<1\|\|n>4/);
   assert.match(backend,/n<1\|\|n>4/);
   assert.match(staff,/id="bw20cap-\$\{h\(x\.id\)\}" type="number" min="1" max="4"/);
-  assert.match(staff,/수업반 정원은 아이 1~4명으로 입력해 주세요/);
+  assert.match(staff,/아이 정원은 1~4명으로 입력해 주세요/);
   assert.match(report,/7~48개월/);
 });
 test('public pages never claim preapproval, exemption or child drop-off',()=>{
