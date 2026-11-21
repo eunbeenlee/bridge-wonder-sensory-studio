@@ -105,7 +105,7 @@ check('operations status filter hides nonmatching cards without deleting data',(
 check('staff UX remains frontend-only and does not send hidden data to GitHub',()=>{
  assert.doesNotMatch(script,/fetch\s*\(|localStorage\.|sessionStorage\.|SPREADSHEET_ID|OWNER_EMAIL|BW23_PRIVATE_PEPPER/);
  assert.match(app,/BW31UX\?\.onPageRendered/);
- assert.ok(html.includes('staff-ux-v31.js?v=39.0.0'));
+ assert.ok(html.includes('staff-ux-v31.js?v=41.0.0'));
 });
 console.log(JSON.stringify({suite:'V31 GitHub staff UX',passed:checks}));
 dom.window.close();

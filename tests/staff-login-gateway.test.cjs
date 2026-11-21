@@ -10,7 +10,7 @@ let passed=0;
 function ok(name,check){check();passed++;console.log('PASS',name);}
 ok('GitHub owns the native login screen',()=>{assert.match(html,/id="loginScreen"/);assert.match(html,/id="passwordLoginForm"/);});
 ok('No Google iframe or top-level redirect needed',()=>{assert.doesNotMatch(html,/<iframe\b|window\.location\.replace/);assert.match(diag,/id="loginScreen"/);});
-ok('Direct Google link retained as optional recovery',()=>{assert.match(html,/Google 직접 접속/);assert.match(html,/script\.google\.com\/macros\/s\//);});
+ok('Alternate access link retained for recovery',()=>{assert.match(html,/별도 접속 화면 열기/);assert.match(html,/script\.google\.com\/macros\/s\//);});
 ok('Static defaults load before Google bridge and app',()=>{const p=html.indexOf('staff-static-defaults.js'),b=html.indexOf('staff-google-bridge.js'),a=html.indexOf('administration.js');assert.ok(p>=0&&b>p&&a>b);});
 ok('No private data, credentials, or Sheets ID in defaults',()=>{assert.doesNotMatch(defaults,/SPREADSHEET_ID|OWNER_EMAIL|password|payrollCommand|studentPhone|secret|google\.com\/macros/);});
 ok('Class presets are reusable yet cannot grant permissions',()=>{const win={};vm.runInNewContext(defaults,{window:win,Object});assert.equal(win.BWStaffDefaults.classEditor.courseCode,'BW-SENSORY');assert.equal(win.BWStaffDefaults.classEditor.newClassVisibility,'비공개');assert.ok(Object.isFrozen(win.BWStaffDefaults.classEditor));});

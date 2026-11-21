@@ -20,7 +20,7 @@ function check(name,fn){fn();console.log('PASS',name);count++;}
 
 check('the new corporate skin only loads on staff entrypoints and is last',()=>{
   for(const page of [html,fallback]){
-    assert.match(page,/staff-enterprise-v40\.css\?v=40\.0\.0/);
+    assert.match(page,/staff-enterprise-v40\.css\?v=41\.0\.0/);
     assert.ok(page.indexOf('staff-sensory-v39.css')<page.indexOf('staff-enterprise-v40.css'));
     assert.ok(page.indexOf('staff-ux-v31.css')<page.indexOf('staff-enterprise-v40.css'));
     assert.match(page,/id="loginScreen"/);
@@ -31,15 +31,16 @@ check('the new corporate skin only loads on staff entrypoints and is last',()=>{
   assert.doesNotMatch(get('sensory-studio/index.html'),/staff-enterprise-v40/);
   assert.doesNotMatch(get('index.html'),/staff-enterprise-v40/);
 });
-check('desktop uses existing scrollable grouped sidebar and keeps toolbar controls accessible',()=>{
-  assert.match(css,/@media\(min-width:1080px\)/);
-  assert.match(css,/#workspace\.bw33-ready\s*\{[^}]*display:grid!important;[^}]*grid-template-columns:246px minmax\(0,1fr\)/s);
-  assert.match(css,/#workspace\.bw33-ready>\.sidebar\s*\{[^}]*display:flex!important;[^}]*position:sticky;[^}]*height:100vh;/s);
-  assert.match(css,/#workspace\.bw33-ready \.sidebar-nav\s*\{[^}]*overflow-y:auto/s);
-  assert.match(css,/#workspace\.bw33-ready \.bw31-nav-items \.nav-btn/);
-  assert.match(css,/#workspace\.bw33-ready \.bw33-primary-groups,\s*#workspace\.bw33-ready \.bw33-home\s*\{display:none!important;\}/s);
-  assert.doesNotMatch(css,/#workspace\.bw33-ready \.bw33-primary-actions\s*\{\s*display:none/);
-  assert.ok(html.indexOf('id="logoutBtn"')>=0,'original sidebar logout button preserved');
+check('V41 keeps the original sidebar only as a fallback; desktop categories are visible at the top',()=>{
+  const final=css.slice(css.indexOf('/* 10 — V41'));
+  assert.match(final,/@media\(min-width:1080px\)/);
+  assert.match(final,/#workspace\.bw33-ready>\.sidebar\s*\{display:none!important;\}/);
+  assert.match(final,/#workspace\.bw33-ready \.bw33-primary-groups\s*\{[^}]*display:flex!important;/s);
+  assert.match(final,/#workspace\.bw33-ready \.bw33-home\s*\{[^}]*display:inline-flex!important;/s);
+  assert.match(final,/#workspace\.bw33-ready \.bw33-navigation\s*\{[^}]*top:0!important;/s);
+  assert.match(html,/id="sideNav"/);
+  assert.match(topJs,/data-bw33group-trigger/);
+  assert.doesNotMatch(final,/pointer-events:none!important/);
 });
 check('mobile top navigation and search/PDF retain functional routes',()=>{
   assert.match(css,/@media\(max-width:1079px\)/);

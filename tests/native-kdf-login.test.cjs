@@ -62,7 +62,7 @@ async function webProof(pw=password,userEmail=email,secure=true){
 const value=p=>({email,password,proof:p});
 (async()=>{
  await test('GitHub login loads browser KDF before main app and preserves no-iframe structure',()=>{
-   assert.match(entry,/staff-native-kdf\.js\?v=39\.0\.0/);
+   assert.match(entry,/staff-native-kdf\.js\?v=41\.0\.0/);
    assert.ok(entry.indexOf('staff-native-kdf.js')<entry.indexOf('administration.js'));
    assert.doesNotMatch(entry,/<iframe\b/i);
  });
