@@ -95,14 +95,20 @@ jobs:
       - name: education-support compliance and Korean copy V43 tests
         if: always()
         run: node tests/staff-legal-v43.test.cjs
-      - name: Create staff Apps Script V38 installer ZIP
+      - name: four-child parent-participation V44 tests
+        if: always()
+        run: node tests/sensory-parent-participation-v44.test.cjs
+      - name: lesson-plan file security and upload V45 tests
+        if: always()
+        run: node tests/lesson-library-v45.test.cjs
+      - name: Create staff Apps Script V45 installer ZIP
         if: success()
         run: python3 tools/build-gas-install-package.py
       - name: Upload staff Apps Script installer
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: BridgeWonder-V38-Staff-AppsScript-Install
-          path: dist/Bridge_Wonder_V38_Staff_AppsScript_Install.zip
+          name: BridgeWonder-V45-Staff-AppsScript-Install
+          path: dist/Bridge_Wonder_V45_Staff_AppsScript_Install.zip
           if-no-files-found: error
           retention-days: 30
