@@ -37,7 +37,7 @@
       {id:'incident',title:'사고·특이사항 보고서',note:'민감정보는 별도 관리가 필요합니다',status:'planned'}
     ]},
     {id:'legacy',title:'기존 계약·등록 원본',summary:'이전에 작성한 서류를 확인할 때 사용',items:[
-      {id:'registration',type:'registration',title:'기존 수강 등록 확인서',note:'학원 등록번호가 필요한 기존 양식',status:'legacy'},
+      {id:'registration',type:'registration',title:'기존 수강 등록 확인서',note:'기존 학원형 양식 · 등록번호 확인 필요',status:'legacy'},
       {id:'contract',type:'contract',title:'기존 전자서명 계약서 사본',note:'서명된 원본을 그대로 발급 · 신규 스튜디오 이용동의서가 아님',status:'legacy'}
     ]}
   ]);
