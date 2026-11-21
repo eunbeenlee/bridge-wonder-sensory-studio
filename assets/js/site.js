@@ -136,7 +136,7 @@
       <p class="bw-open-kicker">OPENING NOTICE</p>
       <p class="bw-open-date">JANUARY · 2027</p>
       <h2 id="bw-open-title" class="bw-open-title">2027년 1월<br><em>오픈 예정</em></h2>
-      <p id="bw-open-desc" class="bw-open-description">작은 호기심이 특별한 발견으로 이어지는 곳.<br><strong>7~48개월 아이를 위한 영어 오감놀이 스튜디오</strong><br>브릿지 원더가 부산 명지에서 첫 만남을 준비합니다.</p>
+      <p id="bw-open-desc" class="bw-open-description">작은 호기심이 특별한 발견으로 이어지는 곳.<br><strong>7~48개월 · 한 회차 아이 최대 4명 · 보호자 동반</strong><br>브릿지 원더가 부산 명지에서 첫 만남을 준비합니다.</p>
       <p class="bw-open-subline">1월 체험수업 예정 · 정규 수업은 3월 시작 예정</p>
       <div class="bw-open-actions">
         <a class="btn btn-dark" href="/sensory-studio/visit/#online-inquiry" data-bw-link>체험수업 상담 신청 <span aria-hidden="true">↗</span></a>
