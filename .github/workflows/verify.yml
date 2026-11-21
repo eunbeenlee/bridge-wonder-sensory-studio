@@ -98,6 +98,20 @@ jobs:
       - name: V44 four-child parent-participation staff tests
         if: always()
         run: node tests/staff-parent-participation-v44.test.cjs
+      - name: V45 staff lesson-plan library tests
+        if: always()
+        run: node tests/lesson-plans-v45.test.cjs
+      - name: Create V45 staff lesson-plan installer ZIP
+        if: success()
+        run: python3 tools/build-lesson-plan-install-v45.py
+      - name: Upload V45 staff lesson-plan installer
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: BridgeWonder-V45-Lesson-Plans-Staff-Update
+          path: dist/Bridge_Wonder_V45_Lesson_Plans_Staff_Update.zip
+          if-no-files-found: error
+          retention-days: 30
       - name: Create staff Apps Script V38 installer ZIP
         if: success()
         run: python3 tools/build-gas-install-package.py
