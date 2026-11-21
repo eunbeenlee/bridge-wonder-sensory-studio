@@ -7,38 +7,38 @@
   'use strict';
 
   const GROUPS=Object.freeze([
-    {id:'consult',title:'상담·체험',summary:'상담 접수와 체험 프로그램 이용 전 안내',items:[
-      {id:'inquiry',type:'inquiry',title:'상담 접수 확인서',note:'접수된 상담 내용 확인',status:'available'},
-      {id:'experience-booking',title:'체험 예약 확정 안내서',note:'예약 일시·참여 인원·방문 전 안내',status:'planned'},
-      {id:'consult-followup',title:'상담 결과·이용 안내',note:'상담 후 일정·신청 절차 안내',status:'planned'}
+    {id:'consult',title:'상담·체험',summary:'상담과 체험 예약 관련 서류',items:[
+      {id:'inquiry',type:'inquiry',title:'상담 접수 확인서',note:'상담 신청 내용 확인',status:'available'},
+      {id:'experience-booking',title:'체험 예약 확정 안내서',note:'체험 날짜와 방문 안내',status:'planned'},
+      {id:'consult-followup',title:'상담 결과·이용 안내',note:'상담 후 다음 일정 안내',status:'planned'}
     ]},
-    {id:'agreement',title:'이용 신청·보호자 동의',summary:'신청 내용과 필수·선택 동의는 명확하게 구분',items:[
-      {id:'studio-application',title:'스튜디오 이용 신청서',note:'아이·보호자 정보와 이용 프로그램 확인',status:'planned'},
-      {id:'studio-terms',title:'이용 안내 및 취소·환불 조건 확인서',note:'이용 일정·요금·변경·취소 조건',status:'planned'},
-      {id:'privacy-consent',title:'개인정보 처리 안내·동의서',note:'만 14세 미만 아동의 법정대리인 동의 확인 절차 필요',status:'planned'},
-      {id:'media-consent',title:'사진·영상 활용 선택 동의서',note:'촬영·홍보 활용 범위와 철회 방법을 별도 안내',status:'planned'}
+    {id:'agreement',title:'이용 신청·보호자 동의',summary:'신청서와 보호자 동의 서류',items:[
+      {id:'studio-application',title:'스튜디오 이용 신청서',note:'아이와 보호자, 신청한 프로그램',status:'planned'},
+      {id:'studio-terms',title:'이용 안내 및 취소·환불 조건 확인서',note:'이용 일정, 요금, 취소·환불 조건',status:'planned'},
+      {id:'privacy-consent',title:'개인정보 처리 안내·동의서',note:'법정대리인 동의 및 확인이 필요한 서류',status:'planned'},
+      {id:'media-consent',title:'사진·영상 활용 선택 동의서',note:'촬영·홍보 동의는 별도 선택',status:'planned'}
     ]},
-    {id:'class',title:'클래스·보호자 안내',summary:'진행 일정, 준비사항, 변동사항을 보호자에게 안내',items:[
-      {id:'class',type:'class',title:'클래스 안내문',note:'기존 수업 기록을 바탕으로 안내문 발급',status:'available'},
-      {id:'notice',type:'notice',title:'스튜디오 일반 안내문',note:'제목과 안내 내용을 입력해 PDF 발급',status:'available'},
-      {id:'schedule-change',title:'일정 변경·휴강 안내',note:'변경 일정과 대체 이용 안내',status:'planned'},
-      {id:'materials',title:'오감놀이 준비물 안내',note:'월령·활동별 보호자 사전 안내',status:'planned'}
+    {id:'class',title:'클래스·보호자 안내',summary:'날짜와 준비물을 보호자에게 안내',items:[
+      {id:'class',type:'class',title:'클래스 안내문',note:'등록된 클래스 일정으로 발급',status:'available'},
+      {id:'notice',type:'notice',title:'스튜디오 일반 안내문',note:'제목과 내용을 직접 작성',status:'available'},
+      {id:'schedule-change',title:'일정 변경·휴강 안내',note:'변경 날짜와 보강 안내',status:'planned'},
+      {id:'materials',title:'오감놀이 준비물 안내',note:'활동에 필요한 준비물 안내',status:'planned'}
     ]},
-    {id:'payment',title:'이용료·환불',summary:'실제 결제·환불 기록을 근거로 안내',items:[
-      {id:'payment',type:'payment',title:'이용료 납부 내역 안내서',note:'기존 수납 기록을 근거로 발급하며 영수증을 대신하지 않음',status:'available'},
-      {id:'refund-notice',title:'환불 처리 안내서',note:'확정된 환불 금액·처리일·결제수단별 안내',status:'planned'},
-      {id:'receipt',title:'결제 증빙·영수증',note:'카드전표·현금영수증 등은 실제 결제수단에서 별도 발행',status:'external'}
+    {id:'payment',title:'이용료·환불',summary:'결제 내역과 환불 관련 서류',items:[
+      {id:'payment',type:'payment',title:'이용료 납부 내역 안내서',note:'납부 기록 확인용 · 영수증 별도',status:'available'},
+      {id:'refund-notice',title:'환불 처리 안내서',note:'환불 금액과 처리 날짜 안내',status:'planned'},
+      {id:'receipt',title:'결제 증빙·영수증',note:'카드전표·현금영수증은 별도 발급',status:'external'}
     ]},
-    {id:'safety',title:'영유아 안전·운영 서식',summary:'보호자 인계, 재료 안전, 위생과 사고 대응',items:[
-      {id:'materials-safety',title:'오감놀이 재료·안전 안내문',note:'삼킴 위험·위생·재료 정보·보호자 주의사항',status:'planned'},
-      {id:'handoff',title:'보호자 동반·인계 확인서',note:'동반 원칙과 실제 인계 확인 절차',status:'planned'},
-      {id:'emergency',title:'긴급상황 연락·대응 안내',note:'비상연락 절차와 현장 대응 방식',status:'planned'},
-      {id:'daily-safety',title:'일일 재료·위생 점검표',note:'현재 재료·안전 점검 메뉴에서 업무기록 가능 · 독립 PDF 서식 미지원',status:'internal'},
-      {id:'incident',title:'사고·특이사항 보고서',note:'민감정보가 포함될 수 있어 접근권한·보관 절차 필요',status:'planned'}
+    {id:'safety',title:'영유아 안전·운영 서식',summary:'재료와 공간의 안전, 보호자 인계',items:[
+      {id:'materials-safety',title:'오감놀이 재료·안전 안내문',note:'사용 재료와 안전 주의사항',status:'planned'},
+      {id:'handoff',title:'보호자 동반·인계 확인서',note:'보호자 동반과 인계 방법',status:'planned'},
+      {id:'emergency',title:'긴급상황 연락·대응 안내',note:'긴급 연락처와 대처 방법',status:'planned'},
+      {id:'daily-safety',title:'일일 재료·위생 점검표',note:'재료·안전 점검 메뉴에서 확인',status:'internal'},
+      {id:'incident',title:'사고·특이사항 보고서',note:'민감정보는 별도 관리가 필요합니다',status:'planned'}
     ]},
-    {id:'legacy',title:'기존 계약·등록 원본',summary:'기존 서명·등록자료를 변경하지 않고 유지',items:[
-      {id:'registration',type:'registration',title:'기존 수강 등록 확인서',note:'학원형 기관정보를 요구하는 기존 양식 · 적용 확인 후 발급',status:'legacy'},
-      {id:'contract',type:'contract',title:'기존 전자서명 계약서 사본',note:'보관된 서명 PDF 원본 사본 · 신규 스튜디오 이용동의서가 아님',status:'legacy'}
+    {id:'legacy',title:'기존 계약·등록 원본',summary:'이전에 작성한 서류를 확인할 때 사용',items:[
+      {id:'registration',type:'registration',title:'기존 수강 등록 확인서',note:'기존 학원형 양식 · 등록번호 확인 필요',status:'legacy'},
+      {id:'contract',type:'contract',title:'기존 전자서명 계약서 사본',note:'서명된 원본을 그대로 발급 · 신규 스튜디오 이용동의서가 아님',status:'legacy'}
     ]}
   ]);
   const SHORTCUTS={
@@ -100,9 +100,9 @@
     const headline=hub.querySelector('h3');
     if(headline)headline.textContent='센소리 스튜디오 문서목록';
     const intro=hub.querySelector('.bw33-doc-hub-head p');
-    if(intro)intro.textContent='실제 발급할 수 있는 문서와 준비 중인 스튜디오 서식을 구분해 확인하세요.';
+    if(intro)intro.textContent='필요한 서류를 골라 주세요. 아직 만들 수 없는 서식은 준비 중으로 표시했습니다.';
     const oldHint=hub.querySelector('.bw33-document-hint');
-    if(oldHint)oldHint.textContent='현재 서버가 제공하는 6종의 PDF만 즉시 발급할 수 있습니다. 새 신청서·동의서·안전 서식은 별도 개발 전까지 발급되지 않습니다.';
+    if(oldHint)oldHint.textContent='PDF 발급은 기존 6종만 가능합니다. 보호자 동의서와 안전 서식은 아직 만들 수 없습니다.';
     const title=pane.querySelector('.page-title');
     if(title)title.textContent='센소리 스튜디오 문서센터';
     const desc=pane.querySelector('.page-description');

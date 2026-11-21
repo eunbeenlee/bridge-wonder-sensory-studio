@@ -4,41 +4,52 @@
  */
 (function(global){
   'use strict';
+  // V43: Applicability is subject to the real operation, not its tax registration name.
+  // Preserve V32 code IDs because status records are keyed by those IDs.
   const LAW=Object.freeze({
-    academy:'https://www.law.go.kr/LSW/lsInfoP.do?efYd=20261001&lsiSeq=290261',
-    rules:'https://www.law.go.kr/lsInfoP.do?lsId=008606',
-    busan:'https://www.law.go.kr/LSW/ordinInfoP.do?ordinId=211001',
+    academy:'https://www.law.go.kr/LSW/lsInfoP.do?ancNo=21501&ancYd=20260331&efYd=20261001&lsiSeq=285147',
+    rules:'https://www.law.go.kr/LSW/lsInfoP.do?efYd=20261001&lsiSeq=290261',
+    busan:'https://www.pen.go.kr/main/cm/cntnts/cntntsView.do?cntntsId=188&mi=30308',
     busanRules:'https://www.law.go.kr/ordinInfoP.do?ordinId=211002',
-    privacy:'https://www.law.go.kr/lsLinkCommonInfo.do?lsJoLnkSeq=1029335069',
-    child:'https://www.law.go.kr/lsLinkCommonInfo.do?lsJoLnkSeq=1033134993'
+    privacy:'https://law.go.kr/LSW/lsLinkCommonInfo.do?chrClsCd=010202&lsJoLnkSeq=1034516085',
+    child:'https://www.law.go.kr/LSW/lsInfoP.do?efYd=20260227&lsiSeq=283741',
+    vat:'https://www.law.go.kr/LSW/lsLinkCommonInfo.do?lsJoLnkSeq=1032155877',
+    food:'https://law.go.kr/lsLinkCommonInfo.do?chrClsCd=010202&lsJoLnkSeq=1026749099',
+    consumer:'https://www.law.go.kr/admRulInfoP.do?admRulSeq=2100000270136',
+    commerce:'https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=11300000006&HighCtg=',
+    classification:'https://indicode.kr/explanation/industry/11/85709',
+    safety:'https://www.law.go.kr/LSW/lsInfoP.do?efYd=20260227&lsiSeq=283741',
+    childcare:'https://law.go.kr/LSW/lsLinkCommonInfo.do?lsJoLnkSeq=1022687647',
+    labour:'https://www.law.go.kr/lsLinkCommonInfo.do?lsJoLnkSeq=1025589901',
+    childProtection:'https://law.go.kr/lsLinkCommonInfo.do?chrClsCd=010202&lsJoLnkSeq=1033125939'
   });
   const CATALOG=Object.freeze([
-    ['REG01','등록·게시','학원 등록증·교습과정·명칭 확인','법정 확인','등록증과 실제 운영 과정을 대조합니다.',LAW.academy],
-    ['REG02','등록·게시','시설·운영자 변경 신고사항','법정 확인','변경신고 필요 여부와 신고 원본을 확인합니다.',LAW.busan],
-    ['REG03','등록·게시','교습비 및 광고 표시','법정 확인','홈페이지·전단·교습비 게시표의 금액을 대조합니다.',LAW.academy],
-    ['REG04','등록·게시','영유아 월령별 교습과정 적합 여부','관할 확인','7~48개월 대상 과정과 학원 등록 범위를 관할 교육지원청에 확인합니다.',LAW.busanRules],
-    ['REG05','등록·게시','학원 원칙·등록증 게시와 원본 보관','법정 확인','등록 유형에 맞는 게시·비치 의무를 확인합니다.',LAW.rules],
-    ['FEE01','수납·장부','교습비 영수증 원부·현금출납부 대조','법정 확인','실제 수납자료와 발급 원부를 점검합니다.',LAW.rules],
-    ['FEE02','수납·장부','수강생대장·출석부·직원명부','법정 확인','원본 전산 기록 및 보존 기준을 점검합니다.',LAW.rules],
-    ['FEE03','수납·장부','반환기준 안내 및 반환기한','법정 확인','사유 발생일부터 5일 내 반환 및 별표 4 기준을 확인합니다.',LAW.academy],
-    ['FEE04','수납·장부','교습비 변경 신고·증빙 관리','관할 확인','변경 신고와 수납금액·고지 내용의 일치를 확인합니다.',LAW.busanRules],
-    ['FEE05','수납·장부','영수증·계약·결제 증빙 대조','권장 관리','등록번호별 결제·문서 원본을 대조합니다.',LAW.rules],
-    ['STAFF01','교직원','강사 채용·해임·자격서류','법정 확인','법정 통보·자격·고용 형태별 기록을 확인합니다.',LAW.academy],
-    ['STAFF02','교직원','성범죄·아동학대 취업제한 관련 조회','법정 확인','적용 대상 확인 후 적법한 조회 여부만 기록합니다.',LAW.child],
-    ['STAFF03','교직원','종사자 의무교육 대상·이수','적용 확인','아동학대 신고의무 등 직원별 적용 교육을 확인합니다.',LAW.child],
-    ['STAFF04','교직원','근로계약·임금대장·보험 가입 구분','적용 확인','고용 형태별 노동·사회보험 의무를 별도 확인합니다.',LAW.academy],
-    ['PRIV01','개인정보','만 14세 미만 법정대리인 동의 확인','법정 확인','동의가 필요한 처리의 법정대리인 동의와 확인 기록을 확인합니다.',LAW.privacy],
-    ['PRIV02','개인정보','사진·영상 활용과 철회 관리','적용 확인','사진·홍보 영상 처리 근거 및 선택 동의·철회 이력을 확인합니다.',LAW.privacy],
-    ['PRIV03','개인정보','처리방침·보유기간·파기 관리','법정 확인','개인정보 처리방침 및 보유·파기 절차를 점검합니다.',LAW.privacy],
-    ['PRIV04','개인정보','접근권한·접속기록·백업 점검','법정 확인','퇴사자 권한 회수와 계정·자료 접근 통제를 점검합니다.',LAW.privacy],
-    ['SAFE01','시설·안전','배상책임보험·공제가입 및 만기','법정 확인','부산 조례의 보장액과 기간을 가입 증권과 대조합니다.',LAW.busan],
-    ['SAFE02','시설·안전','비상대피·소방·출입 안전','관할 확인','건축물 용도 및 해당되는 소방·안전 규정을 확인합니다.',LAW.busanRules],
-    ['SAFE03','시설·안전','영유아 보호자 인계·비상 연락','권장 관리','수업 전후 동반·인계 기록과 비상연락 절차를 점검합니다.',LAW.busan],
-    ['SAFE04','시설·안전','식재료·자연소재 안전·위생','권장 관리','월령별 삼킴 위험, 재료 상태와 위생 점검표를 관리합니다.',LAW.busan],
-    ['SAFE05','시설·안전','강의실 면적·시설 등록내용 일치','관할 확인','실측 면적·용도·시설 기준을 관할 교육지원청에 확인합니다.',LAW.busan],
-    ['OPS01','실사 준비','현장점검 원본 제출자료 보관처','권장 관리','등록증·보험·영수증·수강생대장의 원본 위치를 점검합니다.',LAW.rules],
-    ['OPS02','실사 준비','미비사항 조치·재점검 기록','권장 관리','완료되지 않은 항목의 담당자와 기한을 확인합니다.',LAW.academy],
-    ['OPS03','실사 준비','교육·월간계획·안전기록 대조','권장 관리','수업 계획과 실제 안전·출결 기록의 차이를 점검합니다.',LAW.busan]
+    ['REG01','사업 형태','사업자등록 업종이 실제 운영과 맞는지 확인','관할 확인','교육지원 서비스업(85709)은 교육 지원업입니다. 직접 오감놀이 프로그램을 진행하는 경우에도 맞는 분류인지 세무서에 확인하세요.',LAW.classification],
+    ['REG02','사업 형태','학원·교습소 등록이 필요한지 확인','관할 확인','7~48개월 영유아 대상 영어 오감놀이의 진행 방식, 회당 50분, 주 1~2회, 동시 인원과 반복 기간을 정리해 북부교육지원청에 확인하세요.',LAW.academy],
+    ['REG03','사업 형태','건축물 용도와 실제 사용 공간 확인','관할 확인','2층 상가의 건축물대장과 평면도를 기준으로 사용 용도, 소방·피난, 건물 관리규약을 확인하세요.',LAW.busan],
+    ['REG04','사업 형태','정규·체험 가격 및 할인 조건 점검','운영 확인','정규 50분 30,000원, 체험 50분 25,000원 안내와 할인 조건·재료 포함 여부를 홈페이지 및 실제 결제 금액과 대조하세요.',LAW.consumer],
+    ['REG05','사업 형태','홍보 문구와 실제 프로그램 내용 대조','관할 확인','영어학원·어린이집·돌봄 서비스로 오해할 수 있는 표현은 사업 형태를 확인하기 전까지 사용하지 마세요.',LAW.academy],
+    ['FEE01','결제·환불','결제 기록과 증빙 발행 확인','운영 확인','실제 결제와 카드전표·현금영수증 발행 내역을 대조하세요. 내부 납부 안내서는 영수증이 아닙니다.',LAW.consumer],
+    ['FEE02','결제·환불','예약 변경·취소 조건 안내','운영 확인','체험과 정기 클래스의 취소·변경 시점을 나누어 안내하고, 이용 전에 보호자가 확인했는지 살펴보세요.',LAW.consumer],
+    ['FEE03','결제·환불','적용되는 환불 규정 확인','관할 확인','학원법, 계속거래 및 소비자분쟁해결기준 적용 여부를 먼저 확인하세요. 기존 화면의 5일 계산값을 새 서비스의 법정기한으로 쓰지 마세요.',LAW.consumer],
+    ['FEE04','결제·환불','부가세와 과세·면세 여부 확인','관할 확인','교육지원 서비스업 등록만으로 부가세가 면제되지는 않습니다. 실제 업종과 제공 서비스에 따라 과세·면세를 확인하세요.',LAW.vat],
+    ['FEE05','결제·환불','신청·결제·환불 기록 대조','운영 확인','신청 내용, 수납 내역, 환불 처리와 증빙 보관 위치가 서로 맞는지 확인하세요.',LAW.consumer],
+    ['STAFF01','직원 관리','근로계약·급여·보험 확인','법령 확인','직원별 고용 형태에 맞게 근로계약, 급여 및 사회보험 관련 기록을 관리하세요.',LAW.labour],
+    ['STAFF02','직원 관리','성범죄·아동학대 취업제한 조회 대상 확인','관할 확인','실제 시설·사업 유형에 따라 취업제한 조회가 필요한지 관계기관에 확인하고, 조회 결과 원본은 별도 보관하세요.',LAW.childProtection],
+    ['STAFF03','직원 관리','종사자 의무교육 대상 확인','관할 확인','아동학대 신고의무자 교육 등 직원에게 적용되는 교육을 확인하고 이수 기록을 보관하세요.',LAW.childcare],
+    ['STAFF04','직원 관리','보호자 동반·인계 운영 원칙 정리','운영 확인','부모와 함께하는 활동인지, 보호자 없이 맡기는 시간은 없는지 명확히 정하고 직원에게 공유하세요.',LAW.childcare],
+    ['PRIV01','개인정보','아동 개인정보의 보호자 동의 확인','법령 확인','동의가 필요한 아동 개인정보 처리에는 법정대리인의 동의와 확인 절차가 필요합니다.',LAW.privacy],
+    ['PRIV02','개인정보','사진·영상 활용 동의 따로 관리','법령 확인','사진 촬영과 홍보 활용의 동의 범위를 나누어 받고, 동의하지 않아도 기본 프로그램 이용에 불이익이 없게 관리하세요.',LAW.privacy],
+    ['PRIV03','개인정보','개인정보 안내문·보관·삭제 기준','법령 확인','수집하는 정보와 보관 기간, 삭제 방법을 실제 운영 및 개인정보 처리방침과 맞춰 주세요.',LAW.privacy],
+    ['PRIV04','개인정보','직원별 조회 권한·이용 기록 관리','법령 확인','퇴사·담당 변경 시 접근 권한을 정리하고 아동 정보와 기록을 승인된 직원에게만 공개하세요.',LAW.privacy],
+    ['SAFE01','시설·안전','사고 배상책임보험 보장 범위 확인','관할 확인','영유아 체험 활동, 재료 사용, 낙상·배상책임을 실제로 보장하는지 보험 약관과 특약을 확인하세요.',LAW.safety],
+    ['SAFE02','시설·안전','소방·피난·출입문과 안전 설비','관할 확인','2층 상가의 출입·피난 동선과 소방설비, 영유아 안전시설을 관할 부서와 확인하세요.',LAW.safety],
+    ['SAFE03','시설·안전','보호자 인계·비상연락 절차 점검','운영 확인','참여 전 비상연락처를 확인하고 수업 전후 보호자 인계 절차를 운영하세요.',LAW.childcare],
+    ['SAFE04','시설·안전','식재료·자연재료 위생과 삼킴 위험 점검','운영 확인','재료는 만지기용과 먹기용을 구분하고, 7~48개월 아이의 삼킴·질식 위험과 식품 제공 여부를 확인하세요.',LAW.food],
+    ['SAFE05','시설·안전','실내 놀이시설 해당 여부 및 교구 안전','관할 확인','설치한 놀이기구와 놀이공간에 어린이놀이시설법이 적용되는지 확인하세요. 2027년 개정 시행 내용도 별도로 검토하세요.',LAW.safety],
+    ['OPS01','개원 준비','기관에 확인한 내용과 서류 보관','운영 확인','교육지원청·세무서·구청의 확인 내용과 회신 날짜, 건축물대장 등 증빙 위치를 남겨 두세요.',LAW.busan],
+    ['OPS02','개원 준비','개원 전 미완료 사항과 담당자 정리','운영 확인','아직 답변을 받지 못한 항목은 완료로 표시하지 말고 담당자와 다음 확인일을 기록하세요.',LAW.busan],
+    ['OPS03','개원 준비','수업 계획·안전 기록·보호자 안내 대조','운영 확인','월간 재료·활동 계획과 현장 점검표, 보호자 안내 내용이 서로 맞는지 확인하세요.',LAW.safety]
   ].map(x=>Object.freeze({code:x[0],category:x[1],title:x[2],kind:x[3],help:x[4],url:x[5]})));
   const STATUSES=['미확인','확인중','내부확인','보완필요'];
   const APPLIES=['확인필요','적용','해당없음'];
@@ -91,12 +102,12 @@
   }
   async function render(root,ctx) {
     if(!root||!ctx?.isCurrent?.())return;
-    root.innerHTML='<h2 class="page-title">운영 기준·법정 확인</h2><p class="page-description">스튜디오 운영에 필요한 서류와 안전·개인정보 확인 상태를 관리합니다.</p>'+banner('사업자등록 업종과 실제 운영 형태에 따라 적용 기준이 다를 수 있습니다. 필요한 신고·등록과 법정 요건은 관할기관에 확인하세요.')+
+    root.innerHTML='<h2 class="page-title">개원 준비·운영 기준</h2><p class="page-description">확인이 필요한 내용을 분야별로 정리했습니다. 답변을 받으면 날짜와 근거를 남겨 주세요.</p>'+banner('교육지원 서비스업으로 등록하더라도 실제로 영유아에게 수업을 제공한다면 학원법 적용 대상이 될 수 있습니다. 북부교육지원청과 세무서에 운영 계획을 설명하고 확인해 주세요. 아래 항목은 확인 목록이며 인허가를 대신하지 않습니다.')+
       '<div id="bw32Stats"></div>'+
-      '<section class="panel bw32-main"><div class="bw32-top"><div><h3>안전·개인정보·필요 서류 확인</h3><p>기존 점검 기록은 그대로 두고 필요한 항목을 별도로 확인합니다.</p></div><div class="bw32-actions"><button type="button" id="bw32Pdf" class="btn btn-primary">현장점검 준비 PDF 다운로드</button><button type="button" id="bw32OpenLegacy" class="btn btn-outline">기존 운영 점검표</button></div></div>'+
+      '<section class="panel bw32-main"><div class="bw32-top"><div><h3>운영 전 확인할 내용</h3><p>확인한 항목은 담당자와 관련 자료를 함께 기록해 주세요.</p></div><div class="bw32-actions"><button type="button" id="bw32Pdf" class="btn btn-primary">현장점검 준비 PDF 다운로드</button><button type="button" id="bw32OpenLegacy" class="btn btn-outline">기존 운영 점검표</button></div></div>'+
       '<div class="bw32-filters"><label>관리 분야<select id="bw32Category"><option value="">전체 분야</option></select></label><label>적용 여부<select id="bw32Applies"><option value="">전체</option></select></label><label>진행 상태<select id="bw32Status"><option value="">전체</option></select></label><label>검색<input type="search" id="bw32Search" placeholder="서류·보험·등록 검색"></label></div>'+
       '<p id="bw32Count" class="bw32-help" role="status"></p><div id="bw32Items">법정 점검 정보를 불러오는 중입니다…</div></section>'+
-      '<section class="panel"><h3>교습비 반환·기한 관리</h3><p>환불 사유 발생일부터 5일 이내 반환 기준을 관리합니다. 실제 금액은 「학원법 시행령」 별표 4와 수강 조건을 검토해 입력해야 합니다.</p><button class="btn btn-outline" type="button" id="bw32Tuition">수납·환불 관리로 이동</button></section>';
+      '<section class="panel"><h3>기존 계약의 환불 기록</h3><p>기존 서버는 학원형 계약 기준으로 기한을 계산합니다. 신규 체험·정기 이용권의 환불 기준과 기한은 적용 법령을 확인해 따로 정해야 합니다.</p><button class="btn btn-outline" type="button" id="bw32Tuition">이용료·환불 기록 보기</button></section>';
     const data=await ctx.call('staff32ListCompliance',ctx.token);
     if(!ctx.isCurrent())return;
     const records=new Map(data.map(r=>[r.code,r]));
@@ -147,8 +158,8 @@
   function appendRefunds(root,ctx,students) {
     if(!root||root.querySelector('#bw32Refunds'))return;
     const section=document.createElement('section');section.id='bw32Refunds';section.className='panel bw32-refunds';
-    section.innerHTML='<div class="bw32-top"><div><h3>환불 기한·처리대장</h3><p>별도 관리대장입니다. 기존 수납 원장·영수증 기록은 수정하지 않습니다.</p></div><button id="bw32LoadRefunds" class="btn btn-outline" type="button">환불대장 열기</button></div>'+
-      '<p class="bw32-help">반환사유 발생일부터 5일 이내 반환 원칙. 입력한 반환액은 법정 반환기준 자동 계산값이 아니며 실제 입금·지급을 대신하지 않습니다.</p><div id="bw32RefundBody"></div>';
+    section.innerHTML='<div class="bw32-top"><div><h3>기존 계약 환불대장</h3><p>기존 수강계약의 환불 내역을 확인하는 화면입니다. 새 스튜디오 서비스의 환불 기준을 자동 계산하는 기능은 아닙니다.</p></div><button id="bw32LoadRefunds" class="btn btn-outline" type="button">환불대장 열기</button></div>'+
+      '<p class="bw32-help">이 화면의 5일 기한은 기존 서버 계산값이며 신규 교육지원 서비스에 바로 적용할 수 없습니다. 실제 환불 기한과 금액을 확인한 뒤 사용해 주세요.</p><div id="bw32RefundBody"></div>';
     root.appendChild(section);
     const load=$('bw32LoadRefunds'),body=$('bw32RefundBody');
     let rows=[],pending=null;
@@ -161,7 +172,7 @@
       '<label>등록 접수<select id="bw32Receipt" required><option value="">수강등록 접수 선택</option>'+options+'</select></label>'+
       '<label>반환 사유<select id="bw32Reason" required>'+selected(REFUND_REASONS,REFUND_REASONS[0])+'</select></label>'+
       '<label>사유 발생일<input id="bw32Event" type="date" required></label>'+
-      '<label>확인기한 (자동 계산)<output id="bw32Due">사유 발생일 선택</output></label>'+
+      '<label>기존 시스템 참고일 (5일)<output id="bw32Due">사유 발생일 선택</output></label>'+
       '<label>실제 납부액 (원)<input id="bw32Paid" type="number" min="0" max="999999999" step="1" value="0" required></label>'+
       '<label>검토 반환액 (원)<input id="bw32Return" type="number" min="0" max="999999999" step="1" value="0" required></label>'+
       '<label>처리 상태<select id="bw32RefundStatus">'+selected(REFUND_STATES,'접수')+'</select></label>'+
@@ -169,7 +180,7 @@
       '<label>증빙 참조 (비공개)<input id="bw32RefundEvidence" maxlength="180" placeholder="이체확인증 등 비공개 문서 참조"></label>'+
       '</div><label>처리 메모<textarea id="bw32RefundNote" maxlength="240" rows="2" placeholder="금액 검토 근거·담당자 확인 내용 (계좌번호·민감정보 제외)"></textarea></label>'+
       '<div class="bw32-actions"><button type="submit" class="btn btn-primary">환불 처리 기록 저장</button><button type="button" class="btn btn-outline" id="bw32RefundNew">새 기록</button><span id="bw32RefundFeedback" role="status" class="bw32-help"></span></div></form>'+
-      '<h4>기존 환불 기록 '+rows.length+'건</h4><div class="table-scroll"><table class="data-table"><thead><tr><th>관리번호</th><th>접수번호</th><th>확인기한</th><th>진행 상태</th><th>관리</th></tr></thead><tbody>'+rows.map(x=>'<tr><td>'+esc(x.id)+'</td><td>'+esc(x.receipt)+'</td><td>'+esc(x.due)+'</td><td>'+esc(x.status)+'</td><td><button class="btn btn-outline btn-small" type="button" data-bw32edit="'+esc(x.id)+'">수정</button></td></tr>').join('')+'</tbody></table></div>';
+      '<h4>기존 환불 기록 '+rows.length+'건</h4><div class="table-scroll"><table class="data-table"><thead><tr><th>관리번호</th><th>접수번호</th><th>기존 참고일</th><th>진행 상태</th><th>관리</th></tr></thead><tbody>'+rows.map(x=>'<tr><td>'+esc(x.id)+'</td><td>'+esc(x.receipt)+'</td><td>'+esc(x.due)+'</td><td>'+esc(x.status)+'</td><td><button class="btn btn-outline btn-small" type="button" data-bw32edit="'+esc(x.id)+'">수정</button></td></tr>').join('')+'</tbody></table></div>';
       const updateDue=()=>{$('bw32Due').textContent=dueAfter($('bw32Event').value,5)||'사유 발생일 선택';};
       $('bw32Event').addEventListener('change',updateDue);
       function reset(){
