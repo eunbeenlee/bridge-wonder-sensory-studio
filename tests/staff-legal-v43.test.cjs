@@ -10,6 +10,7 @@ const compliance=read('assets/js/staff-compliance-v32.js');
 const app=read('assets/js/administration.js');
 const documentCatalog=read('assets/js/staff-documents-v42.js');
 const server=read('server/apps-script/Code.gs');
+const refundServer=read('server/apps-script/Compliance.gs');
 const report=read('docs/BRIDGE_V43_LEGAL_REVIEW_EDUCATION_SUPPORT.md');
 const drafts=read('docs/BRIDGE_V43_PARENT_FORM_DRAFTS.md');
 const dom=new JSDOM('<!doctype html><html lang="ko"><head></head><body></body></html>',{
@@ -30,7 +31,7 @@ test('preserve all original 26 legal status keys and server contracts',()=>{
   ];
   assert.deepEqual(rows.map(x=>x.code),expected);
   assert.match(server,/function staffDocTypes\(token\)/);
-  assert.match(server,/function staff32SaveRefund/);
+  assert.match(refundServer,/function staff32SaveRefund/);
 });
 test('studio criteria are conditional and do not declare automatic exemption',()=>{
   const data=rows.map(r=>r.title+' '+r.help).join('\n');
