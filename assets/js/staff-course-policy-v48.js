@@ -113,7 +113,8 @@
       currentFee.toLocaleString('ko-KR')+'원':'미설정';
     feeHint.textContent='기존 계약용 수업비 저장값: '+displayedFee+
       ' · 새 운영안: 주 1회 × 10주, 재료비 포함. 텀 총액과 부가세·환불 조건은 아직 확인이 필요합니다. '+
-      '1~2월 체험 25,000원 및 3월 체험 35,000원은 운영자 초안이며 공개 홈페이지·기존 계약 금액은 자동으로 변경하지 않습니다.';
+      '1~2월 체험 25,000원 및 3월 체험 35,000원은 운영자 초안이며 공개 홈페이지·기존 계약 금액은 자동으로 변경하지 않습니다.'+
+      (/학원/.test(String(root.querySelector('#bw23Course_business')?.value||''))?' 현재 저장된 법정 상호에는 ‘학원’ 표시가 포함되어 있습니다. 사업자등록 내용이 확정되기 전까지 임의로 변경하지 마세요.':'');
     const feedback=outer.querySelector('#bw48Result');
     outer.querySelector('#bw48Apply').addEventListener('click',()=>{
       const selection=FIELDS.filter(item=>outer.querySelector('[data-bw48-field="'+item.key+'"]').checked);
