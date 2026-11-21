@@ -90,7 +90,7 @@ check('grouped navigation continues to honor each synthetic employee permission'
   for(const m of links){const b=d.createElement('button');b.type='button';b.dataset.page=m[0];b.textContent=m[2];side.appendChild(b);}
   w.BW31UX.decorateNav();
   const rendered=[...side.querySelectorAll('button[data-page]')].map(x=>x.dataset.page);
-  assert.deepEqual(rendered.sort(),links.map(m=>m[0]).sort());
+  assert.deepEqual(rendered.sort(),Array.from(links,m=>m[0]).sort());
   assert.equal(side.querySelector('[data-page="students"]'),null);
   assert.equal(side.querySelector('[data-page="payroll"]'),null);
   assert.ok(side.querySelector('.bw31-nav-group'));
