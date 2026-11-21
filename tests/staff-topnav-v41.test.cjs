@@ -117,7 +117,7 @@ check('plain Korean guidance and the privacy-sensitive route contract are intact
   assert.match(help,/수업 횟수와 시간은 상담 후 정하면 됩니다/);
   assert.match(help,/아이 명단을 불러온 뒤/);
   assert.match(app,/관리 시스템 업데이트가 필요합니다/);
-  assert.match(app,/보호자 동반 여부와 수업 후 인계 결과만 기록해 주세요/);
+  assert.match(app,/보호자는 수업이 끝날 때까지 함께합니다/);
   const permissions=JSON.parse(app.match(/const BW24_CAPS=(\{[^\n]+\});/)[1]);
   assert.deepEqual(Object.keys(permissions).sort(),MENU.map(x=>x[0]).sort());
   assert.ok(!permissions.payroll.read.includes('teacher'));
