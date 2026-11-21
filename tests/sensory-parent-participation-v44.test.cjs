@@ -67,6 +67,6 @@ test('public pages never claim preapproval, exemption or child drop-off',()=>{
     const h=read(p);
     assert.doesNotMatch(h,/학원법 적용 제외 확정|학원 등록 필요 없음|무허가 합법|아이만 맡기세요/);
   }
-  assert.match(read('assets/js/staff-compliance-v32.js'),/법제처의 2026년 소규모 대면교습 해석은 참고자료/);
+  assert.match(read('assets/js/staff-compliance-v32.js'),/법제처 25-0736/);
 });
 console.log(JSON.stringify({suite:'V44 small parent-accompanied sensory studio',passed}));
