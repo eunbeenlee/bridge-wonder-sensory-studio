@@ -244,7 +244,7 @@ check('published prices distinguish regular tuition from trial promotion without
   assert.match(visit,/정규 수업 · 50분 1회.*30,000원/s);
   assert.match(experience,/정규 수업은 50분 1회 30,000원/);
   assert.match(programs,/정규 수업은 50분 1회 30,000원/);
-  assert.match(app,/1회 안내가격을 그대로 월 교습비로 입력하지 말고/);
+  assert.match(app,/회당 안내 금액과 월 교습비는 다를 수 있으니/);
   assert.match(app,/id="bw38SessionCount"/);
   assert.match(app,/id="bw38SessionFee"/);
   assert.match(app,/n\*30000/);
