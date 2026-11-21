@@ -35,7 +35,7 @@ test('intake remains consultation-only, no automatic booking',()=>{
   assert.ok(visit.includes('id="online-inquiry"'));
   assert.match(visit,/아이 한 명당 보호자 한 명이 함께 들어와 수업이 끝날 때까지 참여합니다/);
   assert.match(visit,/한 회차에 아이는 최대 4명/);
-  assert.match(visit,/상담 신청만으로 예약|상담 신청만으로|접수만으로 수업이 확정되지/);
+  assert.match(visit,/상담 신청은 예약 확정이 아닙니다/);
   assert.doesNotMatch(visit,/온라인 수강 등록으로 이동/);
 });
 test('legacy academy enrollment page is paused without erasing legacy source or registrations',()=>{
