@@ -74,6 +74,44 @@ check('original tokens, permissions, authentication and data storage are not rew
   assert.doesNotMatch(css,/--forest\s*:|--sage\s*:|--orange\s*:|--cream\s*:/);
   assert.doesNotMatch(css,/fetch\s*\(|localStorage|sessionStorage|SPREADSHEET_ID|addEventListener/);
 });
+check('split-panel login carries the official logo and both authentication and password-recovery paths',()=>{
+  for(const page of [html,fallback]){
+    const doc=new JSDOM(page).window.document;
+    const root=doc.getElementById('loginScreen');
+    assert.ok(root,'original login route stays in place');
+    assert.ok(root.querySelector('.login-wrap.bw40-login-layout'));
+    assert.ok(root.querySelector('.bw40-login-intro .login-brand img.logo[src*="bridge-wonder-logo.png"]'));
+    assert.equal(root.querySelectorAll('.bw40-login-intro').length,1);
+    assert.ok(root.querySelector('.bw40-intro-areas'));
+    assert.ok(root.querySelector('.bw40-login-panel .login-card'));
+    assert.ok(root.querySelector('form#passwordLoginForm'));
+    assert.ok(root.querySelector('form#emailForm'));
+    assert.ok(root.querySelector('form#otpForm'));
+    assert.ok(root.querySelector('#loginStepPassword'));
+    assert.ok(root.querySelector('#loginStepEmail[hidden]'));
+    assert.ok(root.querySelector('#loginStepOtp[hidden]'));
+    assert.ok(root.querySelector('input#passwordEmail[autocomplete="username"]'));
+    assert.ok(root.querySelector('input#passwordInput[type="password"]'));
+    assert.ok(root.querySelector('input#loginOtp[autocomplete="one-time-code"]'));
+    assert.ok(root.querySelector('input#bw23NewPass'));
+    assert.ok(root.querySelector('input#bw23ConfirmPass'));
+    assert.ok(root.querySelector('button#bw23FirstTime'));
+    assert.ok(root.querySelector('button#bw23Reset'));
+    assert.ok(root.querySelector('button#backToEmail'));
+    assert.ok(root.querySelector('#loginFeedback[aria-live="polite"]'));
+    assert.ok(root.querySelector('details.bw40-login-help summary'));
+    assert.ok(root.querySelector('button#bw27-check-server'));
+    assert.ok(root.querySelector('a[href^="https://script.google.com/macros/s/"]'));
+    assert.equal(root.querySelectorAll('input#passwordEmail').length,1);
+  }
+  assert.ok(new JSDOM(html).window.document.querySelector('#loginScreen #bw27-server-status[aria-live="polite"]'));
+  assert.match(css,/\.login-wrap\.bw40-login-layout\s*\{[^}]*display:grid;[^}]*grid-template-columns:minmax\(0,\.94fr\) minmax\(0,1\.06fr\)/s);
+  assert.match(css,/\.bw40-login-intro\s*\{[^}]*background:#edf2eb;/s);
+  assert.match(css,/@media\(max-width:850px\)[\s\S]*\.login-wrap\.bw40-login-layout\s*\{[^}]*grid-template-columns:minmax\(0,1fr\)/s);
+  assert.match(css,/@media\(max-width:480px\)/);
+  assert.match(css,/\.bw40-login-panel \.login-card input:not\(\[type=checkbox\]\):focus/);
+  assert.match(css,/\.bw40-login-panel \.bw31-login-help/);
+});
 check('grouped navigation continues to honor each synthetic employee permission',()=>{
   const dom=new JSDOM('<!doctype html><html lang="ko"><body>'+
     '<div id="workspace" class="app"><aside class="sidebar"><nav id="sideNav" class="sidebar-nav"></nav></aside>'+
