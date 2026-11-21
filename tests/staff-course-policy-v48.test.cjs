@@ -26,7 +26,7 @@ function html(){
   check('frontend-only addition after existing app, absent from all public pages',()=>{
     for(const page of [index,standalone]){
       assert.ok(page.includes('staff-course-policy-v48.js?v=48.0.0'));
-      assert.ok(page.indexOf('administration.js?v=45.0.0')<page.indexOf('staff-course-policy-v48.js'));
+      assert.ok(page.indexOf('administration.js?v=49.0.0')<page.indexOf('staff-course-policy-v48.js'));
     }
     const publicPaths=['index.html','sensory-studio/index.html','sensory-studio/visit/index.html',
        'sensory-studio/programs/index.html','sensory-studio/experience/index.html',

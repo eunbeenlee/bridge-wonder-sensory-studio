@@ -28,7 +28,7 @@
     {id:'admin',label:'스튜디오 관리',sections:[
       {name:'운영정보와 시설',pages:['operations','courseSettings']},
       {name:'안전·규정·직원 관리',pages:['compliance','staffCompliance']},
-      {name:'계정·급여·이용 기록',pages:['users','payroll','security']}
+      {name:'계정·급여·이용 기록',pages:['users','payroll','finance','security']}
     ]}
   ]);
   const DOCUMENT_TYPES=Object.freeze([

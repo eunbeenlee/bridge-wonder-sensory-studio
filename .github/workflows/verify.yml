@@ -110,6 +110,9 @@ jobs:
       - name: V48 studio operating settings Q&A and safe field import tests
         if: always()
         run: node tests/staff-course-policy-v48.test.cjs
+      - name: V49 taxable finance scenario and private ledger tests
+        if: always()
+        run: node tests/staff-finance-v49.test.cjs
       - name: Create V45 staff lesson-plan installer ZIP
         if: success()
         run: python3 tools/build-lesson-plan-install-v45.py
@@ -142,5 +145,17 @@ jobs:
         with:
           name: BridgeWonder-V46-Family-And-Lesson-Staff-Patch
           path: dist/Bridge_Wonder_V46_Staff_Family_And_Lesson_Upload.zip
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Build V49 owner finance Apps Script patch
+        if: success()
+        run: python3 tools/build-finance-install-v49.py
+      - name: Upload V49 finance Apps Script patch
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: BridgeWonder-V49-Finance-Staff-Update
+          path: dist/Bridge_Wonder_V49_Staff_Finance_Install.zip
           if-no-files-found: error
           retention-days: 30
