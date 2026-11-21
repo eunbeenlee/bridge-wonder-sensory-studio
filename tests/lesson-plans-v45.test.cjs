@@ -56,6 +56,7 @@ function fixture(){
   }
   const util={
     getUuid:()=>crypto.randomUUID(),
+    DigestAlgorithm:{SHA_256:'sha256'},
     base64Decode:t=>Array.from(Buffer.from(t,'base64'),x=>x>127?x-256:x),
     base64Encode:t=>Buffer.from(t.map(x=>(x+256)%256)).toString('base64'),
     computeDigest:(_alg,data)=>Array.from(crypto.createHash('sha256').update(typeof data==='string'?data:Buffer.from(data.map(x=>(x+256)%256))).digest(),x=>x>127?x-256:x),
