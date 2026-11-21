@@ -118,7 +118,7 @@ function staff45ListLessonPlans(token) {
     .map(bw45Public_).sort((a,b)=>b.updated.localeCompare(a.updated)).slice(0,250);
   const versions=all.filter(x=>items.some(item=>item.id===String(x.values[0])))
     .map(bw45Public_).sort((a,b)=>a.id.localeCompare(b.id)||b.version-a.version);
-  return {items,versions,canEdit:user.role==='owner'||user.role==='director',maxBytes:BW45.LIMIT,chunkBytes:BW45.CHUNK};
+  return {items,versions,canEdit:(user.role==='owner'||user.role==='director')&&bw24Can_(user,'themes','write'),maxBytes:BW45.LIMIT,chunkBytes:BW45.CHUNK};
 }
 function staff45BeginLessonPlan(token,p) {
   const user=bw45Allowed_(token,true),meta=bw45Meta_(p),requestId=String(p&&p.requestId||'');
@@ -189,13 +189,20 @@ function staff45FinishLessonPlan(token,uploadId) {
     bw17Audit_(user,'수업안 등록 확인',planId,'시작','v'+version+' · '+bytes.length+' bytes');
     const blob=Utilities.newBlob(bytes,name.mime,'BW45_'+planId+'_v'+version+'_'+name.name);
     const file=bw45Folder_(false).createFile(blob);
+    const tab=bw45Tab_('plan');
+    let appendedRow=0;
     try{
       try{file.setSharing(DriveApp.Access.PRIVATE,DriveApp.Permission.NONE);}catch(_){}
-      const tab=bw45Tab_('plan');
       tab.appendRow([planId,version,new Date(),v[11],v[12],v[13],v[14],name.name,name.mime,bytes.length,file.getId(),sha,'사용',user.email,new Date()]);
+      appendedRow=tab.getLastRow();
       found.sheet.getRange(found.row,5).setValue('완료');
       found.sheet.getRange(found.row,17,1,3).setValues([[new Date(),v[17],file.getId()]]);
-    }catch(e){try{file.setTrashed(true);}catch(_){}throw e;}
+    }catch(e){
+      if(appendedRow)try{tab.deleteRow(appendedRow);}catch(_){}
+      try{found.sheet.getRange(found.row,5).setValue('업로드중');}catch(_){}
+      try{file.setTrashed(true);}catch(_){}
+      throw e;
+    }
     try{stage.setTrashed(true);}catch(_){}
     return {ok:true,plan:{id:planId,version,title:v[11],filename:name.name,size:bytes.length,status:'사용'}};
   }finally{lock.releaseLock();}
@@ -232,7 +239,7 @@ function staff45UpdateLessonPlan(token,p) {
 }
 function staff45ArchiveLessonPlan(token,p) {
   const user=bw45Allowed_(token,true),id=String(p&&p.planId||'');
-  if(!/^BW-LP-[a-f0-9]{24}$/i.test(id)||typeof p.archived!=='boolean')throw Error('수업안 보관 상태를 확인해 주세요.');
+  if(!/^BW-LP-[a-f0-9]{24}$/i.test(id)||!p||typeof p.archived!=='boolean')throw Error('수업안 보관 상태를 확인해 주세요.');
   const lock=LockService.getScriptLock();lock.waitLock(15000);
   try{
     const current=bw45Latest_(id);
