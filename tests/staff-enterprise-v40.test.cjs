@@ -20,7 +20,7 @@ function check(name,fn){fn();console.log('PASS',name);count++;}
 
 check('the new corporate skin only loads on staff entrypoints and is last',()=>{
   for(const page of [html,fallback]){
-    assert.match(page,/staff-enterprise-v40\.css\?v=40\.0\.0/);
+    assert.match(page,/staff-enterprise-v40\.css\?v=41\.0\.0/);
     assert.ok(page.indexOf('staff-sensory-v39.css')<page.indexOf('staff-enterprise-v40.css'));
     assert.ok(page.indexOf('staff-ux-v31.css')<page.indexOf('staff-enterprise-v40.css'));
     assert.match(page,/id="loginScreen"/);
