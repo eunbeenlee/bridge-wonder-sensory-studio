@@ -73,7 +73,7 @@ function bw49Entries_(sheet){
 }
 function staff49FinanceRead(token,month){
   bw49Auth_(token,false);
-  const period=bw49Period_(month),s=bw49Settings_(false),e=bw49Sheet_('entries',false);
+  const period=bw49Period_(month),s=bw49Sheet_('settings',false),e=bw49Sheet_('entries',false);
   const settings=bw49Settings_(s);
   const entries=bw49Entries_(e).filter(r=>r.month===period&&r.state==='유효').map(r=>{
     const {requestId,...publicRow}=r;return publicRow;
