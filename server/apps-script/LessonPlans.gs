@@ -102,7 +102,7 @@ function staff45ListLessons(token){
   const user=bw45Auth_(token,false),sheet=bw45Tab_(false);
   const rows=bw45Rows_(sheet).filter(r=>{
     const state=String(r.values[8]||'');
-    return user.role==='teacher'?state==='공유':state!=='업로드중'&&state!=='취소';
+    return user.role==='teacher'?state==='공유':(state!=='취소'&&(state!=='업로드중'||r.values[9]===user.email));
   });
   return rows.reverse().map(bw45Public_);
 }
