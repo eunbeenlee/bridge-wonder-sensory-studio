@@ -191,7 +191,7 @@
         `<div class="metric-grid">${metrics.map(([key,title])=>`<article class="metric"><div class="metric-name">${h(title)}</div><div class="metric-value" id="bw271Metric_${key}" aria-live="polite">—</div></article>`).join('')}</div>`+
         panel('현재 수업 운영 기준','부모참여형 오감놀이 · 한 타임 기준',
           '<div class="row" style="gap:8px;flex-wrap:wrap"><span class="pill">생후 7~48개월</span><span class="pill">아이 4명</span><span class="pill">보호자 4명 동반</span><span class="pill">50분</span></div><p class="footnote">보호자는 수업 내내 아이와 함께 참여합니다. 아이만 맡기는 돌봄은 운영하지 않습니다. 다른 공간에서 동시에 활동하는 인원도 확인하세요.</p>'+
-          (bw24Can('themes')?'<div class="row spaced"><button type="button" class="btn btn-outline btn-small" data-goto="themes">수업안 파일 관리</button></div>':'') )+
+          (bw24Can('themes')&&['owner','director','teacher'].includes(state.user?.role)?'<div class="row spaced"><button type="button" class="btn btn-outline btn-small" data-goto="themes">수업안 파일 관리</button></div>':'') )+
         panel('자주 쓰는 업무','필요한 메뉴를 선택해 주세요. 사용 권한이 있는 메뉴만 표시됩니다.',
           `<div class="bw39-workstreams">${streams.map(group=>`
             <section class="bw39-workstream">
@@ -715,7 +715,7 @@ async function renderThemes(){
  if(edit){$('bw20ThemeReset').onclick=()=>{$('bw20ThemeForm').reset();};$('pageBody').querySelectorAll('[data-bw20theme]').forEach(b=>b.onclick=()=>{const x=rows.find(v=>v.month===b.dataset.bw20theme);if(!x)return;const vals={bw20ThemeMonth:x.month,bw20ThemeStatus:x.status,bw20ThemeName:x.theme,bw20ThemeBook:x.book,bw20ThemeSong:x.song,bw20ThemeActivity:x.activity};Object.entries(vals).forEach(([k,v])=>$(k).value=v||'');x.methods.forEach((v,i)=>$('bw20ThemeMethod'+i).value=v||'');$('bw20ThemeForm').scrollIntoView({behavior:'smooth',block:'start'});});$('bw20ThemeForm').onsubmit=async e=>{e.preventDefault();const f=e.currentTarget;setBusy(f,true);try{await call('staff20SaveTheme',state.token,{month:$('bw20ThemeMonth').value,status:$('bw20ThemeStatus').value,theme:$('bw20ThemeName').value,book:$('bw20ThemeBook').value,song:$('bw20ThemeSong').value,activity:$('bw20ThemeActivity').value,methods:labels.map((_,i)=>$('bw20ThemeMethod'+i).value)});toast('월간 주제를 저장했습니다.');await renderThemes();}catch(e){toast(e.message,true);}finally{setBusy(f,false);}};}
   // V45: file library is optional until the existing STAFF server is upgraded.
   // A missing module or server method must not block monthly sensory planning.
-  if(window.BW45LessonPlans){
+  if(window.BW45LessonPlans&&['owner','director','teacher'].includes(state.user?.role)){
     const routeToken=state.token,routeSeq=state.navigationSeq;
     window.BW45LessonPlans.mount({
       root:$('pageBody'),token:routeToken,call,
