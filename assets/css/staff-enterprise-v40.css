@@ -1808,3 +1808,15 @@
 @media(prefers-reduced-motion:reduce) {
   #workspace.bw33-ready .bw33-group-trigger::after {transition:none;}
 }
+
+/* Secondary standalone entry: keep the diagnostic label quiet and in flow. */
+.bw40-diagnostic-note {
+  margin:16px 0 0;
+  border-left:2px solid #d1693b;
+  background:#fbf8f2;
+  color:#677560;
+  padding:8px 11px;
+  font-size:11px;
+  line-height:1.65;
+  word-break:keep-all;
+}
