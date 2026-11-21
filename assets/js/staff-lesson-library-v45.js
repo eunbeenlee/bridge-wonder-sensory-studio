@@ -42,7 +42,7 @@
         '<label class="bw45-field"><span>적용 월 (선택)</span><input type="month" name="month"></label>'+
         '<label class="bw45-field"><span>대상 월령</span><select name="age">'+options(AGE,'전체')+'</select></label>'+
         '<label class="bw45-field wide"><span>메모 (선택)</span><textarea name="note" rows="2" maxlength="300" placeholder="필요한 재료나 준비사항만 간단히 적어 주세요."></textarea></label>'+
-        '<div class="bw45-field wide"><div class="bw45-actions"><button class="btn btn-primary" id="bw45UploadButton" type="submit">수업안 업로드</button>'+
+        '<div class="bw45-field wide"><div class="bw45-actions"><button class="btn btn-primary" id="bw45UploadButton" type="submit" disabled>수업안 업로드</button>'+
         '<button class="btn btn-outline" id="bw45CancelButton" type="button" disabled>업로드 중지</button><span class="bw45-feedback" id="bw45UploadFeedback" role="status"></span></div>'+
         '<progress id="bw45Progress" class="bw45-progress" max="100" value="0" aria-label="업로드 진행률" aria-busy="false"></progress>'+
         '<p class="bw45-note">아동 이름·보호자 연락처·건강정보가 포함된 파일은 올리지 마세요. 선생님에게 보여 주려면 업로드 후 공유 상태를 바꿔 주세요.</p></div>'+
@@ -107,10 +107,12 @@
         if(!good())return;
         if(!Array.isArray(items))throw Error('수업안 목록이 올바르지 않습니다.');
         records=items;available=true;show('');
+        const uploadButton=$(host,'#bw45UploadButton');if(uploadButton&&!busy)uploadButton.disabled=false;
         draw();
       }catch(error){
         if(!good())return;
-        const text=errText(error);
+        const text=errText(error);available=false;
+        const uploadButton=$(host,'#bw45UploadButton');if(uploadButton)uploadButton.disabled=true;
         show(/허용되지 않은 업무 요청|함수를 찾을 수|Script function not found|is not a function|unknown method/i.test(text)
           ?'수업안 자료실은 사이트에 준비돼 있습니다. 실제 업로드를 사용하려면 직원용 관리 서버를 한 번 업데이트해야 합니다. 기존 문서나 수업 기록은 그대로 유지됩니다.':text,true);
         $(host,'#bw45Rows').innerHTML='<div class="bw45-empty">수업안 목록을 불러오지 못했습니다.</div>';
@@ -128,14 +130,11 @@
       };
       uploadForm.onsubmit=async event=>{
         event.preventDefault();
-        if(busy)return;
+        if(busy||!available)return;
         const file=fileInput.files&&fileInput.files[0];
         if(!file){show('파일을 선택해 주세요.',true);return;}
         if(file.size<1||file.size>MAX_BYTES){show('8MB 이하 파일만 업로드할 수 있습니다.',true);return;}
-        if(!new RegExp('(?:'+ACCEPT.split(',').map(x=>x.slice(1)).join('|')+')$','i').test(file.name.split('.').pop())){
-          // A file type check is repeated on the server.
-          if(!ACCEPT.split(',').some(ext=>file.name.toLowerCase().endsWith(ext))){show('지원하는 파일 형식을 선택해 주세요.',true);return;}
-        }
+        if(!ACCEPT.split(',').some(ext=>file.name.toLowerCase().endsWith(ext))){show('지원하는 파일 형식을 선택해 주세요.',true);return;}
         const payload={
           fileName:file.name,size:file.size,title:uploadForm.elements.namedItem('title').value.trim(),
           month:uploadForm.elements.namedItem('month').value,
@@ -173,12 +172,13 @@
           if(good())await refresh();
         }catch(error){
           if(good()){
-            show(errText(error)+(pendingId?' 전송이 중단됐다면 아래 목록에서 ‘미완료 정리’를 선택해 주세요.':''),true);
+            const message=errText(error)+(pendingId?' 전송이 중단됐다면 아래 목록에서 ‘미완료 정리’를 선택해 주세요.':'');
             info.textContent='업로드를 완료하지 못했습니다.';
             await refresh();
+            if(good())show(message,true);
           }
         }finally{
-          busy=false;cancelled=false;if(good()){submit.disabled=false;cancel.disabled=true;progress.setAttribute('aria-busy','false');}
+          busy=false;cancelled=false;if(good()){submit.disabled=!available;cancel.disabled=true;progress.setAttribute('aria-busy','false');}
         }
       };
     }
