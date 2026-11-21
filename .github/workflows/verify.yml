@@ -95,6 +95,9 @@ jobs:
       - name: education-support compliance and Korean copy V43 tests
         if: always()
         run: node tests/staff-legal-v43.test.cjs
+      - name: V44 four-child parent-participation staff tests
+        if: always()
+        run: node tests/staff-parent-participation-v44.test.cjs
       - name: Create staff Apps Script V38 installer ZIP
         if: success()
         run: python3 tools/build-gas-install-package.py
