@@ -181,7 +181,7 @@
         {title:'상담·등록',desc:'체험 문의부터 아이 기본정보까지',pages:['inquiries','waitlist','students','registrations']},
         {title:'클래스 운영',desc:'일정, 출결, 결석·보강과 인계',pages:['classes','capacity','roster','attendance','makeups','handoff']},
         {title:'오감놀이 준비',desc:'월간 테마와 재료·안전 확인',pages:['experiences','themes','safety']},
-        {title:'보호자·운영 지원',desc:'수납과 문서, 시설·직원 관리',pages:['tuition','documents','operations','courseSettings','compliance','staffCompliance','users','payroll','finance'}
+        {title:'보호자·운영 지원',desc:'수납과 문서, 시설·직원 관리',pages:['tuition','documents','operations','courseSettings','compliance','staffCompliance','users','payroll','finance']}
       ].map(group=>({...group,items:group.pages.map(id=>shortcuts.find(m=>m[0]===id)).filter(Boolean)}))
         .filter(group=>group.items.length);
       const metrics=[['classCount',state.user?.role==='teacher'?'담당 클래스':'운영 중인 클래스']];
