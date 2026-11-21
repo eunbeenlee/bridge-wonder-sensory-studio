@@ -91,7 +91,7 @@ async function flush(){await new Promise(resolve=>setImmediate(resolve));}
   test('a new page rebuild honors server-provided available document options',()=>{
     const enabled=[...d.querySelectorAll('#bw33DocumentChoices button[data-bw33doc]')].map(x=>x.dataset.bw33doc);
     assert.deepEqual(enabled.sort(),['class','notice']);
-    assert.equal(d.querySelector('button[data-bw33doc="contract"]')?.closest('#bw33DocumentChoices')||null,null);
+    assert.equal(d.querySelector('#bw33DocumentChoices button[data-bw33doc="contract"]'),null);
     assert.ok(d.querySelectorAll('#bw33DocumentChoices .bw42-doc-group').length===6);
   });
   test('responsive forest/sage/cream branding and no extra data transport',()=>{
