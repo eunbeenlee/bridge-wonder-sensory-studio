@@ -172,9 +172,9 @@ function fixture(){
   await check('each staff entrypoint loads V45 before main app, public site has no import',()=>{
     for(const text of [html,alt]){
       assert.ok(text.indexOf('staff-lesson-plans-v45.js?v=45.0.0')>
-        text.indexOf('staff-enterprise-v33.js?v=41.0.0'));
+        text.indexOf('staff-enterprise-v33.js?v=49.0.0'));
       assert.ok(text.indexOf('staff-lesson-plans-v45.js?v=45.0.0')<
-        text.indexOf('administration.js?v=45.0.0'));
+        text.indexOf('administration.js?v=49.0.0'));
     }
     assert.match(app,/BW45LessonPlans\.mount/);
     assert.match(app,/수업안 파일 관리/);
