@@ -12,29 +12,29 @@
     {key:'admin',title:'스튜디오 관리',items:['operations','courseSettings','compliance','staffCompliance','users','payroll','security']}
   ];
   const HELP={
-    home:['스튜디오 운영','상담과 체험 클래스 운영을 확인하고 필요한 업무로 이동하세요.'],
-    classes:['클래스 일정','요일과 시간, 시작일을 정한 뒤 저장하세요. 공개할 일정은 내용을 확인한 후 공개 상태로 변경합니다.'],
-    students:['아이 기본정보','아이와 보호자 정보를 먼저 등록하고, 상담 후 주 1회·2회와 클래스 일정을 결정하세요.'],
-    experiences:['월간 체험 테마','매달 체험 테마 세 가지를 준비하세요. 공개할 콘텐츠는 확인을 마친 뒤 공개로 변경합니다.'],
-    roster:['클래스 아이 명단','담당 클래스의 아이와 배정 상태를 확인하세요. 보호자 연락처는 권한이 있는 직원에게만 표시됩니다.'],
+    home:['스튜디오 운영','새로 들어온 상담과 필요한 업무를 확인해 주세요.'],
+    classes:['클래스 일정','요일과 시간을 정하고 시작일과 운영 기간을 확인해 저장해 주세요. 홈페이지에 공개할 일정은 검토 후 공개해 주세요.'],
+    students:['아이 기본정보','아이와 보호자의 기본정보를 먼저 저장해 주세요. 수업 횟수와 시간은 상담 후 정하면 됩니다.'],
+    experiences:['월간 체험 테마','매달 체험 주제 세 가지를 작성하고 내용을 확인한 뒤 홈페이지에 공개해 주세요.'],
+    roster:['아이 명단','담당 클래스의 아이 명단을 확인해 주세요. 연락처는 권한이 있는 직원에게만 보입니다.'],
     attendance:['클래스 출결','클래스와 날짜를 선택하고 아이 명단을 불러온 뒤 출결을 기록하세요.'],
-    handoff:['보호자 인계','클래스와 날짜를 선택한 뒤 수업 전 동반과 종료 후 인계 상태를 기록하세요.'],
-    safety:['재료·안전 점검','오감놀이 재료의 위생과 작은 부품, 바닥·출입문 상태를 수업 전에 확인하세요.'],
-    makeups:['보강 일정 관리','학생을 선택해 요청을 등록하세요. 원장이나 관리자가 남은 자리와 일정을 확인한 뒤 확정합니다.'],
-    capacity:['수업반 정원 관리','반별 등록 인원과 남은 자리를 확인하세요. 정원 변경은 권한이 있는 직원만 할 수 있습니다.'],
-    themes:['월간 오감놀이 기획','월별 그림책·노래·감각놀이 주제를 정하고 월령별 진행 방법을 기록하세요.'],
-    inquiries:['체험·클래스 상담','보호자의 신청 내용을 확인하고 상담 결과와 다음 연락 일정을 정리하세요.'],
-    waitlist:['대기자 관리','상담 기록과 희망 수업반을 선택하고 대기 상태를 저장하세요. 등록 확정은 수강 신청 화면에서 확인합니다.'],
-    registrations:['등록 서류 확인','확인된 신청서와 서명 기록을 조회하세요. 기본 상담 신청과 최종 계약은 구분합니다.'],
-    tuition:['수업비·환불','실제 수납·환불 금액과 증빙을 확인한 후 기록해 주세요. 결제·영수증 처리는 별도로 확인합니다.'],
-    documents:['보호자 문서 발급','서류 종류와 아이 기록을 선택하고 내용을 확인하세요. PDF 다운로드와 이메일 발송을 이용할 수 있습니다.'],
-    operations:['시설·운영 점검','스튜디오 운영과 시설 준비 상태를 확인하고 담당자, 마감일과 증빙 위치를 기록하세요.'],
-    compliance:['운영 기준·법정 확인','실제 사업 형태에 적용되는 규정부터 확인하고 시설·개인정보·안전 서류를 정리하세요. 필요한 자료는 점검 준비 PDF로 받을 수 있습니다.'],
-    courseSettings:['스튜디오 운영정보','서비스 안내, 실제 신고·등록 정보와 계약 조건을 확인하고 변경할 항목만 저장하세요.'],
-    staffCompliance:['직원 필수 확인','직원을 선택해 필요한 조회·교육의 완료 여부를 기록하세요. 실제 확인이 끝난 항목만 완료로 표시합니다.'],
-    users:['직원 계정 관리','직원 이메일과 역할을 등록한 뒤 임시 비밀번호를 발급하세요. 직원은 첫 로그인 후 비밀번호를 직접 변경합니다.'],
-    payroll:['직원 급여 관리','급여 귀속월과 직원을 선택하고 계산 내용을 확인하세요. 확정 후 실제 지급을 마치면 지급 완료로 기록합니다.'],
-    security:['접속 기록·백업','직원 이용 기록을 확인하고 필요한 경우 자료를 백업하세요.']
+    handoff:['보호자 인계','날짜와 클래스를 선택하고 보호자 동반 여부와 수업 후 인계 상태를 기록해 주세요.'],
+    safety:['재료·안전 점검','수업 전에 재료 위생, 작은 교구, 바닥과 출입문 상태를 확인해 주세요.'],
+    makeups:['보강 일정','보강이 필요한 아이와 희망 날짜를 선택해 주세요. 빈자리와 일정을 확인한 뒤 확정합니다.'],
+    capacity:['클래스 정원','클래스별 인원과 남은 자리를 확인해 주세요. 정원은 담당 권한이 있는 직원만 변경할 수 있습니다.'],
+    themes:['월간 오감놀이 계획','월별 그림책·노래·감각놀이 주제를 적고, 월령에 따른 진행 방법을 정리해 주세요.'],
+    inquiries:['체험·클래스 상담','접수된 내용을 확인하고 상담 결과와 다음 연락 일정을 기록해 주세요.'],
+    waitlist:['대기·일정 협의','대기 중인 아이와 희망 일정을 확인해 주세요. 실제 등록은 상담 후 확정합니다.'],
+    registrations:['등록 서류 확인','제출된 신청서와 서명 기록을 확인해 주세요. 상담 신청과 최종 등록 계약은 구분해 관리합니다.'],
+    tuition:['수업비·환불','실제로 받은 금액과 환불 내역을 확인해 기록해 주세요. 영수증 발급 여부는 별도로 확인합니다.'],
+    documents:['보호자 문서 발급','발급할 문서와 대상 기록을 고른 뒤 내용을 확인해 주세요. PDF로 저장하거나 이메일로 보낼 수 있습니다.'],
+    operations:['시설·운영 점검','시설과 준비 사항을 점검하고 담당자, 완료 기한, 증빙 위치를 기록해 주세요.'],
+    compliance:['운영 기준·법정 확인','실제 운영 형태에 적용되는 규정을 확인하고 시설·안전·개인정보 관련 서류를 정리해 주세요.'],
+    courseSettings:['스튜디오 운영정보','서비스 내용과 가격, 신고·등록 정보를 확인하고 필요한 내용만 바꿔 주세요.'],
+    staffCompliance:['직원 필수 확인','직원별로 필요한 교육과 서류를 확인한 뒤, 실제 완료한 항목만 기록해 주세요.'],
+    users:['직원 계정 관리','직원 이메일과 권한을 설정하고 임시 비밀번호를 발급해 주세요. 첫 로그인 때 비밀번호를 바꾸도록 안내합니다.'],
+    payroll:['직원 급여 관리','직원과 급여 계산 기간을 선택해 주세요. 금액과 공제 내역을 확인한 뒤 확정하고, 실제 지급한 내역을 기록합니다.'],
+    security:['접속 기록·백업','직원 접속 기록을 확인하거나 필요한 자료를 백업해 주세요.']
   };
   const $=id=>document.getElementById(id);
   let context=null,configured=false;
@@ -120,7 +120,7 @@
     if(!root||root.querySelector('#bw31Guide'))return;
     const [heading,body]=HELP[page]||['이 화면의 사용법','필요한 내용을 확인한 뒤 저장해 주세요.'];
     const details=document.createElement('details');details.id='bw31Guide';details.className='bw31-guide';
-    details.open=['classes','users','documents','operations'].includes(page);
+    details.open=false;
     const summary=document.createElement('summary');summary.textContent=heading;
     const paragraph=document.createElement('p');paragraph.textContent=body;
     details.append(summary,paragraph);
@@ -164,7 +164,7 @@
   function classes(){
     const form=$('classForm');if(!form)return;
     addPreset($('classTime'),Array.from(form.querySelectorAll('[data-bw241-time]')).map(el=>el.dataset.bw241Time),'이전에 사용한 수업 시간 선택');
-    addPreset($('classPeriod'),Array.from(form.querySelectorAll('[data-bw241-period]')).map(el=>el.dataset.bw241Period),'교습 기간 빠른 선택');
+    addPreset($('classPeriod'),Array.from(form.querySelectorAll('[data-bw241-period]')).map(el=>el.dataset.bw241Period),'수업 기간 선택');
     form.querySelectorAll('.bw241-chip-row').forEach(row=>{
       if(row.querySelector('[data-bw241-time],[data-bw241-period]'))row.hidden=true;
     });
@@ -180,7 +180,7 @@
       },true);
     }
     const note=document.createElement('p');note.className='bw31-form-note';
-    note.textContent='반 코드는 자동으로 제안됩니다. 수강 과정을 확인하고 홈페이지 공개 여부는 검토 후 설정하세요.';
+    note.textContent='반 코드는 자동으로 제안됩니다. 수업 내용을 확인한 뒤 홈페이지에 공개할지 선택해 주세요.';
     form.querySelector('.bw241-form-intro')?.after(note);
   }
   function users(){
