@@ -248,7 +248,7 @@ check('published prices distinguish regular tuition from trial promotion without
   assert.match(app,/id="bw38SessionCount"/);
   assert.match(app,/id="bw38SessionFee"/);
   assert.match(app,/n\*30000/);
-  assert.match(app,/위 계약 교습비는 자동 변경되지 않으며/);
+  assert.match(app,/계약 금액은 자동으로 바뀌지 않으니/);
   assert.match(visit,/정규 수업 50분 1회 30,000원/);
   assert.doesNotMatch(academic,/25000|30000|25,000|30,000/);
 });
