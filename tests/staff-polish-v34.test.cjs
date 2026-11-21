@@ -37,7 +37,7 @@ test('helper text has legible consistent size instead of tiny low-contrast footn
 test('administration and payroll instructions use direct, natural language',()=>{
   assert.match(admin,/결제가 완료된 건만 수납으로 기록하세요/);
   assert.match(admin,/발급한 PDF는 스튜디오 전용 문서함에 보관됩니다/);
-  assert.match(admin,/보호자 동반 여부와 수업 후 인계 결과만 기록해 주세요/);
+  assert.match(admin,/보호자는 수업이 끝날 때까지 함께합니다/);
   assert.doesNotMatch(admin,/저장 즉시 Google Sheets에 반영됩니다/);
   assert.doesNotMatch(admin,/현재 Apps Script는 접속 IP 주소를 별도로 확보하지 못합니다/);
   assert.match(payroll,/급여관리 설정을 확인해 주세요/);
