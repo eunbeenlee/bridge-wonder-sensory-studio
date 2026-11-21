@@ -35,7 +35,7 @@ check('no private data placed in static markup or sessions',()=>{
  assert.doesNotMatch(html,/SPREADSHEET_ID|BW17_AUTH_SECRET|BANK_ACCOUNT|api[_-]?key/i);
  const release=JSON.parse(fs.readFileSync(__dirname+'/../package.json','utf8')).version;
  for(const file of ['staff-google-bridge.js','administration-accelerator.js','administration.js','staff-native-kdf.js']){
-   assert.ok(html.includes(file+'?v='+(file==='administration.js'?release:'41.0.0')),'version mismatch: '+file);
+   assert.ok(html.includes(file+'?v='+(['administration.js','administration-accelerator.js'].includes(file)?release:'41.0.0')),'version mismatch: '+file);
  }
 });
 console.log(JSON.stringify({suite:'V28.2 concurrent home and health',passed,total:8}));
