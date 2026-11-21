@@ -76,7 +76,7 @@
       '<section class="bw49-pane" data-bw49pane="budget" hidden>'+
         '<div class="bw49-panel"><h3>예산 입력·손익 시뮬레이션</h3>'+
         '<p>입력 즉시 계산됩니다. 실제 납부액을 모르는 항목은 0원 또는 예시값으로 표시되므로 빠진 비용이 없는지 확인하세요.</p>'+
-        '<form id="bw49BudgetForm"><div class="bw49-form-groups">'+groups.filter(g=>g.id!=='opening').map(groupHTML).join('')+
+        '<form id="bw49BudgetForm"><div class="bw49-form-groups">'+groups.filter(g=>g.id!=='opening').map((group,i)=>groupHTML(group,values,i)).join('')+
         '</div><div class="bw49-actions" style="margin-top:15px"><button type="submit" id="bw49SaveBudget" class="btn btn-primary">예산 설정 저장</button>'+
         '<button type="button" class="btn btn-outline" id="bw49ResetBudget">예시값으로 돌아가기</button>'+
         '<span class="bw49-feedback" id="bw49SaveStatus" role="status"></span></div></form></div></section>'+
