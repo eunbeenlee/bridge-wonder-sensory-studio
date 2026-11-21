@@ -2,6 +2,8 @@
 'use strict';
     const $=id=>document.getElementById(id), h=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const ROLE_NAMES={owner:'원장',director:'관리자',teacher:'선생님',frontdesk:'상담 담당자'};
+    // V44: internal studio operating plan, not a statutory capacity determination.
+    const BW44_POLICY=Object.freeze({minMonths:7,maxMonths:48,maxChildren:4,guardianPerChild:1,sessionMinutes:50});
     const MENU=[['home','⌂','스튜디오 홈',['owner','director','teacher','frontdesk']],['classes','▦','클래스 시간표',['owner','director','teacher','frontdesk']],['roster','♧','아이 명단',['owner','director','teacher']],['students','▤','아이 기본정보',['owner','director']],['experiences','♧','월간 체험 테마',['owner','director']],['attendance','✓','출결 체크',['owner','director','teacher']],['makeups','▤','결석·보강',['owner','director','teacher']],['safety','♧','재료·안전 점검',['owner','director','teacher']],['handoff','✓','보호자 인계',['owner','director','teacher']],['themes','♧','월간 오감놀이 계획',['owner','director','teacher','frontdesk']],['capacity','▣','클래스 정원',['owner','director','teacher','frontdesk']],['inquiries','◷','체험·클래스 상담',['owner','director','frontdesk']],['waitlist','◷','대기·일정 협의',['owner','director','frontdesk']],['registrations','▤','등록 서류 확인',['owner','director']],['tuition','₩','수업비·환불 기록',['owner','director']],['documents','▣','보호자 문서·PDF',['owner','director','teacher','frontdesk']],['operations','☷','시설·운영 점검',['owner','director']],['compliance','▤','운영 기준·법정 확인',['owner','director']],['courseSettings','◈','스튜디오 운영정보',['owner','director']],['staffCompliance','◈','직원 필수 확인',['owner']],['users','♙','직원 계정·권한',['owner']],['payroll','₩','직원 급여',['owner']],['security','⌘','이용 기록·백업',['owner']]];
     const BW24_CAPS={"home":{"label":"스튜디오 홈","read":["owner","director","teacher","frontdesk"],"write":[]},"inquiries":{"label":"체험·클래스 상담","read":["owner","director","frontdesk"],"write":["owner","director","frontdesk"]},"registrations":{"label":"등록 서류 확인","read":["owner","director"],"write":[]},"classes":{"label":"클래스 시간표","read":["owner","director","teacher","frontdesk"],"write":["owner","director"]},"courseSettings":{"label":"스튜디오 운영정보","read":["owner","director"],"write":["owner","director"]},"roster":{"label":"아이 명단","read":["owner","director","teacher"],"write":[]},"students":{"label":"아이 기본정보","read":["owner","director"],"write":["owner","director"]},"experiences":{"label":"월간 체험 테마","read":["owner","director"],"write":["owner","director"]},"attendance":{"label":"출결 체크","read":["owner","director","teacher"],"write":["owner","director","teacher"]},"operations":{"label":"시설·운영 점검","read":["owner","director"],"write":["owner","director"]},"compliance":{"label":"운영 기준·법정 확인","read":["owner","director"],"write":["owner","director"]},"tuition":{"label":"수업비·환불 기록","read":["owner","director"],"write":["owner","director"]},"safety":{"label":"재료·안전 점검","read":["owner","director","teacher"],"write":["owner","director","teacher"]},"handoff":{"label":"보호자 인계","read":["owner","director","teacher"],"write":["owner","director","teacher"]},"staffCompliance":{"label":"직원 필수 확인","read":["owner"],"write":["owner"]},"users":{"label":"직원 계정·권한","read":["owner"],"write":["owner"]},"documents":{"label":"보호자 문서·PDF","read":["owner","director","teacher","frontdesk"],"write":["owner","director","teacher","frontdesk"]},"capacity":{"label":"클래스 정원","read":["owner","director","teacher","frontdesk"],"write":["owner","director"]},"waitlist":{"label":"대기·일정 협의","read":["owner","director","frontdesk"],"write":["owner","director","frontdesk"]},"makeups":{"label":"결석·보강","read":["owner","director","teacher"],"write":["owner","director","teacher"]},"themes":{"label":"월간 오감놀이 계획","read":["owner","director","teacher","frontdesk"],"write":["owner","director"]},"security":{"label":"이용 기록·백업","read":["owner"],"write":["owner"]},"payroll":{"label":"직원 급여","read":["owner"],"write":["owner"]}};
     function bw24Can(page,mode='read'){
@@ -187,6 +189,8 @@
       if(bw24Can('registrations'))metrics.push(['pendingEnrollments','확인할 등록 서류']);
       $('pageBody').innerHTML=head('센서리 스튜디오 운영','오늘 처리할 일을 확인해 주세요.')+
         `<div class="metric-grid">${metrics.map(([key,title])=>`<article class="metric"><div class="metric-name">${h(title)}</div><div class="metric-value" id="bw271Metric_${key}" aria-live="polite">—</div></article>`).join('')}</div>`+
+        panel('현재 수업 운영 기준','부모참여형 오감놀이 · 한 타임 기준',
+          '<div class="row" style="gap:8px;flex-wrap:wrap"><span class="pill">생후 7~48개월</span><span class="pill">아이 4명</span><span class="pill">보호자 4명 동반</span><span class="pill">50분</span></div><p class="footnote">보호자는 수업 내내 아이와 함께 참여합니다. 아이만 맡기는 돌봄은 운영하지 않습니다. 다른 공간에서 동시에 활동하는 인원도 확인하세요.</p>')+
         panel('자주 쓰는 업무','필요한 메뉴를 선택해 주세요. 사용 권한이 있는 메뉴만 표시됩니다.',
           `<div class="bw39-workstreams">${streams.map(group=>`
             <section class="bw39-workstream">
@@ -236,7 +240,7 @@
     async function renderCourseSettings(){
       const d=await call('staff22GetCourseSettings',state.token);
       const v=(d.rows||[]).find(x=>x.code==='BW-SENSORY')||{code:'BW-SENSORY',name:'Bridge Wonder Sensory Play Studio',fee:'',extras:'0',refund:'',business:'',license:'',retention:'',location:'',makeup:'',accompaniment:'',materials:'',safety:'',status:'중지'};
-      const labels=[['name','과정 이름','text'],['fee','교습비 (원)','number'],['extras','기타 경비 (원)','number'],['business','법정 상호','text'],['license','학원 등록번호','text'],['location','수업 장소','text'],['retention','개인정보 보유 기간','text'],['refund','교습비 반환 기준','textarea'],['makeup','결석·보강 기준','textarea'],['accompaniment','보호자 동반 기준','textarea'],['materials','재료·준비물 안내','textarea'],['safety','수업 안전 안내','textarea']];
+      const labels=[['name','과정 이름','text'],['fee','기존 계약용 수업비 (원)','number'],['extras','기존 계약용 기타 비용 (원)','number'],['business','법정 상호','text'],['license','기존 계약용 학원 등록번호 (해당 시)','text'],['location','수업 장소','text'],['retention','개인정보 보유 기간','text'],['refund','기존 계약용 환불 기준','textarea'],['makeup','결석·보강 기준','textarea'],['accompaniment','보호자 동반 기준','textarea'],['materials','재료·준비물 안내','textarea'],['safety','수업 안전 안내','textarea']];
       const fields=labels.map(([key,label,type])=>`<div class="form-item"><label for="bw23Course_${key}">${label}</label>${type==='textarea'?`<textarea id="bw23Course_${key}" rows="3">${h(v[key]||'')}</textarea>`:`<input id="bw23Course_${key}" type="${type}" value="${h(v[key]||'')}" ${type==='number'?'min="0" max="100000000" step="1"':''}>`}</div>`).join('');
       $('pageBody').innerHTML=head('스튜디오 이용 조건','정규 50분 30,000원, 체험 50분 25,000원 기준입니다. 실제 결제·세금 적용 조건을 확인하세요.')+panel('Bridge Wonder · Sensory Play Studio','이 화면은 기존 수강계약 시스템에 연결되어 있습니다. 학원 등록번호가 필요한 기존 양식이므로 신규 스튜디오 이용계약에 적용하기 전에 확인해 주세요. 금액을 바꾸면 기존 계약 기능에도 영향을 줄 수 있습니다.',`<form id="bw23CourseForm"><div class="cols">${fields}</div><div class="form-item spaced"><label for="bw23Course_status">운영 상태</label><select id="bw23Course_status"><option value="중지" ${v.status==='중지'?'selected':''}>중지</option><option value="활성" ${v.status==='활성'?'selected':''}>활성</option></select></div><div class="row spaced"><button type="submit" class="btn btn-primary">기존 수강조건 저장</button><span id="bw23CourseStatus" class="inline-status"></span></div></form>
       <div class="form-item spaced" role="group" aria-label="정규 수업 회차별 교습비 계산">
@@ -294,7 +298,7 @@
           <div class="bw241-step"><b>2</b>수업 상세 정보</div>
           <div class="bw241-grid bw241-grid--three">
             <div class="form-item"><label for="classDate">수업 시작일</label><input id="classDate" type="date" required><small class="bw241-help">첫 수업 날짜를 선택하세요.</small></div>
-            <div class="form-item"><label for="classPeriod">교습 기간</label><input id="classPeriod" type="text" placeholder="예: 1개월 / 2027.01.02~01.31" maxlength="160" required>${principal?`<div class="bw241-chip-row">${(window.BWStaffDefaults?.classEditor?.durationChoices||['1개월','3개월','6개월']).map(x=>`<button type="button" class="bw241-chip" data-bw241-period="${x}">${x}</button>`).join('')}</div>`:''}</div>
+            <div class="form-item"><label for="classPeriod">운영 기간</label><input id="classPeriod" type="text" placeholder="예: 1개월 / 2027.01.02~01.31" maxlength="160" required>${principal?`<div class="bw241-chip-row">${(window.BWStaffDefaults?.classEditor?.durationChoices||['1개월','3개월','6개월']).map(x=>`<button type="button" class="bw241-chip" data-bw241-period="${x}">${x}</button>`).join('')}</div>`:''}</div>
             <div class="form-item"><label for="classId">반 코드</label><div class="row" style="gap:6px;flex-wrap:nowrap"><input id="classId" type="text" placeholder="요일·시간 입력 시 자동 제안" maxlength="32" autocomplete="off" required>${principal?'<button type="button" id="bw241GenerateCode" class="btn btn-outline btn-small" style="flex:none">자동 제안</button>':''}</div><small class="bw241-help">새 반의 코드는 자동 제안됩니다. 등록한 반의 코드는 변경할 수 없습니다.</small></div>
           </div>
           <div class="bw241-grid bw241-grid--three" style="margin-top:15px">
@@ -314,7 +318,8 @@
         <div class="bw241-class-heading"><span class="bw241-count">${state.classes.length}개 수업반</span>${editable?'<button id="bw241NewTop" type="button" class="btn btn-primary btn-small">+ 새 시간표 만들기</button>':''}</div>
         <div class="bw241-table-top"><input id="bw241ClassSearch" type="search" aria-label="수업반 검색" placeholder="요일 · 시간 · 반 코드 검색"><small class="muted">검색 결과 <span id="bw241ResultCount">${items.length}</span>건</small></div>
         <div id="bw241Rows"></div>`);
-      $('pageBody').innerHTML=head('수업 시간표','한 가지 과정의 요일과 수업 시간을 간편하게 관리합니다.')+form+list;
+      $('pageBody').innerHTML=head('수업 시간표','요일과 시간을 정하고 반별 운영 상황을 확인하세요.')+
+        '<div class="subtle" role="note">수업은 생후 7~48개월 아이 4명과 보호자 4명이 함께 참여하는 50분 활동을 기준으로 준비합니다. 같은 시간에 반을 겹쳐 운영하지 않도록 확인해 주세요. 실제 정원은 ‘정원 현황’에서 설정합니다.</div>'+form+list;
       const listEl=$('bw241Rows');
       const renderRows=()=>{
         const q=$('bw241ClassSearch').value.toLocaleLowerCase('ko').trim();
@@ -355,7 +360,7 @@
         if(autoCode&&!editingId)field('classId').value=codeSuggestion();
         field('bw241PreviewTime').textContent=day&&time?`${day} · ${time}`:'요일과 시간을 입력하세요.';
         const visible=field('classPublic').value==='공개'&&field('classReview').value==='검토완료';
-        field('bw241PreviewMeta').textContent=`${field('classDate').value||'시작일 미정'} / ${field('classPeriod').value||'교습 기간 미정'} / ${visible?'공개 조건 충족':'비공개 또는 검토 대기'}`;
+        field('bw241PreviewMeta').textContent=`${field('classDate').value||'시작일 미정'} / ${field('classPeriod').value||'운영 기간 미정'} / ${visible?'공개 조건 충족':'비공개 또는 검토 대기'}`;
       }
       function resetForm(scroll){
         formEl.reset();editingId='';autoCode=true;
@@ -400,12 +405,12 @@
         if(!weekday.includes(normalizedDay))return fail('수업 요일을 목록에서 선택해 주세요.');
         if(!normalizedTime)return fail('시간은 11:30 또는 11:30–12:20 형식으로 입력해 주세요.');
         if(!/^20\d{2}-\d{2}-\d{2}$/.test(starts))return fail('수업 시작일을 선택해 주세요.');
-        if(!period)return fail('교습 기간을 입력해 주세요.');
+        if(!period)return fail('운영 기간을 입력해 주세요.');
         if(!/^[A-Z0-9_-]{3,32}$/.test(id))return fail('반 코드는 영어 대문자·숫자·하이픈으로 3~32자 입력해 주세요.');
         if(!courses.some(x=>x.id.toUpperCase()===template))return fail('운영 중인 수강 과정을 목록에서 선택해 주세요.');
         if(!['공개','비공개'].includes(publicStatus)||!['확인전','검토완료'].includes(review))return fail('홈페이지 공개·검토 항목에서 값을 선택해 주세요.');
         if(publicStatus==='공개'&&review!=='검토완료')return fail('홈페이지에 공개하려면 운영자 검토를 완료해 주세요.');
-        if(publicStatus==='공개'&&!confirm('이 시간표를 보호자 등록 화면에 공개할까요? 교습비와 환불 기준을 먼저 확인해 주세요.'))return;
+        if(publicStatus==='공개'&&!confirm('이 시간표를 보호자 등록 화면에 공개할까요? 이용료와 환불 기준을 먼저 확인해 주세요.'))return;
         const payload={id,template,starts,day:normalizedDay,time:normalizedTime,period,publicStatus,review};
         setBusy(formEl,true);formEl.classList.add('bw241-busy');
         try{
@@ -545,8 +550,8 @@
       const cls=await getClasses();const d=await call('staffListDailyChecks',state.token,{});if(state.page!=='safety')return;
       const statuses=['','확인완료','조치필요','해당없음'];const today=new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Seoul'}).format(new Date());
       const opts=statuses.map(v=>`<option value="${v}">${v||'확인 결과 선택'}</option>`).join('');
-      $('pageBody').innerHTML=head('재료·안전 점검','오감놀이 재료와 수업 공간을 확인하고 아이의 월령에 맞게 준비하세요.')+
-      panel('수업 전 확인','안전에 문제가 있다면 먼저 수업을 조정하거나 중단하고 보호자 연락과 필요한 조치를 진행해 주세요.',`<form id="safetyForm" class="stack"><div class="fields"><div class="form-item"><label for="safeClass">수업반</label><select id="safeClass" required><option value="">반 선택</option>${state.classes.map(c=>`<option value="${h(c.id)}">${h(c.id)} · ${h(c.day)} ${h(c.time)}</option>`).join('')}</select></div><div class="form-item"><label for="safeDate">수업일</label><input id="safeDate" type="date" value="${today}" required></div><div class="form-item"><label for="safeTheme">월간 공통 주제</label><input id="safeTheme" maxlength="70" placeholder="예: Little Color Explorers" required></div><div class="form-item"><label for="safeMaterial">재료 유형</label><select id="safeMaterial"><option>식재료</option><option>자연소재</option><option>교구</option><option>복합</option><option>재료 없음</option></select></div></div><div class="fields">${[['fresh','재료·유통 상태'],['room','바닥·출입문 등'],['smallParts','삼킴 위험·작은 교구'],['hygiene','손 씻기·세척·정리'],['notice','보호자 사전안내']].map(([id,label])=>`<div class="form-item"><label for="safe-${id}">${label}</label><select id="safe-${id}" required>${opts}</select></div>`).join('')}</div><div class="form-item"><label for="safeAction">조치가 필요한 사항</label><textarea id="safeAction" maxlength="120" placeholder="재료 교체·사용 중지 등 운영 조치만 적어 주세요. 아동의 질병·알레르기 등 민감정보는 적지 않습니다."></textarea></div><div class="row"><button type="submit" class="btn btn-primary">점검 결과 저장</button><small>같은 반과 날짜의 점검 기록을 다시 저장하면 내용이 갱신됩니다.</small></div></form>`)+
+      $('pageBody').innerHTML=head('재료·안전 점검','활동에 사용할 재료와 공간을 확인하세요. 7~48개월 아이가 보호자와 함께 참여합니다.')+
+      panel('수업 전 확인','아이 4명과 동반 보호자 4명이 참여할 공간인지 확인하세요. 삼킴 위험이나 재료·시설 문제가 있으면 활동을 시작하지 마세요.',`<form id="safetyForm" class="stack"><div class="fields"><div class="form-item"><label for="safeClass">수업반</label><select id="safeClass" required><option value="">반 선택</option>${state.classes.map(c=>`<option value="${h(c.id)}">${h(c.id)} · ${h(c.day)} ${h(c.time)}</option>`).join('')}</select></div><div class="form-item"><label for="safeDate">수업일</label><input id="safeDate" type="date" value="${today}" required></div><div class="form-item"><label for="safeTheme">월간 공통 주제</label><input id="safeTheme" maxlength="70" placeholder="예: Little Color Explorers" required></div><div class="form-item"><label for="safeMaterial">재료 유형</label><select id="safeMaterial"><option>식재료</option><option>자연소재</option><option>교구</option><option>복합</option><option>재료 없음</option></select></div></div><div class="fields">${[['fresh','재료·유통 상태'],['room','바닥·출입문 등'],['smallParts','삼킴 위험·작은 교구'],['hygiene','손 씻기·세척·정리'],['notice','보호자 사전안내']].map(([id,label])=>`<div class="form-item"><label for="safe-${id}">${label}</label><select id="safe-${id}" required>${opts}</select></div>`).join('')}</div><div class="form-item"><label for="safeAction">조치가 필요한 사항</label><textarea id="safeAction" maxlength="120" placeholder="재료 교체·사용 중지 등 운영 조치만 적어 주세요. 아동의 질병·알레르기 등 민감정보는 적지 않습니다."></textarea></div><div class="row"><button type="submit" class="btn btn-primary">점검 결과 저장</button><small>같은 반과 날짜의 점검 기록을 다시 저장하면 내용이 갱신됩니다.</small></div></form>`)+
       panel('최근 점검 결과','담당 반 이외의 기록은 선생님 계정에서 보이지 않습니다.',table(['수업일·반','주제·재료','재료·위생·안전','조치사항','기록자'],d.map(x=>`<tr><td>${h(x.date)}<br>${h(x.classId)}</td><td>${h(x.theme)}<br><small>${h(x.material)}</small></td><td>${tag(x.fresh)} / ${tag(x.room)} / ${tag(x.smallParts)}<br>${tag(x.hygiene)} / ${tag(x.notice)}</td><td class="note-cell">${h(x.action||'—')}</td><td>${h(x.operator)}</td></tr>`)))+
       `<div class="subtle">응급 상황에서는 점검표 작성보다 현장 대응과 보호자 연락을 우선해 주세요.</div>`;
       $('safetyForm').onsubmit=async e=>{e.preventDefault();const f=e.currentTarget;setBusy(f,true);try{const p={classId:$('safeClass').value,date:$('safeDate').value,theme:$('safeTheme').value,material:$('safeMaterial').value,action:$('safeAction').value};for(const k of ['fresh','room','smallParts','hygiene','notice'])p[k]=$('safe-'+k).value;await call('staffSaveDailyCheck',state.token,p);toast('수업 안전 점검을 저장했습니다.');await renderSafety();}catch(err){toast(err.message,true);}finally{setBusy(f,false);}};
@@ -554,10 +559,10 @@
     async function renderHandoff(){
       await getClasses();if(state.page!=='handoff')return;
       const today=new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Seoul'}).format(new Date());
-      $('pageBody').innerHTML=head('보호자 동반·인계','보호자 동반 여부와 수업 후 아이를 안전하게 인계했는지 확인해 주세요.')+
+      $('pageBody').innerHTML=head('보호자 동반·인계','보호자 1명이 아이 1명과 수업 내내 함께하는지 확인해 주세요.')+
       panel('수업 선택','선생님 계정은 담당 반의 확정 수강생만 확인할 수 있습니다.',`<div class="fields"><div class="form-item"><label for="handoffClass">수업반</label><select id="handoffClass"><option value="">수업반 선택</option>${state.classes.map(c=>`<option value="${h(c.id)}">${h(c.id)} · ${h(c.day)} ${h(c.time)}</option>`).join('')}</select></div><div class="form-item"><label for="handoffDate">수업일</label><input id="handoffDate" type="date" value="${today}"></div></div><div class="spaced"><button id="handoffLoad" class="btn btn-outline">명단 불러오기</button></div>`)+
       panel('아동별 확인','미확인 또는 확인 필요로 표시된 경우에는 운영자에게 확인을 요청하세요.',`<div id="handoffRows" class="empty">수업반과 날짜를 선택해 주세요.</div>`)+
-      `<p class="footnote">보호자 동반 여부와 수업 후 인계 결과만 기록해 주세요.</p>`;
+      `<p class="footnote">보호자는 수업이 끝날 때까지 함께합니다. 아이만 남겨 두는 경우에는 수업을 진행하지 말고 운영자에게 확인하세요. 동반·인계 결과만 기록하며 건강정보는 입력하지 않습니다.</p>`;
       $('handoffLoad').onclick=async()=>{const id=$('handoffClass').value,date=$('handoffDate').value;if(!id)return toast('수업반을 선택해 주세요.',true);const b=$('handoffLoad');b.disabled=true;try{
         const items=await call('staffListHandoffs',state.token,{classId:id,date});
         $('handoffRows').innerHTML=table(['아동','보호자 동반','종료 인계','저장'],items.map((x,i)=>`<tr><td><b>${h(x.child)}</b></td><td><select class="inline-select" id="arrive-${i}">${['미확인','동반 확인','확인 필요'].map(s=>`<option ${s===x.arrival?'selected':''}>${s}</option>`).join('')}</select></td><td><select class="inline-select" id="leave-${i}">${['미확인','인계 확인','확인 필요'].map(s=>`<option ${s===x.departure?'selected':''}>${s}</option>`).join('')}</select></td><td><button class="btn btn-outline btn-small" data-save-handoff="${i}">저장</button></td></tr>`));
@@ -662,12 +667,24 @@ function bw20ClassOptions(list,empty){return `<option value="">${h(empty||'수�
 async function renderCapacity(){
  const d=await call('staff20Capacity',state.token);if(state.page!=='capacity')return;
  const edit=bw20CanEdit();
- const cards=d.rows.map(x=>`<article class="bw20-cap-card"><div class="bw20-cap-top"><div><b>${h(x.id)}</b><p>${h(x.day)} · ${h(x.time)}</p></div>${tag(x.status)}</div><dl class="bw20-cap-stats"><div><dt>확정 등록</dt><dd>${bw20Fmt(x.enrolled)}명</dd></div><div><dt>남은 자리</dt><dd>${x.free===null?'—':bw20Fmt(x.free)+'명'}</dd></div><div><dt>대기</dt><dd>${bw20Fmt(x.waiting)}건</dd></div></dl>${edit?`<div class="bw20-cap-edit"><label for="bw20cap-${h(x.id)}">기준 정원</label><div class="row"><input id="bw20cap-${h(x.id)}" type="number" min="1" max="100" value="${x.capacity||''}" placeholder="정원 입력" aria-label="${h(x.id)} 기준 정원" data-cap-value="${h(x.id)}"><button type="button" class="btn btn-outline btn-small" data-cap-save="${h(x.id)}">저장</button></div></div>`:`<p class="footnote">등록된 정원 ${x.capacity?bw20Fmt(x.capacity)+'명':'미설정'}</p>`}</article>`).join('');
- $('pageBody').innerHTML=head('정원 현황','수업반별 확정 등록 인원과 대기 현황을 확인합니다. 정원은 운영자가 승인한 실제 수용 기준을 입력해 주세요.')+
- panel('반별 운영 인원','정원이 설정되어야 보강 승인 시 빈자리를 확인할 수 있습니다.',`<div class="bw20-cap-grid">${cards||'<div class="empty">등록된 수업반이 없습니다.</div>'}</div>`)+
+ const overLimit=d.rows.filter(x=>Number(x.capacity)>BW44_POLICY.maxChildren||Number(x.enrolled)>BW44_POLICY.maxChildren);
+ const cards=d.rows.map(x=>`<article class="bw20-cap-card"><div class="bw20-cap-top"><div><b>${h(x.id)}</b><p>${h(x.day)} · ${h(x.time)}</p></div>${tag(x.status)}</div><dl class="bw20-cap-stats"><div><dt>확정 등록</dt><dd>${bw20Fmt(x.enrolled)}명</dd></div><div><dt>남은 자리</dt><dd>${x.free===null?'—':bw20Fmt(x.free)+'명'}</dd></div><div><dt>대기</dt><dd>${bw20Fmt(x.waiting)}건</dd></div></dl>${edit?`<div class="bw20-cap-edit"><label for="bw20cap-${h(x.id)}">기준 정원</label><div class="row"><input id="bw20cap-${h(x.id)}" type="number" min="1" max="4" value="${x.capacity||''}" placeholder="아이 1~4명"  aria-label="${h(x.id)} 기준 정원" data-cap-value="${h(x.id)}"><button type="button" class="btn btn-outline btn-small" data-cap-save="${h(x.id)}">저장</button></div></div>`:`<p class="footnote">등록된 정원 ${x.capacity?bw20Fmt(x.capacity)+'명':'미설정'}</p>`}</article>`).join('');
+ $('pageBody').innerHTML=head('정원 현황','한 타임 아이 정원은 최대 4명입니다. 보호자는 아이마다 1명씩 함께 참여합니다.')+
+ (overLimit.length?'<div class="warning" role="alert">기준을 초과한 기존 반이 있습니다: '+overLimit.map(x=>h(x.id)).join(', ')+' · 기존 등록 인원과 정원을 확인해 주세요. 이 안내는 데이터를 자동으로 변경하지 않습니다.</div>':'')+
+ panel('반별 운영 인원','한 반의 아이 정원은 1~4명으로 설정하세요. 보호자와 교사 인원은 정원 숫자에 포함하지 않습니다.',`<div class="bw20-cap-grid">${cards||'<div class="empty">등록된 수업반이 없습니다.</div>'}</div>`)+
  (d.legacyNotice?`<p class="footnote">이전 링크로 접수한 ${bw20Fmt(d.legacyNotice)}건은 정원 집계에서 빠져 있을 수 있습니다. 반 배정을 확인해 주세요.</p>`:'')+
- `<p class="footnote">화면의 정원은 수업 운영을 위한 수치입니다. 실제 시설 기준은 등록 서류와 함께 확인해 주세요.</p>`;
- if(edit)$('pageBody').querySelectorAll('[data-cap-save]').forEach(b=>b.onclick=async()=>{b.disabled=true;const classId=b.dataset.capSave,capacity=Number($('pageBody').querySelector(`[data-cap-value="${classId}"]`).value);try{await call('staff20SetCapacity',state.token,{classId,capacity});toast('수업반 정원을 저장했습니다.');await renderCapacity();}catch(e){toast(e.message,true);}finally{b.disabled=false;}});
+ `<p class="footnote">4명은 스튜디오에서 정한 운영 기준이지 법적 인허가 기준이 아닙니다. 기존 신청·다른 운영 화면의 정원 초과 여부는 별도로 확인해 주세요.</p>`;
+ if(edit)$('pageBody').querySelectorAll('[data-cap-save]').forEach(b=>b.onclick=async()=>{
+   const classId=b.dataset.capSave;
+   const raw=$('pageBody').querySelector(`[data-cap-value="${classId}"]`)?.value||'';
+   const capacity=Number(raw);
+   if(!raw||!Number.isInteger(capacity)||capacity<1||capacity>BW44_POLICY.maxChildren){toast('아이 정원은 1~4명으로 입력해 주세요.',true);return;}
+   const current=d.rows.find(x=>x.id===classId);
+   if(current&&Number(current.enrolled)>capacity){toast('현재 등록된 아이보다 정원을 적게 설정할 수 없습니다. 배정 현황부터 확인해 주세요.',true);return;}
+   b.disabled=true;
+   try{await call('staff20SetCapacity',state.token,{classId,capacity});toast('아이 정원을 저장했습니다.');await renderCapacity();}
+   catch(e){toast(e.message,true);}finally{b.disabled=false;}
+ });
 }
 async function renderWaitlist(){
  const [classes,waits,inqs]=await Promise.all([getClasses(),call('staff20Waitlist',state.token),call('staffListInquiries',state.token)]);if(state.page!=='waitlist')return;
