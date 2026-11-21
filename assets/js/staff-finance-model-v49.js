@@ -160,7 +160,7 @@
     const otherGross=c.otherSales*multiplier;
     const salesGross=regGross+trialGross+otherGross;
     const vatUnresolved=false; // non-exempt taxable business is the configured default
-    const revenueBook=taxable?(priceIncluded?salesGross/1.1:salesGross/1.1):salesGross;
+    const revenueBook=taxable?salesGross/1.1:salesGross;
     const expenseGroups=FIELD_GROUPS.find(x=>x.id==='facility').fields.map(f=>({
       key:f[0],label:f[1],amount:c[f[0]]
     }));
