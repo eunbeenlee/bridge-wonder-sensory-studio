@@ -104,6 +104,9 @@ jobs:
       - name: V46 public studio four-child parent participation tests
         if: always()
         run: node tests/sensory-parent-participation-v44.test.cjs
+      - name: V47 staff parent FAQ drafts and policy safeguards tests
+        if: always()
+        run: node tests/staff-parent-faq-v47.test.cjs
       - name: Create V45 staff lesson-plan installer ZIP
         if: success()
         run: python3 tools/build-lesson-plan-install-v45.py
