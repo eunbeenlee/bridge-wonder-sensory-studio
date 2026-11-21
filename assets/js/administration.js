@@ -245,7 +245,7 @@
         <label for="bw38SessionCount">상담 후 확정할 정규 수업 회차</label>
         <input type="number" id="bw38SessionCount" min="1" max="60" step="1" placeholder="예: 6" inputmode="numeric" style="max-width:190px">
         <output id="bw38SessionFee" for="bw38SessionCount" aria-live="polite">회차를 입력하면 예상 교습비가 표시됩니다.</output>
-        <p class="help">이 계산은 상담 참고용입니다. 위 계약 교습비는 자동 변경되지 않으며, 실제 수강기간·회차·할인 및 신고된 교습비를 확인한 뒤 별도로 저장해야 합니다.</p>
+        <p class="help">상담할 때 참고하는 예상 금액입니다. 계약 금액은 자동으로 바뀌지 않으니 실제 수업 횟수와 기간, 할인 조건을 확인해 따로 저장해 주세요.</p>
       </div>`);
       const feeCount=$('bw38SessionCount'),feeOutput=$('bw38SessionFee');
       if(feeCount&&feeOutput)feeCount.addEventListener('input',()=>{
@@ -557,7 +557,7 @@
       $('pageBody').innerHTML=head('보호자 동반·인계','보호자 동반 여부와 수업 후 아이를 안전하게 인계했는지 확인해 주세요.')+
       panel('수업 선택','선생님 계정은 담당 반의 확정 수강생만 확인할 수 있습니다.',`<div class="fields"><div class="form-item"><label for="handoffClass">수업반</label><select id="handoffClass"><option value="">수업반 선택</option>${state.classes.map(c=>`<option value="${h(c.id)}">${h(c.id)} · ${h(c.day)} ${h(c.time)}</option>`).join('')}</select></div><div class="form-item"><label for="handoffDate">수업일</label><input id="handoffDate" type="date" value="${today}"></div></div><div class="spaced"><button id="handoffLoad" class="btn btn-outline">명단 불러오기</button></div>`)+
       panel('아동별 확인','미확인 또는 확인 필요로 표시된 경우에는 운영자에게 확인을 요청하세요.',`<div id="handoffRows" class="empty">수업반과 날짜를 선택해 주세요.</div>`)+
-      `<p class="footnote">보호자는 학원 인계 절차에 따라 확인하고, 이곳에는 동반·인계 여부만 기록해 주세요.</p>`;
+      `<p class="footnote">보호자 동반 여부와 수업 후 인계 결과만 기록해 주세요.</p>`;
       $('handoffLoad').onclick=async()=>{const id=$('handoffClass').value,date=$('handoffDate').value;if(!id)return toast('수업반을 선택해 주세요.',true);const b=$('handoffLoad');b.disabled=true;try{
         const items=await call('staffListHandoffs',state.token,{classId:id,date});
         $('handoffRows').innerHTML=table(['아동','보호자 동반','종료 인계','저장'],items.map((x,i)=>`<tr><td><b>${h(x.child)}</b></td><td><select class="inline-select" id="arrive-${i}">${['미확인','동반 확인','확인 필요'].map(s=>`<option ${s===x.arrival?'selected':''}>${s}</option>`).join('')}</select></td><td><select class="inline-select" id="leave-${i}">${['미확인','인계 확인','확인 필요'].map(s=>`<option ${s===x.departure?'selected':''}>${s}</option>`).join('')}</select></td><td><button class="btn btn-outline btn-small" data-save-handoff="${i}">저장</button></td></tr>`));
@@ -593,7 +593,7 @@
       `<div id="docResult" class="empty">발급한 문서가 없습니다.</div><div id="docSendArea" class="hidden stack spaced"><div class="row"><button id="docDownloadBtn" type="button" class="btn btn-outline">PDF 내려받기</button><small>발급한 PDF는 스튜디오 전용 문서함에 보관됩니다.</small></div><div class="fields"><div class="form-item"><label for="docRecipient">받는 사람 이메일</label><input type="email" id="docRecipient" autocomplete="off" placeholder="받는 분의 이메일 주소" maxlength="180"></div><div class="form-item"><label for="docConfirmEmail">이메일 다시 입력</label><input type="email" id="docConfirmEmail" autocomplete="off" placeholder="주소를 다시 입력해 주세요" maxlength="180"></div></div><div class="form-item"><label for="docMailNote">이메일에 덧붙일 안내 (선택)</label><textarea id="docMailNote" rows="2" maxlength="350" placeholder="예: 요청하신 안내서를 보내드립니다."></textarea></div><label class="row" style="font-size:12px;align-items:flex-start;gap:10px"><input id="docMailConfirm" type="checkbox" style="width:19px;min-height:19px;margin-top:2px;flex:none"><span>받는 분의 주소와 첨부 문서를 확인했습니다. 개인정보가 포함된 문서는 수신자에게 교부할 수 있는지 확인한 후 발송합니다.</span></label><div class="row"><button id="docSendBtn" type="button" class="btn btn-primary">PDF 이메일 보내기</button><small>발송 후에는 수신자에게 메일 도착 여부를 확인해 주세요.</small></div></div>`)+
       panel('최근 발급 기록','기존 문서는 다시 생성하지 않고 내려받을 수 있습니다.',
       `<div id="docHistory">${docHistoryTable(history)}</div>`)+
-      `<div class="footnote">교습비 영수증은 별도로 발행해야 합니다. 계약서와 발급 문서는 학원 보관 기준에 따라 원본과 백업을 관리해 주세요.</div>`;
+      `<div class="footnote">교습비 영수증은 별도로 발행해야 합니다. 계약서와 발급 문서는 내부 보관 기준에 따라 원본과 사본을 구분해 보관해 주세요.</div>`;
       let preview=null,generated=null;
       function req(){return {type:$('docType').value,sourceId:$('docSource').value,title:$('docCustomTitle').value.trim(),note:$('docCustomNote').value.trim()};}
       function resetPreview(){preview=null;generated=null;$('docPreview').className='empty';$('docPreview').textContent='내용을 선택하고 미리보기를 확인해 주세요.';$('docGenerateBtn').classList.add('hidden');$('docResult').className='empty';$('docResult').textContent='발급한 문서가 없습니다.';$('docSendArea').classList.add('hidden');$('docMailConfirm').checked=false;}
