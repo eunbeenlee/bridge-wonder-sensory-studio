@@ -41,9 +41,6 @@
   function tabRow(title,value,critical){
     return '<tr><td>'+escapeHTML(title)+'</td><td'+(critical?' class="negative"':'')+'>'+escapeHTML(money(value))+'</td></tr>';
   }
-  function renderSummary(d){
-    const cards=$('#bw49Results','#bw49OverviewCards');
-  }
   function makeCSV(rows,headers){
     const quote=x=>'"'+String(x==null?'':x).replace(/"/g,'""')+'"';
     return '\uFEFF'+[headers,...rows].map(r=>r.map(quote).join(',')).join('\r\n');
