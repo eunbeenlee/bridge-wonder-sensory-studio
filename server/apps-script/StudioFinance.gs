@@ -29,7 +29,7 @@ const BW49=Object.freeze({
     'workingCapitalMonths'
   ],
   ENUMS:Object.freeze({
-    vatMode:['undecided','general','simplified','exempt'],
+    vatMode:['general','simplified'],priceVatIncluded:['yes','no'],
     rentVatSeparate:['no','yes'],managementVatSeparate:['no','yes']
   })
 });
