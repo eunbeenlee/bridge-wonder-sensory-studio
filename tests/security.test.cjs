@@ -50,7 +50,7 @@ function tuitionFixture(extraColumns=[]){
 const tick=()=>new Promise(r=>setTimeout(r,0));
 function contract(overrides={}){return {version:'test-v1',operator:'테스트 기관',registrationNo:'TEST-ONLY',course:'테스트 과정',starts:'2027-01-05',period:'4회',schedule:'화요일 · 10:00',fee:100000,extras:0,venue:'테스트 장소',absence:'테스트 보강 기준',accompany:'보호자 동반',materials:'테스트 재료',safety:'테스트 안전 기준',retention:'테스트 보유기간',refund:'원래 반환 기준',clausesVersion:'BW-ENROLLMENT-TERMS-2026-11-18-V12',clauses:Array.from({length:10},(_,i)=>['제'+(i+1)+'조','테스트 조항']),consentVersion:'BW-CONSENT-2026-11-18-V13',...overrides};}
 async function enrollmentFixture({legacy=false,offer=contract()}={}){
-  const html=fs.readFileSync(__dirname+'/../sensory-studio/enroll/index.html','utf8');
+  const html=fs.readFileSync(__dirname+'/../tests/fixtures/legacy-enroll-v43.fixture','utf8');
   const dom=new JSDOM(html,{url:'https://example.invalid/enroll/'+(legacy?'?code=ABCDEFGHJK':''),runScripts:'outside-only'}),w=dom.window,d=w.document;
   const api='https://script.google.com/macros/s/TEST_ONLY/exec',posts=[],queries=[],prints=[];
   w.BRIDGE_WONDER_CONTACT_CONFIG={webAppUrl:api};w.HTMLElement.prototype.scrollIntoView=function(){};
