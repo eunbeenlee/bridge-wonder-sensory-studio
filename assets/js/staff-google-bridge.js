@@ -13,14 +13,14 @@
     const node = STATUS();
     if (node) {
       node.textContent = text;
-      node.style.color = warning ? '#8c4428' : '#40543a';
-      node.style.borderColor = warning ? '#c66b44' : '#e8dcc8';
+      node.style.color = warning ? '#a75537' : '#40543a';
+      node.style.borderColor = warning ? '#d1693b' : '#99a682';
     }
   };
   const u = new URL(ENDPOINT);
   if (u.protocol !== 'https:' || u.hostname !== 'script.google.com' ||
       !/^\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(u.pathname)) {
-    throw Error('직원용 Google 배포 주소가 올바르지 않습니다.');
+    throw Error('운영 시스템 접속 주소를 확인해 주세요.');
   }
   let count = 0;
   // V29 diagnostics track only method names and elapsed time, never arguments or tokens.
@@ -57,26 +57,26 @@
         cache:'no-store', headers:{'Content-Type':'text/plain;charset=utf-8'},
         body,signal:controller.signal
       });
-      if (!response.ok) throw Error('Google 서버 응답: HTTP ' + response.status);
+      if (!response.ok) throw Error('운영 시스템 응답: HTTP ' + response.status);
       const txt = await response.text();
       let data;
       try { data = JSON.parse(txt); } catch (_) {
-        throw Error('Google 서버가 JSON 대신 다른 페이지를 반환했습니다. 배포 주소와 Google 접근 설정을 확인해 주세요.');
+        throw Error('운영 시스템에서 예상하지 못한 응답을 받았습니다. 연결 설정을 확인해 주세요.');
       }
-      if (!data || data.ok !== true) throw Error(String(data && data.message || 'Google 서버 요청이 실패했습니다.'));
+      if (!data || data.ok !== true) throw Error(String(data && data.message || '요청을 완료하지 못했습니다. 다시 확인해 주세요.'));
       if (name === 'bridgeHealth') {
-        if (!data.value || data.value.transport !== 'google-apps-script' || data.value.version !== '27.0.0') throw Error('Google 직원 서버의 연결 버전이 일치하지 않습니다. 새 배포를 확인해 주세요.');
+        if (!data.value || data.value.transport !== 'google-apps-script' || data.value.version !== '27.0.0') throw Error('운영 시스템 버전이 일치하지 않습니다. 관리 담당자에게 확인해 주세요.');
         bridgeVerified = true;
       }
-      if (count === 1) msg('Google 직원 서버와 통신되었습니다.', false);
+      if (count === 1) msg('운영 시스템에 연결되었습니다.', false);
       return data.value;
     } catch (err) {
       const raw = err && err.message || '';
       const detail = err && err.name === 'AbortError'
-        ? 'Google 서버 요청이 지연되었습니다. 저장 작업을 중복 실행하지 말고 결과를 확인해 주세요.'
+        ? '응답이 늦어지고 있습니다. 저장 버튼을 다시 누르기 전에 처리 결과를 확인해 주세요.'
         : (/Failed to fetch|NetworkError|CORS/i.test(raw)
-          ? 'Google 웹앱 통신이 차단되었습니다. 배포 주소·접근 권한과 브라우저의 CORS 오류를 확인해 주세요.'
-          : String(raw || 'Google 서버 연결에 실패했습니다.'));
+          ? '운영 시스템과 연결하지 못했습니다. 인터넷 연결을 확인하고 다시 시도해 주세요.'
+          : String(raw || '운영 시스템에 연결하지 못했습니다.'));
       msg(detail, true);
       throw new Error(detail);
     } finally {
@@ -101,7 +101,7 @@
             if (typeof ok === 'function') ok(value, userObject);
           }, err => {
             if (typeof fail === 'function') fail({message:err.message}, userObject);
-            else console.error('[Bridge Wonder] Google request failed:', err.message);
+            else console.error('[Bridge Wonder] staff request failed:', err.message);
           });
         };
       }
@@ -119,16 +119,16 @@
   const check = document.getElementById('bw27-check-server');
   if (check) check.addEventListener('click', async () => {
     check.disabled=true;
-    msg('Google 서버 통신을 확인하고 있습니다…',false);
+    msg('운영 시스템에 연결하고 있습니다…',false);
     try {
       await checkHealth(true);
-      msg('Google 직원 서버 연결이 확인되었습니다. 로그인할 수 있습니다.',false);
+      msg('연결 상태를 확인했습니다. 로그인할 수 있습니다.',false);
     } catch (_) { /* Error already reported by request(). */ }
     finally { check.disabled=false; }
   });
-  msg('Google 서버 연결을 자동으로 확인하고 있습니다…',false);
+  msg('운영 시스템에 연결하고 있습니다…',false);
   // No password or private data is sent by this one-time anonymous health probe.
   Promise.resolve().then(()=>checkHealth()).then(()=>{
-    msg('Google 직원 서버 연결 확인 완료 · 로그인할 수 있습니다.',false);
+    msg('운영 시스템에 연결되었습니다. 로그인할 수 있습니다.',false);
   }).catch(()=>{});
 })(window);
