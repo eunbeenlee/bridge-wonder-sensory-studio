@@ -147,3 +147,15 @@ jobs:
           path: dist/Bridge_Wonder_V46_Staff_Family_And_Lesson_Upload.zip
           if-no-files-found: error
           retention-days: 30
+
+      - name: Build V49 owner finance Apps Script patch
+        if: success()
+        run: python3 tools/build-finance-install-v49.py
+      - name: Upload V49 finance Apps Script patch
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: BridgeWonder-V49-Finance-Staff-Update
+          path: dist/Bridge_Wonder_V49_Staff_Finance_Install.zip
+          if-no-files-found: error
+          retention-days: 30
