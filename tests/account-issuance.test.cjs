@@ -48,8 +48,8 @@ function fixture(){
 (async()=>{
   new vm.Script(accountUI,{filename:'staff-account-management.js'});
   new vm.Script(adminUI,{filename:'administration.js'});
-  assert.match(index,/staff-account-management\.js\?v=39\.0\.0/);
-  assert.ok(index.indexOf('staff-account-management.js')<index.indexOf('administration.js?v=39.0.0'));
+  assert.match(index,/staff-account-management\.js\?v=41\.0\.0/);
+  assert.ok(index.indexOf('staff-account-management.js')<index.indexOf('administration.js?v=41.0.0'));
   assert.match(bridge,/staff30IssueTemporaryPassword:\s*staff30IssueTemporaryPassword/);
   assert.match(bridge,/staff30ChangeOwnPassword:\s*staff30ChangeOwnPassword/);
   const f=fixture(),c=f.ctx;
