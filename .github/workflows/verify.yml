@@ -110,6 +110,9 @@ jobs:
       - name: V48 studio operating settings Q&A and safe field import tests
         if: always()
         run: node tests/staff-course-policy-v48.test.cjs
+      - name: V49 taxable finance scenario and private ledger tests
+        if: always()
+        run: node tests/staff-finance-v49.test.cjs
       - name: Create V45 staff lesson-plan installer ZIP
         if: success()
         run: python3 tools/build-lesson-plan-install-v45.py
