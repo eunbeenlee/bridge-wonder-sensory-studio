@@ -10,7 +10,7 @@
 - **태블릿·모바일:** 기존 상단 그룹형 메뉴·검색·PDF 기능을 유지하며 너비에 맞게 항목과 입력 폼을 축소·정렬
 - **홈 화면:** 각자 둥근 카드로 분리되던 운영 현황을 하나의 KPI 바 형태로 표시하고, 업무 바로가기를 테두리 없는 업무 목록으로 구성
 - **콘텐츠 디자인:** 하얀 배경, 얇은 회색 선, 균일한 8~10px 곡률, 일관된 폼/테이블/버튼. 강조색은 기존 브릿지 원더 포레스트 그린 유지
-- **로그인 화면:** 브랜드 로고는 유지하고 카드·안내문·입력창의 여백을 간결하게 조정
+- **로그인 및 계정 복구:** 공식 로고와 세이지색·아이보리 톤을 보존하면서 브랜드 소개/업무 로그인 2열(모바일 1열)로 개편. 이메일 OTP, 첫 계정 비밀번호 설정, 접속 도움말도 같은 입력 UI로 정리. 모든 인증 ID와 계정·세션 처리 로직은 그대로
 
 ## 유지한 기능
 - 기존 `MENU`, `BW24_CAPS`, `staffCurrentUser`, 직원별 Google 권한, 로그인/로그아웃
@@ -20,7 +20,7 @@
 - Google Apps Script `Code.gs`, `Admin.html`, `Payroll.gs`, `StaffBridge.gs`와 기존 배포 설정 미변경
 
 ## 적용 방식
-CSS `assets/css/staff-enterprise-v40.css` 하나를 기존 스타일 파일 뒤에 추가했습니다. `staff/index.html`, `staff/standalone.html`만 HTML 수준에서 바뀌었으며, Apps Script 직원 `/exec` 페이지는 그대로입니다.
+CSS `assets/css/staff-enterprise-v40.css` 하나를 기존 스타일 파일 뒤에 추가했습니다. `staff/index.html`, `staff/standalone.html`의 로그인 구조를 새롭게 배치하되 원래 로그인·계정 인증·OTP·Google 직접 접속·서버 재확인 버튼과 모든 ID는 유지했습니다. Apps Script 직원 `/exec` 페이지는 그대로입니다.
 
 **별도 설치/실행 함수 없음.** GitHub PR이 메인 브랜치로 병합되고 Pages가 배포되면 직원 사이트에 자동 반영됩니다.
 
