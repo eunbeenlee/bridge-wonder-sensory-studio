@@ -866,3 +866,43 @@ async function renderPayroll(){
   if(nav!==state.navigationSeq||token!==state.token||state.page!=='payroll')return;
   await window.BWPayroll.mount($('pageBody'),{token,user,call,isCurrent:()=>nav===state.navigationSeq&&token===state.token&&state.page==='payroll'&&state.user?.role==='owner'});
 }
+
+ // V49: owner-only finance UI; assets are loaded only when the finance page opens.
+ let bw49Assets=null;
+ function bw49LoadAssets(){
+   if(window.BW49FinanceModel&&window.BW49FinanceUI)return Promise.resolve();
+   if(bw49Assets)return bw49Assets;
+   const base='https://bridgewonder.bridgeacademy.co.kr/assets/';
+   const asset=(tag,id,url)=>new Promise((resolve,reject)=>{
+     const old=document.getElementById(id);
+     if(old?.dataset.loaded==='yes'){resolve();return;}
+     if(old)old.remove();
+     const element=document.createElement(tag);element.id=id;
+     let settled=false;
+     const finish=err=>{if(settled)return;settled=true;clearTimeout(timer);element.onload=null;element.onerror=null;
+       if(err){element.remove();reject(err);}else{element.dataset.loaded='yes';resolve();}
+     };
+     const timer=setTimeout(()=>finish(Error('운영 손익 화면을 불러오는 시간이 길어지고 있습니다. 다시 시도해 주세요.')),22000);
+     element.onload=()=>finish();
+     element.onerror=()=>finish(Error('재무 관리 화면을 불러오지 못했습니다.'));
+     if(tag==='link'){element.rel='stylesheet';element.href=url;document.head.appendChild(element);}
+     else{element.src=url;element.async=false;document.body.appendChild(element);}
+   });
+   bw49Assets=Promise.all([
+     asset('link','bw49Style',base+'css/staff-finance-v49.css?v=49.0.0'),
+     asset('script','bw49Model',base+'js/staff-finance-model-v49.js?v=49.0.0')
+   ]).then(()=>asset('script','bw49Interface',base+'js/staff-finance-v49.js?v=49.0.0'))
+     .then(()=>{if(!window.BW49FinanceModel||!window.BW49FinanceUI)throw Error('재무 관리 화면 초기화에 실패했습니다.');})
+     .catch(err=>{bw49Assets=null;throw err;});
+   return bw49Assets;
+ }
+ async function renderFinance49(){
+   const token=state.token,nav=state.navigationSeq,user=state.user;
+   if(user?.role!=='owner'||!bw24Can('finance'))throw Error('운영 손익은 원장 계정에서만 이용할 수 있습니다.');
+   await bw49LoadAssets();
+   if(token!==state.token||nav!==state.navigationSeq||state.page!=='finance')return;
+   await window.BW49FinanceUI.mount($('pageBody'),{
+     token,user,call,navigation:nav,
+     isCurrent:()=>state.page==='finance'&&state.token===token&&state.navigationSeq===nav&&state.user?.role==='owner'
+   });
+ }
