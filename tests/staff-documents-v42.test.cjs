@@ -53,7 +53,7 @@ async function flush(){await new Promise(resolve=>setImmediate(resolve));}
   test('all server-supported document IDs are retained unchanged',()=>{
     const enabled=[...d.querySelectorAll('#bw33DocumentChoices button[data-bw33doc]')].map(x=>x.dataset.bw33doc);
     assert.deepEqual(enabled.sort(),['inquiry','registration','payment','class','contract','notice'].sort());
-    assert.ok(d.querySelector('[data-bw33doc="contract"]').textContent.includes('기존 원본'));
+    assert.ok(d.querySelector('#bw33DocumentChoices [data-bw33doc="contract"]').textContent.includes('기존 원본'));
     assert.ok(d.querySelector('[data-bw33doc="registration"]').textContent.includes('학원형'));
     assert.match(original,/function staffDocTypes\(token\)/);
   });
