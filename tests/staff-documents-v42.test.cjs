@@ -34,8 +34,8 @@ async function flush(){await new Promise(resolve=>setImmediate(resolve));}
   test('both static staff entrypoints load V42 after V33 and before the existing app',()=>{
     for(const file of [html,alt]){
       const v33=file.indexOf('staff-enterprise-v33.js?v=41.0.0');
-      const v42=file.indexOf('staff-documents-v42.js?v=42.0.0');
-      const app=file.indexOf('administration.js?v=41.0.0');
+      const v42=file.indexOf('staff-documents-v42.js?v=43.0.0');
+      const app=file.indexOf('administration.js?v=43.0.0');
       assert.ok(v33>=0&&v42>v33&&app>v42,'load order must remain stable');
     }
   });
