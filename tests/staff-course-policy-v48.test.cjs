@@ -36,13 +36,13 @@ function html(){
   });
   const dom=new JSDOM(html(),{url:'https://bridgewonder.bridgeacademy.co.kr/staff/',runScripts:'outside-only',pretendToBeVisual:true});
   const w=dom.window,d=w.document,root=d.getElementById('pageBody');
-  w.eval(script);
   const set=(key,value)=>{d.getElementById('bw23Course_'+key).value=value;};
   const get=key=>d.getElementById('bw23Course_'+key).value;
   set('fee','120000');set('extras','0');set('business','브릿지 원더 학원');
   set('license','레거시-등록번호');set('refund','기존 환불 기준');
   set('makeup','기존 보강 안내');set('accompaniment','기존 동반 기준');
   set('materials','기존 준비물 안내');set('safety','기존 안전 안내');
+  w.eval(script);
   d.dispatchEvent(new w.Event('DOMContentLoaded'));
   w.BW48CoursePolicy.mount(root);
   check('class operating plan appears before the legacy contract form',()=>{
