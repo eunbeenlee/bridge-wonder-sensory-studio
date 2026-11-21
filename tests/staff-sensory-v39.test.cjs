@@ -60,7 +60,7 @@ test('dashboard groups allowed work without new private API calls',()=>{
 });
 test('legal checks remain visible but do not presume the registered business type',()=>{
   const compliance=read('assets/js/staff-compliance-v32.js');
-  assert.match(compliance,/사업자등록 업종과 실제 운영 형태에 따라 적용 기준이 다를 수 있습니다/);
+  assert.match(compliance,/교육지원 서비스업으로 등록하더라도 실제로 영유아에게 수업을 제공한다면 학원법 적용 대상이 될 수 있습니다/);
   assert.match(compliance,/staff32DownloadInspectionPdf/);
   assert.match(server,/function bw24Can_/);
   assert.match(help,/운영 기준·법정 확인/);
