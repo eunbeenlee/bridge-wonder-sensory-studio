@@ -77,7 +77,8 @@
     ]}
   ]);
   const SPECIAL_FIELDS=Object.freeze([
-    {key:'vatMode',label:'부가세 처리 방식',values:[['undecided','미확정 (기본)'],['general','일반과세 · 과세'],['simplified','간이과세 · 과세'],['exempt','면세 교육용역']]},
+    {key:'vatMode',label:'부가세 과세유형',values:[['general','일반과세 (과세 10%)'],['simplified','간이과세 (과세 · 실제 요율 확인)']]},
+    {key:'priceVatIncluded',label:'수업료·체험료의 부가세 포함 여부',values:[['yes','부가세 포함 소비자가격 (기본)'],['no','부가세 별도 청구 (실제 고지 확인)']]},
     {key:'rentVatSeparate',label:'월세 부가세 별도 청구',values:[['no','아니요/미확정'],['yes','별도 10% 청구 확인']]},
     {key:'managementVatSeparate',label:'관리비 부가세 별도 청구',values:[['no','아니요/미확정'],['yes','별도 10% 청구 확인']]}
   ]);
@@ -113,7 +114,7 @@
   ]);
   const DEFAULTS=Object.freeze(Object.assign(
     Object.fromEntries(FIELD_GROUPS.flatMap(g=>g.fields.map(f=>[f[0],f[3]]))),
-    {vatMode:'undecided',rentVatSeparate:'no',managementVatSeparate:'no'}
+    {vatMode:'general',priceVatIncluded:'yes',rentVatSeparate:'no',managementVatSeparate:'no'}
   ));
   const n=value=>Number.isFinite(Number(value))?Number(value):0;
   const clamp=(value,min,max)=>Math.min(max,Math.max(min,n(value)));
@@ -152,13 +153,14 @@
     const monthlyClasses=c.weeklyClasses*Y;
     const regularChildren=monthlyClasses*4*c.occupancy/100;
     const refundFactor=1-c.refundPercent/100;
-    const regGross=regularChildren*c.regularFee*refundFactor;
-    const trialGross=c.trialCount*c.trialFee;
-    const otherGross=c.otherSales;
+    const taxable=c.vatMode==='general',priceIncluded=c.priceVatIncluded==='yes';
+    const multiplier=taxable&&!priceIncluded?1.1:1;
+    const regGross=regularChildren*c.regularFee*refundFactor*multiplier;
+    const trialGross=c.trialCount*c.trialFee*multiplier;
+    const otherGross=c.otherSales*multiplier;
     const salesGross=regGross+trialGross+otherGross;
-    const taxable=c.vatMode==='general', exempt=c.vatMode==='exempt';
-    const vatUnresolved=c.vatMode==='undecided';
-    const revenueBook=taxable?salesGross/1.1:salesGross;
+    const vatUnresolved=false; // non-exempt taxable business is the configured default
+    const revenueBook=taxable?(priceIncluded?salesGross/1.1:salesGross/1.1):salesGross;
     const expenseGroups=FIELD_GROUPS.find(x=>x.id==='facility').fields.map(f=>({
       key:f[0],label:f[1],amount:c[f[0]]
     }));
@@ -166,7 +168,7 @@
     const extraRentVat=c.rentVatSeparate==='yes'?c.rent*.1:0;
     const extraMgmtVat=c.managementVatSeparate==='yes'?c.management*.1:0;
     const vatPaidOnRent=extraRentVat+extraMgmtVat;
-    const vatRecoverable=taxable?Math.min(vatPaidOnRent+Math.max(0,c.otherInputVat),salesGross-salesGross/1.1):0;
+    const vatRecoverable=taxable?Math.max(0,vatPaidOnRent+c.otherInputVat):0;
     const vatPaidNonDeductible=taxable?0:vatPaidOnRent;
     const material=regularChildren*(c.materialPerChild+c.consumablePerChild)+
       c.trialCount*(c.materialPerChild+c.consumablePerChild);
@@ -186,8 +188,8 @@
     const operatingCosts=fixedBase+vatPaidNonDeductible+variableTotal+peopleTotal+c.ownerHealth+c.depreciation;
     const operatingProfit=revenueBook-operatingCosts;
     const outputVat=taxable?salesGross-salesGross/1.1:0;
-    const vatEstimate=vatUnresolved?null:taxable?Math.max(0,outputVat-(vatPaidOnRent+c.otherInputVat)):
-      exempt?0:salesGross*c.simplifiedValueAddedPct/100*.10;
+    const vatEstimate=taxable?Math.max(0,outputVat-(vatPaidOnRent+c.otherInputVat)):
+      salesGross/1.1*c.simplifiedValueAddedPct/100*.10; // simplified taxable: rough provision, not filing formula
     const vatCarry=taxable?Math.max(0,(vatPaidOnRent+c.otherInputVat)-outputVat):0;
     const bizTaxableAnnual=operatingProfit*12-c.ownerPension*12;
     const otherBase=Math.max(0,c.otherIncomeAnnual-c.deductionAnnual);
@@ -204,23 +206,23 @@
     const operatingCashReserve=(fixedBase+peopleTotal+c.ownerHealth+vatPaidOnRent)*operatingReserveMonths;
     const startupImmediate=c.deposit+initialNonDeposit;
     const startupTotal=startupImmediate+operatingCashReserve;
-    const unitNetRevenue=c.regularFee*(taxable?1/1.1:1)*refundFactor;
-    const unitFee=c.regularFee*refundFactor*c.cardFeePercent/100;
+    const unitNetRevenue=c.regularFee*(taxable&&priceIncluded?1/1.1:1)*refundFactor;
+    const unitFee=c.regularFee*multiplier*refundFactor*c.cardFeePercent/100;
     const unitContribution=unitNetRevenue-c.materialPerChild-c.consumablePerChild-unitFee;
-    const trialContribution=c.trialCount*(c.trialFee*(taxable?1/1.1:1)-
-      c.materialPerChild-c.consumablePerChild-c.trialFee*c.cardFeePercent/100);
-    const neededProfitCover=fixedBase+vatPaidNonDeductible+peopleTotal+c.ownerHealth+c.depreciation-trialContribution-otherGross*(taxable?1/1.1:1);
+    const trialContribution=c.trialCount*(c.trialFee*(taxable&&priceIncluded?1/1.1:1)-
+      c.materialPerChild-c.consumablePerChild-c.trialFee*multiplier*c.cardFeePercent/100);
+    const neededProfitCover=fixedBase+vatPaidNonDeductible+peopleTotal+c.ownerHealth+c.depreciation-trialContribution-c.otherSales;
     const targetSeats=unitContribution>0?Math.max(0,neededProfitCover)/unitContribution:Infinity;
     const seatPlaces=monthlyClasses*4;
     const breakEvenFill=seatPlaces>0&&Number.isFinite(targetSeats)?targetSeats/seatPlaces*100:Infinity;
     const targetGroups=c.occupancy>0&&unitContribution>0?
       Math.ceil(targetSeats/(4*c.occupancy/100*Y)):Infinity;
-    const cashTerm=c.weeklyClasses*4*c.occupancy/100*c.regularFee*c.termWeeks;
+    const cashTerm=c.weeklyClasses*4*c.occupancy/100*c.regularFee*c.termWeeks*multiplier;
     const actual=actualSummary(items);
     return {
       input:c, monthlyWeeks:Y, monthlyClasses, monthlySessions:regularChildren,
       salesGross,regGross,trialGross,otherGross,termCashExample:cashTerm,
-      revenueBook,outputVat,vatEstimate,vatCarry,vatUnresolved,vatPaidOnRent,
+      revenueBook,outputVat,vatEstimate,vatCarry,vatUnresolved,vatPaidOnRent,priceIncluded,vatRecoverable,
       fixedBase,expenseGroups,material,processing,variableTotal,peopleTotal,
       wages,employerPension,employerHealth,employerLtc,employerEmployment,employerAccident,severance,employerTotal,
       ownerHealth:c.ownerHealth,ownerPension:c.ownerPension,ownerDraw:c.ownerDraw,
