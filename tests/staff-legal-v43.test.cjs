@@ -29,7 +29,7 @@ test('preserve all original 26 legal status keys and server contracts',()=>{
     'SAFE01','SAFE02','SAFE03','SAFE04','SAFE05',
     'OPS01','OPS02','OPS03'
   ];
-  assert.deepEqual(rows.map(x=>x.code),expected);
+  assert.deepEqual(Array.from(rows,x=>x.code),expected);
   assert.match(server,/function staffDocTypes\(token\)/);
   assert.match(refundServer,/function staff32SaveRefund/);
 });
