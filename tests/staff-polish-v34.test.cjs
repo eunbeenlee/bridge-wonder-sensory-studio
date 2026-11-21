@@ -35,7 +35,7 @@ test('helper text has legible consistent size instead of tiny low-contrast footn
   assert.match(css,/#workspace\.bw33-ready \.bw33-document-hint,/);
 });
 test('administration and payroll instructions use direct, natural language',()=>{
-  assert.match(admin,/실제 수납·환불 내역을 확인한 뒤 기록해 주세요/);
+  assert.match(admin,/결제가 완료된 건만 수납으로 기록하세요/);
   assert.match(admin,/발급한 PDF는 스튜디오 전용 문서함에 보관됩니다/);
   assert.match(admin,/보호자 동반 여부와 수업 후 인계 결과만 기록해 주세요/);
   assert.doesNotMatch(admin,/저장 즉시 Google Sheets에 반영됩니다/);
@@ -58,7 +58,7 @@ test('polish stylesheet and fresh cache versions load in all staff entrypoints',
   assert.match(staticPages[2],/staff-polish-v34\.css\?v=38\.0\.0/);
   const index=staticPages[0];
   for(const script of ['staff-google-bridge.js','administration-accelerator.js','staff-native-kdf.js','staff-account-management.js','staff-ux-v31.js','staff-enterprise-v33.js','administration.js']){
-    assert.ok(index.includes(script+'?v=41.0.0'),script);
+    assert.ok(index.includes(script+'?v='+(script==='administration.js'?'43.0.0':'41.0.0')),script);
   }
   assert.match(admin,/administration-payroll\.js\?v=39\.0\.0/);
 });
