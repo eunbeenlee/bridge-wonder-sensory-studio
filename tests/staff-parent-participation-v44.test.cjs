@@ -93,7 +93,7 @@ async function test(name,fn){await fn();passed++;console.log('PASS '+name);}
     assert.doesNotMatch(compliance,/학원 등록 면제 확정|신고 불필요 확정/);
   });
   await test('only staff HTML and staff scripts are versioned; existing public page remains independent',async()=>{
-    for(const html of [index,standalone])assert.match(html,/administration\.js\?v=44\.0\.0/);
+    for(const html of [index,standalone])assert.match(html,/administration\.js\?v=45\.0\.0/);
     assert.match(src,/staff-compliance-v32\.js\?v=44\.0\.0/);
     const publicSite=read('sensory-studio/index.html');
     assert.doesNotMatch(publicSite,/BW44_POLICY|staff-compliance-v32|staff-parent-v44/);
