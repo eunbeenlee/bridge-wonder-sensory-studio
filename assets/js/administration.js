@@ -695,6 +695,20 @@ async function renderThemes(){
  (edit?panel('교사용 월간 놀이 기획','아이의 월령별 진행 방법과 재료를 정리하고, 수업 전에 담당자가 확인하세요.',`<form id="bw20ThemeForm" class="stack"><div class="fields"><div class="form-item"><label for="bw20ThemeMonth">적용 월</label><input id="bw20ThemeMonth" type="month" required></div><div class="form-item"><label for="bw20ThemeStatus">검토 상태</label><select id="bw20ThemeStatus"><option>초안</option><option>확정</option></select></div></div><div class="form-item"><label for="bw20ThemeName">공통 주제</label><input id="bw20ThemeName" maxlength="80" required placeholder="예: 색을 만나는 하루"></div><div class="fields"><div class="form-item"><label for="bw20ThemeBook">연계 그림책</label><input id="bw20ThemeBook" maxlength="140"></div><div class="form-item"><label for="bw20ThemeSong">노래·리듬</label><input id="bw20ThemeSong" maxlength="140"></div></div><div class="form-item"><label for="bw20ThemeActivity">공통 감각 활동</label><textarea id="bw20ThemeActivity" maxlength="250" rows="2" placeholder="실제 재료·안전 기준에 따라 조정합니다."></textarea></div>${labels.map((x,i)=>`<div class="form-item"><label for="bw20ThemeMethod${i}">${x} · 교사 진행 방식</label><textarea id="bw20ThemeMethod${i}" rows="2" maxlength="270" placeholder="같은 주제 안에서 교사의 언어와 활동 난이도를 어떻게 달리할지"></textarea></div>`).join('')}<div class="row"><button class="btn btn-primary" type="submit">월간 주제 저장</button><button class="btn btn-outline" type="button" id="bw20ThemeReset">새 월 입력</button></div></form>`):'')+
  panel('월별 놀이 계획',edit?'작성 중인 내용과 확정된 내용을 함께 확인할 수 있습니다.':'확정된 월간 주제만 표시됩니다.',rows.length?rows.map(x=>`<details class="bw20-theme-detail"><summary><b>${h(x.month)} · ${h(x.theme)}</b><span class="pill">${h(x.status)}</span></summary><p><b>그림책</b> ${h(x.book||'미입력')}　<b>노래</b> ${h(x.song||'미입력')}</p><p><b>공통 활동</b> ${h(x.activity||'미입력')}</p>${labels.map((l,i)=>`<p class="bw20-method"><strong>${l}</strong> ${h(x.methods[i]||'미입력')}</p>`).join('')}${edit?`<button data-bw20theme="${h(x.month)}" class="btn btn-outline btn-small">이 달 수정</button>`:''}</details>`).join(''):'<div class="empty">아직 월간 공통 주제가 없습니다.</div>');
  if(edit){$('bw20ThemeReset').onclick=()=>{$('bw20ThemeForm').reset();};$('pageBody').querySelectorAll('[data-bw20theme]').forEach(b=>b.onclick=()=>{const x=rows.find(v=>v.month===b.dataset.bw20theme);if(!x)return;const vals={bw20ThemeMonth:x.month,bw20ThemeStatus:x.status,bw20ThemeName:x.theme,bw20ThemeBook:x.book,bw20ThemeSong:x.song,bw20ThemeActivity:x.activity};Object.entries(vals).forEach(([k,v])=>$(k).value=v||'');x.methods.forEach((v,i)=>$('bw20ThemeMethod'+i).value=v||'');$('bw20ThemeForm').scrollIntoView({behavior:'smooth',block:'start'});});$('bw20ThemeForm').onsubmit=async e=>{e.preventDefault();const f=e.currentTarget;setBusy(f,true);try{await call('staff20SaveTheme',state.token,{month:$('bw20ThemeMonth').value,status:$('bw20ThemeStatus').value,theme:$('bw20ThemeName').value,book:$('bw20ThemeBook').value,song:$('bw20ThemeSong').value,activity:$('bw20ThemeActivity').value,methods:labels.map((_,i)=>$('bw20ThemeMethod'+i).value)});toast('월간 주제를 저장했습니다.');await renderThemes();}catch(e){toast(e.message,true);}finally{setBusy(f,false);}};}
+
+ const lessonHost=document.createElement('section');
+ lessonHost.id='bw45LessonLibrary';
+ lessonHost.className='panel bw45-lesson-library';
+ $('pageBody').appendChild(lessonHost);
+ const lessonToken=state.token,lessonNav=state.navigationSeq;
+ if(window.BW45LessonLibrary){
+  Promise.resolve(window.BW45LessonLibrary.mount(lessonHost,{
+    token:lessonToken,email:state.user.email,canEdit:edit,call,toast,
+    isCurrent:()=>state.page==='themes'&&state.token===lessonToken&&state.navigationSeq===lessonNav
+  })).catch(error=>{if(state.page==='themes'&&lessonHost.isConnected)lessonHost.textContent='수업안 자료실을 불러오지 못했습니다. '+String(error?.message||error);});
+ }else{
+  lessonHost.innerHTML='<h3>수업안 자료실</h3><p>수업안 자료실을 불러오지 못했습니다. 새로고침 후 다시 확인해 주세요.</p>';
+ }
 }
 const bw20PreviousRenderHome=renderHome;
 renderHome=function(){
