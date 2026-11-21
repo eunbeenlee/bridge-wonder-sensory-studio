@@ -915,7 +915,7 @@ function staff20Capacity(token){
 }
 function staff20SetCapacity(token,p){
  const u=bw24Authorized_(token,'capacity','write',['owner','director']),id=bw20Class_(p&&p.classId).id,n=Number(p&&p.capacity);
- if(!Number.isSafeInteger(n)||n<1||n>100)throw Error('정원은 실제 허용된 수용 인원 범위 안에서 입력해 주세요 (1~100).');
+ if(!Number.isSafeInteger(n)||n<1||n>4)throw Error('브릿지 원더 수업은 한 회차에 아이 최대 4명으로 설정해 주세요.');
  const enrolled=bw20Counts_().counts[id]||0;if(n<enrolled)throw Error('확정 등록 인원보다 작은 정원으로 저장할 수 없습니다.');
  const s=bw20Tab_('CAPS',true),lock=LockService.getScriptLock();lock.waitLock(15000);
  try{const d=bw17Read_(s,5000),idx=d.rows.findIndex(r=>String(r[0]).toUpperCase()===id),row=idx>=0?d.start+idx:s.getLastRow()+1;
