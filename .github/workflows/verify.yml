@@ -89,6 +89,9 @@ jobs:
       - name: top categories, four-color branding and Korean copy V41 tests
         if: always()
         run: node tests/staff-topnav-v41.test.cjs
+      - name: sensory studio document catalog V42 tests
+        if: always()
+        run: node tests/staff-documents-v42.test.cjs
       - name: Create staff Apps Script V38 installer ZIP
         if: success()
         run: python3 tools/build-gas-install-package.py
