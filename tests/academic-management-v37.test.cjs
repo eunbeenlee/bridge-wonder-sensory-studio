@@ -262,7 +262,7 @@ check('new public form collects guardian and weekly frequency without mandatory 
   assert.doesNotMatch(publicInquiry,/localStorage\.setItem\([^)]*child|sessionStorage\.setItem\([^)]*guardian/);
   for(const p of ['sensory-studio/index.html','sensory-studio/story/index.html',
     'sensory-studio/programs/index.html','sensory-studio/experience/index.html']){
-    assert.match(from(p),/간편 등록 상담/);
+    assert.match(from(p),/상담 신청/);
   }
 });
 check('manager frontend and public experience renderer parse without syntax errors',()=>{
