@@ -26,8 +26,8 @@ function harness(fetchMock){
   await run('Health failure blocks transmission of passwords',async()=>{
     const calls=[];
     const h=harness(async(_url,options)=>{calls.push(JSON.parse(options.body).method);throw Error('Failed to fetch');});
-    await assert.rejects(h.win.BW27Bridge.request('staff23PasswordLogin',[{email:'mock@example.invalid',password:'fake-secret'}]),/차단/);
-    assert.deepEqual(calls,['bridgeHealth']);assert.match(h.el.textContent,/차단/);
+    await assert.rejects(h.win.BW27Bridge.request('staff23PasswordLogin',[{email:'mock@example.invalid',password:'fake-secret'}]),/연결하지 못했습니다/);
+    assert.deepEqual(calls,['bridgeHealth']);assert.match(h.el.textContent,/연결하지 못했습니다/);
   });
   await run('Completed health permits exactly one protected login attempt',async()=>{
     const calls=[];
