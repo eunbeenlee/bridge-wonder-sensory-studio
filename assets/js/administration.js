@@ -185,7 +185,7 @@
       const metrics=[['classCount',state.user?.role==='teacher'?'담당 클래스':'운영 중인 클래스']];
       if(bw24Can('inquiries'))metrics.push(['newInquiries','새 체험·수업 문의']);
       if(bw24Can('registrations'))metrics.push(['pendingEnrollments','확인할 등록 서류']);
-      $('pageBody').innerHTML=head('센서리 스튜디오 운영','오늘 필요한 업무를 확인하고 바로 시작하세요.')+
+      $('pageBody').innerHTML=head('센서리 스튜디오 운영','오늘 처리할 일을 확인해 주세요.')+
         `<div class="metric-grid">${metrics.map(([key,title])=>`<article class="metric"><div class="metric-name">${h(title)}</div><div class="metric-value" id="bw271Metric_${key}" aria-live="polite">—</div></article>`).join('')}</div>`+
         panel('자주 쓰는 업무','필요한 메뉴를 선택해 주세요. 사용 권한이 있는 메뉴만 표시됩니다.',
           `<div class="bw39-workstreams">${streams.map(group=>`
@@ -238,13 +238,13 @@
       const v=(d.rows||[]).find(x=>x.code==='BW-SENSORY')||{code:'BW-SENSORY',name:'Bridge Wonder Sensory Play Studio',fee:'',extras:'0',refund:'',business:'',license:'',retention:'',location:'',makeup:'',accompaniment:'',materials:'',safety:'',status:'중지'};
       const labels=[['name','과정 이름','text'],['fee','교습비 (원)','number'],['extras','기타 경비 (원)','number'],['business','법정 상호','text'],['license','학원 등록번호','text'],['location','수업 장소','text'],['retention','개인정보 보유 기간','text'],['refund','교습비 반환 기준','textarea'],['makeup','결석·보강 기준','textarea'],['accompaniment','보호자 동반 기준','textarea'],['materials','재료·준비물 안내','textarea'],['safety','수업 안전 안내','textarea']];
       const fields=labels.map(([key,label,type])=>`<div class="form-item"><label for="bw23Course_${key}">${label}</label>${type==='textarea'?`<textarea id="bw23Course_${key}" rows="3">${h(v[key]||'')}</textarea>`:`<input id="bw23Course_${key}" type="${type}" value="${h(v[key]||'')}" ${type==='number'?'min="0" max="100000000" step="1"':''}>`}</div>`).join('');
-      $('pageBody').innerHTML=head('스튜디오 이용 조건','정규 50분 30,000원, 체험 50분 25,000원 기준입니다. 실제 결제·세금 적용 조건을 확인하세요.')+panel('Bridge Wonder · Sensory Play Studio','여기에 입력한 교습비는 실제 계약에 사용됩니다. 회당 안내 금액과 월 교습비는 다를 수 있으니 수업 횟수와 기간을 확인한 뒤 저장해 주세요. 할인 조건은 별도로 확인합니다.',`<form id="bw23CourseForm"><div class="cols">${fields}</div><div class="form-item spaced"><label for="bw23Course_status">운영 상태</label><select id="bw23Course_status"><option value="중지" ${v.status==='중지'?'selected':''}>중지</option><option value="활성" ${v.status==='활성'?'selected':''}>활성</option></select></div><div class="row spaced"><button type="submit" class="btn btn-primary">수강조건 저장</button><span id="bw23CourseStatus" class="inline-status"></span></div></form>
+      $('pageBody').innerHTML=head('스튜디오 이용 조건','정규 50분 30,000원, 체험 50분 25,000원 기준입니다. 실제 결제·세금 적용 조건을 확인하세요.')+panel('Bridge Wonder · Sensory Play Studio','이 화면은 기존 수강계약 시스템에 연결되어 있습니다. 학원 등록번호가 필요한 기존 양식이므로 신규 스튜디오 이용계약에 적용하기 전에 확인해 주세요. 금액을 바꾸면 기존 계약 기능에도 영향을 줄 수 있습니다.',`<form id="bw23CourseForm"><div class="cols">${fields}</div><div class="form-item spaced"><label for="bw23Course_status">운영 상태</label><select id="bw23Course_status"><option value="중지" ${v.status==='중지'?'selected':''}>중지</option><option value="활성" ${v.status==='활성'?'selected':''}>활성</option></select></div><div class="row spaced"><button type="submit" class="btn btn-primary">기존 수강조건 저장</button><span id="bw23CourseStatus" class="inline-status"></span></div></form>
       <div class="form-item spaced" role="group" aria-label="정규 수업 회차별 교습비 계산">
-        <strong>회차별 교습비 미리 계산</strong>
+        <strong>회차별 이용료 계산 (기존 계약용)</strong>
         <p class="help">정규 수업은 50분 1회 30,000원이며, 체험은 프로모션으로 50분 1회 25,000원입니다.</p>
         <label for="bw38SessionCount">상담 후 확정할 정규 수업 회차</label>
         <input type="number" id="bw38SessionCount" min="1" max="60" step="1" placeholder="예: 6" inputmode="numeric" style="max-width:190px">
-        <output id="bw38SessionFee" for="bw38SessionCount" aria-live="polite">회차를 입력하면 예상 교습비가 표시됩니다.</output>
+        <output id="bw38SessionFee" for="bw38SessionCount" aria-live="polite">회차를 입력하면 참고 금액이 나옵니다.</output>
         <p class="help">상담할 때 참고하는 예상 금액입니다. 계약 금액은 자동으로 바뀌지 않으니 실제 수업 횟수와 기간, 할인 조건을 확인해 따로 저장해 주세요.</p>
       </div>`);
       const feeCount=$('bw38SessionCount'),feeOutput=$('bw38SessionFee');
@@ -498,8 +498,8 @@
       const completed=rows.filter(x=>x.status==='완료').length;
       $('pageBody').innerHTML=head('시설·운영 점검','개원 준비 사항과 시설 점검 내역을 확인하세요. 기관마다 확인할 사항이 다를 수 있습니다.')+
       `<div class="metric-grid"><article class="metric"><div class="metric-name">점검 항목</div><div class="metric-value">${rows.length}</div></article><article class="metric"><div class="metric-name">완료</div><div class="metric-value">${completed}</div></article><article class="metric"><div class="metric-name">확인 필요</div><div class="metric-value">${rows.length-completed}</div></article></div>`+
-      panel('항목별 진행 상태','관련 서류는 전용 문서함에 보관하고, 이곳에는 파일명이나 보관 위치만 기록해 주세요.',`<div class="toolbar"><select id="opsCategory" aria-label="운영 점검 분야"><option value="">전체 분야</option>${groups.map(c=>`<option>${h(c)}</option>`).join('')}</select><span class="pill">법정 확인과 운영 권장 사항을 구분했습니다.</span></div><div id="opsRows"></div>`)+
-      `<p class="footnote">완료로 표시하기 전에 실제 신고 내용과 보험·증빙 서류를 확인해 주세요.</p>`;
+      panel('항목별 진행 상태','관련 서류는 전용 문서함에 보관하고, 이곳에는 파일명이나 보관 위치만 기록해 주세요.',`<div class="toolbar"><select id="opsCategory" aria-label="운영 점검 분야"><option value="">전체 분야</option>${groups.map(c=>`<option>${h(c)}</option>`).join('')}</select><span class="pill">이 목록에는 기존 학원용 항목도 포함되어 있습니다.</span></div><div id="opsRows"></div>`)+
+      `<p class="footnote">기존 학원용 항목은 적용 여부를 먼저 확인하세요. 관계기관의 답변이나 증빙이 있는 항목만 완료로 표시합니다.</p>`;
       const draw=()=>{
         const selected=$('opsCategory').value,arr=rows.filter(x=>!selected||x.category===selected);
         $('opsRows').innerHTML=`<div class="ops-card-grid">${arr.map(x=>`<article class="ops-task-card"><div class="row space-between"><small class="pill">${h(x.category)} · ${h(x.kind)}</small><small class="muted">${h(x.code)}</small></div><h4>${h(x.title)}</h4><div class="fields"><div class="form-item"><label for="op-status-${h(x.code)}">진행 상태</label><select id="op-status-${h(x.code)}" data-op-status="${h(x.code)}">${statusOptions.map(s=>`<option ${s===x.status?'selected':''}>${s}</option>`).join('')}</select></div><div class="form-item"><label for="op-due-${h(x.code)}">확인 예정일</label><input id="op-due-${h(x.code)}" type="date" data-op-due="${h(x.code)}" value="${h(x.due||'')}"></div><div class="form-item"><label for="op-person-${h(x.code)}">담당자</label><input id="op-person-${h(x.code)}" data-op-person="${h(x.code)}" maxlength="60" placeholder="담당자" value="${h(x.person||'')}"></div><div class="form-item"><label for="op-evidence-${h(x.code)}">증빙 참조</label><input id="op-evidence-${h(x.code)}" data-op-evidence="${h(x.code)}" maxlength="180" placeholder="비공개 Drive 자료 위치" value="${h(x.evidence||'')}"></div></div><div class="row space-between"><small class="muted">${x.updated?'최종 수정 '+h(x.updated):'아직 수정 이력이 없습니다.'}</small><button class="btn btn-outline btn-small" data-op-save="${h(x.code)}">저장</button></div></article>`).join('')}</div>`;
@@ -520,7 +520,7 @@
       $('pageBody').innerHTML=head('이용료·환불 기록','결제와 환불 내역을 확인하고 기록하세요.')+
       panel('처리 내역 추가','결제가 완료된 건만 수납으로 기록하세요. 카드전표·현금영수증은 결제 방식에 맞게 따로 발급합니다.',`<form id="tuitionForm" class="stack"><div class="fields"><div class="form-item"><label for="payReceipt">수강등록 접수번호</label><select id="payReceipt" required><option value="">접수번호를 선택해 주세요</option>${d.students.map(x=>`<option value="${h(x.receipt)}">${h(x.name)} · ${h(x.receipt)}</option>`).join('')}</select></div><div class="form-item"><label for="payKind">기록할 업무</label><select id="payKind">${kinds.map(x=>`<option>${x}</option>`).join('')}</select></div><div class="form-item"><label for="payAmount">금액 (원)</label><input id="payAmount" type="number" min="0" max="100000000" step="1" inputmode="numeric" value="0" required></div><div class="form-item"><label for="payReference">영수증·결제·환불 증빙번호</label><input id="payReference" maxlength="85" placeholder="민감한 결제정보는 입력하지 마세요"></div></div><div class="form-item"><label for="payNote">간단한 운영 메모</label><textarea id="payNote" maxlength="120" placeholder="예: 카드 매출전표 발급 확인. 카드번호나 계좌번호는 적지 않습니다."></textarea></div><div class="row"><button type="submit" class="btn btn-primary">처리 이력 추가</button><small>저장한 수납 기록은 수정하거나 삭제할 수 없으니 내용을 확인해 주세요.</small></div></form>`)+
       panel('최근 수납 기록',`최근 ${d.records.length}건을 표시합니다.`,table(['기록시각','등록 접수번호','처리 종류','금액(원)','증빙참조','담당자'],d.records.map(x=>`<tr><td>${h(x.at)}</td><td>${h(x.receipt)}</td><td>${tag(x.kind)}</td><td>${h(x.amount)}</td><td>${h(x.reference)}</td><td>${h(x.operator)}</td></tr>`)))+
-      `<div class="warning">환불금 지급을 마친 건만 '환불완료'로 표시하세요. 반환 금액은 교습비 반환 기준에 따라 확인해야 합니다.</div>`;
+      `<div class="warning">실제로 환불한 건만 ‘환불완료’로 표시하세요. 환불액은 이용 조건과 적용 법령에 따라 확인해야 합니다.</div>`;
       let pendingTuition=null;
       $('tuitionForm').onsubmit=async e=>{e.preventDefault();const f=e.currentTarget;
         const payload={receipt:$('payReceipt').value,kind:$('payKind').value,amount:Number($('payAmount').value),reference:$('payReference').value,note:$('payNote').value};
@@ -570,7 +570,7 @@
       const statuses=['미확인','확인완료','해당없음','재점검필요'];
       const fields=[['criminal','성범죄 관련 법정 조회'],['child','아동학대 관련 전력 조회'],['report','채용·해임 신고'],['abuse','아동학대 신고의무 교육'],['welfare','긴급복지 신고의무 교육'],['disability','장애인학대 신고의무 교육']];
       $('pageBody').innerHTML=head('직원 확인 사항','직원별로 필요한 조회·교육·서류를 확인해 주세요. 해당 여부는 실제 사업 형태에 따라 달라질 수 있습니다.')+
-      `<div class="alert">조회와 교육을 실제로 마친 뒤 상태를 기록하세요. 적용 대상이 아닌 항목은 근거를 확인한 후 '해당없음'으로 표시하세요.</div>`+
+      `<div class="alert">해당 업무에 법정 조회·교육 의무가 있는지 먼저 확인하세요. 실제 완료한 항목만 기록하고 관련 서류는 별도로 보관합니다.</div>`+
       `<div class="ops-card-grid spaced">${people.map((u,i)=>`<article class="ops-task-card"><div><h4>${h(u.name)} <span class="pill">${h(ROLE_NAMES[u.role]||u.role)}</span></h4><small class="muted">${h(u.email)}</small></div><div class="fields">${fields.map(([k,label])=>`<div class="form-item"><label for="staff-${i}-${k}">${h(label)}</label><select id="staff-${i}-${k}">${statuses.map(v=>`<option ${u[k]===v?'selected':''}>${v}</option>`).join('')}</select></div>`).join('')}</div><div class="form-item"><label for="staff-evidence-${i}">증빙 자료 내부 참조</label><input id="staff-evidence-${i}" maxlength="180" value="${h(u.evidence)}" placeholder="비공개 Drive 문서 위치"></div><div class="row space-between"><small class="muted">${u.updated?'최종 수정 '+h(u.updated):'아직 점검 이력이 없습니다.'}</small><button class="btn btn-outline btn-small" data-staff-compliance="${i}">확인 내용 저장</button></div></article>`).join('')}</div>`;
       $('pageBody').querySelectorAll('[data-staff-compliance]').forEach(btn=>btn.onclick=async()=>{
         const i=Number(btn.dataset.staffCompliance),p={email:people[i].email,evidence:$('staff-evidence-'+i).value};
@@ -585,7 +585,7 @@
       if(state.page!=='documents')return;
       
       $('pageBody').innerHTML=head('보호자 문서·PDF','문서를 골라 내용을 확인한 다음 PDF로 저장하거나 이메일로 보낼 수 있습니다.')+
-      `<div class="warning">서명 계약서는 보관된 원본에서 사본을 발급합니다. 등록 확인서와 납부 내역 안내서는 계약서나 영수증을 대신할 수 없습니다.</div>`+
+      `<div class="warning">기존 계약서 사본은 원본 내용 그대로 발급됩니다. 새 스튜디오 이용동의서로 쓸 수 없으며 납부 안내서는 영수증이 아닙니다.</div>`+
       panel('1. 발급 문서 선택','필요한 문서를 고르고 관련 기록을 선택하세요.',
       `<div class="stack" id="docStepForm"><div class="fields"><div class="form-item"><label for="docType">문서 종류</label><select id="docType">${types.map(t=>`<option value="${h(t.id)}">${h(t.label)}</option>`).join('')}</select></div><div class="form-item"><label for="docSource">기록 선택</label><select id="docSource"><option value="">자료를 불러오는 중입니다.</option></select></div></div><div class="form-item hidden" id="docCustomTitleBox"><label for="docCustomTitle">안내문 제목</label><input id="docCustomTitle" maxlength="95" placeholder="예: 3월 수업 준비물 안내"></div><div class="form-item hidden" id="docCustomNoteBox"><label for="docCustomNote">추가 안내 내용</label><textarea id="docCustomNote" maxlength="1600" rows="4" placeholder="보호자에게 전달할 내용을 간단히 적어 주세요."></textarea></div><div class="row"><button type="button" class="btn btn-outline" id="docPreviewBtn">내용 미리보기</button><small>내용을 확인한 후 PDF를 생성하세요.</small></div></div>`)+
       panel('2. 문서 확인','이름과 날짜, 안내 내용을 확인하세요.',`<div id="docPreview" class="empty">문서를 선택하고 미리보기를 눌러 주세요.</div><div class="row spaced"><button id="docGenerateBtn" type="button" class="btn btn-primary hidden">확인한 내용으로 PDF 생성</button></div>`)+
@@ -593,7 +593,7 @@
       `<div id="docResult" class="empty">발급한 문서가 없습니다.</div><div id="docSendArea" class="hidden stack spaced"><div class="row"><button id="docDownloadBtn" type="button" class="btn btn-outline">PDF 내려받기</button><small>발급한 PDF는 스튜디오 전용 문서함에 보관됩니다.</small></div><div class="fields"><div class="form-item"><label for="docRecipient">받는 사람 이메일</label><input type="email" id="docRecipient" autocomplete="off" placeholder="받는 분의 이메일 주소" maxlength="180"></div><div class="form-item"><label for="docConfirmEmail">이메일 다시 입력</label><input type="email" id="docConfirmEmail" autocomplete="off" placeholder="주소를 다시 입력해 주세요" maxlength="180"></div></div><div class="form-item"><label for="docMailNote">이메일에 덧붙일 안내 (선택)</label><textarea id="docMailNote" rows="2" maxlength="350" placeholder="예: 요청하신 안내서를 보내드립니다."></textarea></div><label class="row" style="font-size:12px;align-items:flex-start;gap:10px"><input id="docMailConfirm" type="checkbox" style="width:19px;min-height:19px;margin-top:2px;flex:none"><span>받는 분의 주소와 첨부 문서를 확인했습니다. 개인정보가 포함된 문서는 수신자에게 교부할 수 있는지 확인한 후 발송합니다.</span></label><div class="row"><button id="docSendBtn" type="button" class="btn btn-primary">PDF 이메일 보내기</button><small>발송 후에는 수신자에게 메일 도착 여부를 확인해 주세요.</small></div></div>`)+
       panel('최근 발급 기록','기존 문서는 다시 생성하지 않고 내려받을 수 있습니다.',
       `<div id="docHistory">${docHistoryTable(history)}</div>`)+
-      `<div class="footnote">교습비 영수증은 별도로 발행해야 합니다. 계약서와 발급 문서는 내부 보관 기준에 따라 원본과 사본을 구분해 보관해 주세요.</div>`;
+      `<div class="footnote">결제 증빙은 카드·현금 등 실제 결제수단에 맞게 따로 발급하세요. 계약서 원본과 사본은 구분해 보관합니다.</div>`;
       let preview=null,generated=null;
       function req(){return {type:$('docType').value,sourceId:$('docSource').value,title:$('docCustomTitle').value.trim(),note:$('docCustomNote').value.trim()};}
       function resetPreview(){preview=null;generated=null;$('docPreview').className='empty';$('docPreview').textContent='내용을 선택하고 미리보기를 확인해 주세요.';$('docGenerateBtn').classList.add('hidden');$('docResult').className='empty';$('docResult').textContent='발급한 문서가 없습니다.';$('docSendArea').classList.add('hidden');$('docMailConfirm').checked=false;}
