@@ -1,0 +1,45 @@
+/* Bridge Wonder V50 — compact, linkable staff category workspaces.
+ * The category trigger still opens a submenu; the adjacent '열기' link opens
+ * its dedicated same-origin workspace URL without a full page reload.
+ */
+#workspace.bw33-ready .bw33-primary-groups>.bw33-group {
+  gap:0;
+  border-radius:8px;
+}
+#workspace.bw33-ready .bw50-workspace-link {
+  display:inline-flex;
+  flex:0 0 auto;
+  align-items:center;
+  justify-content:center;
+  padding:5px 7px;
+  min-height:31px;
+  margin-left:-4px;
+  margin-right:3px;
+  color:#657d60;
+  font:600 10px/1.2 system-ui,-apple-system,'Noto Sans KR',sans-serif;
+  background:#f3f6f0;
+  border:1px solid #e5ebdf;
+  border-radius:5px;
+  text-decoration:none;
+  white-space:nowrap;
+}
+#workspace.bw33-ready .bw50-workspace-link:hover,
+#workspace.bw33-ready .bw50-workspace-link:focus-visible {
+  color:#40543a;
+  background:#e6eddf;
+  border-color:#9baa8c;
+  outline-offset:2px;
+}
+#workspace.bw33-ready .bw33-group-trigger.is-active + .bw50-workspace-link {
+  border-color:#cbd9c2;
+  background:#edf2e7;
+  color:#40543a;
+}
+@media(max-width:650px){
+  #workspace.bw33-ready .bw50-workspace-link {
+    min-height:28px;
+    padding:5px 6px;
+    margin-right:2px;
+    font-size:10px;
+  }
+}
