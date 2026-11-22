@@ -13,6 +13,37 @@
       return !userPolicy || userPolicy[mode==='write'?'write':'read']?.[page]===true;
     }
     const state={token:'',user:null,page:'home',classes:[],templates:[],inquiries:[],registrations:[],roster:[],staff:[],attendance:[],busy:false,navigationSeq:0};
+    // V50: URL routes for each staff business area; the same authenticated GAS is retained.
+    // URL contains only the public module/page ID, never a session token or child data.
+    const BW50_AREAS=Object.freeze({
+      consult:['inquiries','waitlist','students','registrations'],
+      class:['classes','capacity','roster','attendance','makeups','handoff'],
+      sensory:['experiences','themes','safety'],
+      service:['tuition','documents'],
+      admin:['operations','courseSettings','compliance','staffCompliance','users','payroll','finance','security']
+    });
+    const bw50AreaOf=page=>Object.keys(BW50_AREAS).find(key=>BW50_AREAS[key].includes(page))||'home';
+    const bw50FromURL=()=>{
+      try{
+        const url=new URL(window.location.href),page=url.searchParams.get('page'),area=url.searchParams.get('area');
+        if(page==='home')return 'home';
+        if(!page||!Object.prototype.hasOwnProperty.call(BW24_CAPS,page))return 'home';
+        if(area&&area!==bw50AreaOf(page))return 'home';
+        return page;
+      }catch(_){return 'home';}
+    };
+    const bw50SyncURL=(page,replace)=>{
+      try{
+        const url=new URL(window.location.href);
+        url.searchParams.delete('page');url.searchParams.delete('area');
+        if(page!=='home'){url.searchParams.set('area',bw50AreaOf(page));url.searchParams.set('page',page);}
+        const target=url.pathname+url.search+url.hash;
+        if(target!==window.location.pathname+window.location.search+window.location.hash){
+          window.history[replace?'replaceState':'pushState']({bw50StaffPage:page},'',target);
+        }
+      }catch(_){/* URL routing must never block a staff task */}
+    };
+
     let toastTimer;
     const toast=(message,error=false)=>{if(message==='BW24_STALE_VIEW')return;const el=$('toast');el.textContent=message;el.style.background=error?'#92513e':'#354f33';el.style.display='block';clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.style.display='none',3900);};
     // V25.1: requests are optimized in the separate GitHub acceleration module.
@@ -124,7 +155,12 @@
       if(token)call('staffLogout',token).catch(()=>{});
     }
     $('logoutBtn').onclick=logout;$('logoutMobile').onclick=logout;
-    async function startApp(){if(!state.user){try{state.user=await call('staffCurrentUser',state.token);}catch(e){await logout();return;}}$('loginScreen').hidden=true;$('workspace').hidden=false;$('staffName').textContent=state.user.name||'선생님';$('staffEmail').textContent=state.user.email||'';$('roleBadge').textContent=ROLE_NAMES[state.user.role]||'직원';renderNav();window.BW31UX?.decorateNav();window.BW33Enterprise?.sync();if(state.user.mustChange){if(!window.BW30Accounts)throw Error('비밀번호 변경 화면을 불러오지 못했습니다.');window.BW30Accounts.openChange(true);return;}await showPage('home');bw29WarmOwnerPayrollAssets();}
+    async function startApp(){if(!state.user){try{state.user=await call('staffCurrentUser',state.token);}catch(e){await logout();return;}}$('loginScreen').hidden=true;$('workspace').hidden=false;$('staffName').textContent=state.user.name||'선생님';$('staffEmail').textContent=state.user.email||'';$('roleBadge').textContent=ROLE_NAMES[state.user.role]||'직원';renderNav();window.BW31UX?.decorateNav();window.BW33Enterprise?.sync();if(state.user.mustChange){if(!window.BW30Accounts)throw Error('비밀번호 변경 화면을 불러오지 못했습니다.');window.BW30Accounts.openChange(true);return;}await showPage(bw24Can(bw50FromURL())?bw50FromURL():'home',true);bw29WarmOwnerPayrollAssets();}
+    window.addEventListener('popstate',()=>{
+      if(!state.user)return;
+      const page=bw50FromURL();
+      if(page!==state.page)showPage(bw24Can(page)?page:'home',true);
+    });
     function bw29WarmOwnerPayrollAssets(){
       // Non-sensitive assets only, off the login critical path. No payroll data is fetched.
       const token=state.token;
@@ -152,7 +188,7 @@
     function table(columns,rows){if(!rows.length)return `<div class="empty">표시할 기록이 없습니다.</div>`;return `<div class="table-scroll"><table class="data-table"><thead><tr>${columns.map(x=>`<th scope="col">${x}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div>`;}
     function tag(s){return `<span class="tag ${/실패|중지|결석/.test(s)?'off':/대기|신규|확인전/.test(s)?'waiting':''}">${h(s||'미확인')}</span>`;}
     function loading(){return `<div class="panel bw24-loading"><span class="bw24-pulse" aria-hidden="true"></span><p class="muted" role="status">자료를 불러오고 있습니다.</p></div>`;}
-    async function showPage(page){if(!state.user||!bw24Can(page))return;if(state.page==='payroll'&&window.BWPayroll?.beforeLeave()===false)return;window.BWPayroll?.dispose();state.page=page;const seq=++state.navigationSeq;bw25Accel?.setNavigation(seq);renderNav();window.BW31UX?.decorateNav();window.BW33Enterprise?.sync();const m=MENU.find(x=>x[0]===page);$('topTitle').textContent=m[2];$('pageBody').innerHTML=loading();try{document.scrollingElement?.scrollTo({top:0,behavior:'auto'});if(page==='home')await renderHome();if(page==='inquiries')await renderInquiries();if(page==='registrations')await renderRegistrations();if(page==='classes')await renderClasses();if(page==='courseSettings')await renderCourseSettings();if(page==='roster')await renderRoster();if(page==='students')await renderStudents37();if(page==='experiences')await renderExperiences37();if(page==='attendance')await renderAttendance();if(page==='operations')await renderOperations();if(page==='compliance')await renderCompliance32();if(page==='tuition')await renderTuition();if(page==='safety')await renderSafety();if(page==='handoff')await renderHandoff();if(page==='staffCompliance')await renderStaffCompliance();if(page==='users')await renderUsers();if(page==='security')await renderSecurity();if(page==='documents')await renderDocuments();if(page==='capacity')await renderCapacity();if(page==='waitlist')await renderWaitlist();if(page==='makeups')await renderMakeups();if(page==='themes')await renderThemes();if(page==='payroll')await renderPayroll();if(page==='finance')await renderFinance49();if(seq===state.navigationSeq){bw24ApplyReadonly(page);window.BW31UX?.onPageRendered(page);window.BW33Enterprise?.pageReady(page);}}catch(e){if(seq!==state.navigationSeq||e.message==='BW24_STALE_VIEW')return;if(/로그인이 필요|접속 시간이 만료|사용 권한이 중지/.test(e.message)){await logout();toast('로그인 상태를 다시 확인해 주세요.',true);}else {
+    async function showPage(page,fromHistory=false){if(!state.user||!bw24Can(page))return;if(state.page==='payroll'&&window.BWPayroll?.beforeLeave()===false)return;window.BWPayroll?.dispose();state.page=page;bw50SyncURL(page,fromHistory);const seq=++state.navigationSeq;bw25Accel?.setNavigation(seq);renderNav();window.BW31UX?.decorateNav();window.BW33Enterprise?.sync();const m=MENU.find(x=>x[0]===page);$('topTitle').textContent=m[2];$('pageBody').innerHTML=loading();try{document.scrollingElement?.scrollTo({top:0,behavior:'auto'});if(page==='home')await renderHome();if(page==='inquiries')await renderInquiries();if(page==='registrations')await renderRegistrations();if(page==='classes')await renderClasses();if(page==='courseSettings')await renderCourseSettings();if(page==='roster')await renderRoster();if(page==='students')await renderStudents37();if(page==='experiences')await renderExperiences37();if(page==='attendance')await renderAttendance();if(page==='operations')await renderOperations();if(page==='compliance')await renderCompliance32();if(page==='tuition')await renderTuition();if(page==='safety')await renderSafety();if(page==='handoff')await renderHandoff();if(page==='staffCompliance')await renderStaffCompliance();if(page==='users')await renderUsers();if(page==='security')await renderSecurity();if(page==='documents')await renderDocuments();if(page==='capacity')await renderCapacity();if(page==='waitlist')await renderWaitlist();if(page==='makeups')await renderMakeups();if(page==='themes')await renderThemes();if(page==='payroll')await renderPayroll();if(page==='finance')await renderFinance49();if(seq===state.navigationSeq){bw24ApplyReadonly(page);window.BW31UX?.onPageRendered(page);window.BW33Enterprise?.pageReady(page);}}catch(e){if(seq!==state.navigationSeq||e.message==='BW24_STALE_VIEW')return;if(/로그인이 필요|접속 시간이 만료|사용 권한이 중지/.test(e.message)){await logout();toast('로그인 상태를 다시 확인해 주세요.',true);}else {
       const needsServer=['students','experiences','compliance'].includes(page) &&
         /허용되지 않은 업무 요청|지원하지 않는 업무 요청|함수를 찾을 수|Script function not found|is not a function|unknown method/i.test(String(e?.message||''));
       if(needsServer){

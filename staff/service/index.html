@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="ko"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="referrer" content="strict-origin">
+<title>이용료·문서 | 브릿지 원더 직원 운영</title>
+<meta http-equiv="refresh" content="0;url=../?area=service&amp;page=tuition">
+<link rel="canonical" href="https://bridgewonder.bridgeacademy.co.kr/staff/">
+<style>body{background:#fbf8f2;color:#40543a;font:14px/1.8 system-ui,-apple-system,'Noto Sans KR',sans-serif;display:grid;place-items:center;min-height:90vh;margin:0}main{text-align:center;padding:24px}a{color:#40543a}</style>
+<script>
+(function(){
+  const allowed=["consult","class","sensory","service","admin"];
+  const own="service";
+  const fallback="tuition";
+  const params=new URLSearchParams(window.location.search);
+  const requested=params.get('page');
+  const known={"consult":["inquiries","waitlist","students","registrations"],"class":["classes","capacity","roster","attendance","makeups","handoff"],"sensory":["experiences","themes","safety"],"service":["tuition","documents"],"admin":["operations","courseSettings","compliance","staffCompliance","users","payroll","finance","security"]};
+  const page=known[own].includes(requested)?requested:fallback;
+  const dest=new URL('../',window.location.href);
+  dest.searchParams.set('area',own);
+  dest.searchParams.set('page',page);
+  window.location.replace(dest.href);
+})();
+</script></head><body><main><strong>이용료·문서</strong><p>직원 운영 화면으로 이동하고 있습니다.</p><a href="../?area=service&amp;page=tuition">화면 바로 열기</a></main></body></html>
