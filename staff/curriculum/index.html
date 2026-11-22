@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ko"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive,nosnippet"><meta name="referrer" content="strict-origin"><meta name="theme-color" content="#fbf8f2">
+<title>회차별 수업안 | Bridge Wonder 직원 관리</title>
+<link rel="icon" href="../../assets/img/favicon.png"><link rel="preconnect" href="https://script.google.com" crossorigin>
+<link rel="stylesheet" href="../../assets/css/staff-content-v51.css?v=51.0.0">
+<script src="../../assets/js/staff-google-bridge.js?v=41.0.0" defer></script>
+<script src="../../assets/js/staff-native-kdf.js?v=41.0.0" defer></script>
+<script src="../../assets/js/staff-content-v51.js?v=51.0.0" defer></script>
+</head><body data-section="lessons">
+<header class="top"><div class="top-inner"><a href="../" class="brand"><img src="../../assets/img/bridge-wonder-logo.png" width="65" height="45" alt="" decoding="async"><span>BRIDGE WONDER<small>STAFF OPERATIONS</small></span></a><div class="top-actions"><span class="user" id="userLabel"></span><a href="../">직원 홈</a><button id="logout" class="text-btn" type="button">로그아웃</button></div></div></header>
+<section id="auth" class="auth-card"><div class="eyebrow">STAFF ACCESS</div><h1>직원 로그인</h1><p class="muted">기존 브릿지 원더 직원 계정을 이용합니다. 운영 기록은 직원 전용으로 관리됩니다.</p><form id="authForm" class="auth-form"><label>업무용 이메일<input id="authEmail" type="email" required autocomplete="username" maxlength="180" placeholder="name@example.com"></label><label>비밀번호<input id="authPassword" type="password" required autocomplete="current-password" minlength="12" maxlength="100"></label><button class="btn btn-primary" id="authSubmit" type="submit">로그인</button></form><p id="authFeedback" class="auth-message" role="status" aria-live="polite"></p><a href="../">비밀번호 설정·재설정은 기존 직원 로그인에서 진행</a></section>
+<main id="app" class="page" hidden>
+<nav id="sectionNav" class="subnav" aria-label="관리 업무별 화면"></nav>
+<div class="page-head"><div><div class="eyebrow">OPERATIONS / CONTENT</div><h1 id="pageTitle">운영 자료 관리</h1><p id="pageNote"></p></div><button id="newBtn" class="btn btn-primary" type="button">+ 새 항목</button></div>
+<div class="workspace"><section class="panel" aria-label="저장된 운영 자료"><div class="section-bar"><h2>등록된 항목 <span class="muted" id="count"></span></h2><button id="refreshBtn" type="button" class="btn btn-soft">새로고침</button></div><div class="search-row"><input type="search" id="search" placeholder="항목명·내용 검색" aria-label="항목 검색" maxlength="100"><select id="filter" aria-label="상태 필터"><option>전체</option><option>사용</option><option>초안</option><option>보관</option></select></div><div class="hint" id="updated" aria-live="polite">동기화 중…</div><div id="items" class="entry-list" aria-live="polite"><p class="empty">데이터를 불러오고 있습니다.</p></div></section>
+<section id="editor" class="panel" aria-label="항목 입력 및 수정"><h2 id="editorTitle">새 항목 등록</h2><form id="entryForm"><input type="hidden" id="entryId"><input type="hidden" id="entryEtag"><div class="form-grid">
+<div class="field"><label id="categoryLabel" for="category">분류</label><input id="category" name="category" maxlength="90" placeholder="예: 2027-01 / 7~12개월"></div>
+<div class="field"><label id="titleLabel" for="title">항목명</label><input id="title" name="title" required maxlength="110" placeholder="항목명을 입력해 주세요"></div>
+<div class="field full"><label id="bodyLabel" for="content">상세 내용</label><textarea id="content" name="content" maxlength="6000" rows="5" placeholder="운영 내용을 입력해 주세요"></textarea></div>
+<div class="field" data-sections="materials,costs"><label for="amount">금액 (원)</label><input id="amount" name="amount" type="number" min="0" max="1000000000" step="1" placeholder="금액"></div>
+<div class="field" data-sections="materials,costs,settings"><label for="unit">단위</label><input id="unit" name="unit" maxlength="50" placeholder="예: 회 / 개 / 월"></div>
+<div class="field" data-sections="lessons,materials,costs,copy,settings,templates"><label for="effectiveDate">적용일 또는 적용월</label><input id="effectiveDate" name="effectiveDate" type="text" maxlength="10" placeholder="2027-01 또는 2027-01-01"></div>
+<div class="field" data-sections="lessons"><label for="ageGroup">대상 월령</label><select id="ageGroup" name="ageGroup"><option value="">선택</option><option>전체(7~48개월)</option><option>7~12개월</option><option>13~18개월</option><option>19~24개월</option><option>25~35개월</option><option>36~48개월</option></select></div>
+<div class="field" data-sections="lessons"><label for="durationMinutes">수업 시간 (분)</label><input id="durationMinutes" name="durationMinutes" inputmode="numeric" placeholder="50"></div>
+<div class="field full" data-sections="lessons,materials"><label for="preparation">준비물 / 준비 방법</label><textarea id="preparation" name="preparation" rows="2" maxlength="900"></textarea></div>
+<div class="field full" data-sections="lessons,materials"><label for="safety">안전 점검 및 주의사항</label><textarea id="safety" name="safety" rows="2" maxlength="900" placeholder="재료별 일반적인 안전 점검 내용을 입력합니다. 아동의 건강정보는 금지"></textarea></div>
+<div class="field" data-sections="materials"><label for="quantity">예상 수량</label><input id="quantity" name="quantity" maxlength="120" placeholder="예: 4세트"></div>
+<div class="field" data-sections="costs"><label for="taxType">세금 구분 (내부 검토)</label><select id="taxType" name="taxType"><option value="">미정</option><option>과세</option><option>면세</option><option>혼합 / 검토 필요</option></select></div>
+<div class="field"><label for="status">상태</label><select id="status" name="status"><option>초안</option><option>사용</option><option>보관</option></select></div></div>
+<div class="form-actions"><button id="saveBtn" class="btn btn-primary" type="submit">스프레드시트에 저장</button><button id="archiveBtn" class="btn btn-warn" type="button" hidden>보관 처리</button></div>
+<p class="action-help">변경 내용은 전용 Google 스프레드시트 탭에 기록됩니다. 다른 직원이 수정한 항목은 충돌을 확인하고 덮어쓰지 않습니다.</p></form></section></div>
+<p id="status" class="feedback" role="status" aria-live="polite">준비 중…</p>
+</main></body></html>
