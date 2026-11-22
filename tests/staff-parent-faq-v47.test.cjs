@@ -79,7 +79,7 @@ function createHTML(){
     }
     assert.match(data[9].note,/약관규제법 제7조/);
     assert.match(data[15].note,/개인 사정·단순 변심/);
-    assert.match(data[2].note,/기존 공개 홈페이지/);
+    assert.match(data[2].note,/체험 가격 변경 전/);
   });
   test('FAQ search and category / review filters update real results',()=>{
     const search=d.getElementById('bw47Search'),category=d.getElementById('bw47GroupFilter'),status=d.getElementById('bw47StatusFilter');

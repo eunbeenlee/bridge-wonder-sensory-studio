@@ -247,8 +247,8 @@ check('published prices distinguish regular tuition from trial promotion without
   assert.match(app,/기존 수강계약 시스템에 연결되어 있습니다/);
   assert.match(app,/id="bw38SessionCount"/);
   assert.match(app,/id="bw38SessionFee"/);
-  assert.match(app,/n\*30000/);
-  assert.match(app,/계약 금액은 자동으로 바뀌지 않으니/);
+  assert.match(app,/bw54CourseTotal/);
+  assert.match(app,/기존 계약 금액이나 등록 서류를 자동 변경하지 않습니다/);
   assert.match(visit,/정규 수업 주 1회 × 10주 320,000원/);
   assert.doesNotMatch(academic,/25000|30000|25,000|30,000/);
 });
