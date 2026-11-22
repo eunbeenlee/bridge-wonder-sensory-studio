@@ -27,3 +27,17 @@
 .pay-rate-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:18px 0}.pay-rate{background:#f6f8f2;border-radius:10px;padding:17px}.pay-rate span{display:block;font-size:12px;color:#6c7d63;margin-bottom:10px}.pay-rate b{font-size:20px}.pay-sources{font-size:12px;line-height:1.9;display:grid;gap:7px}.pay-preview{scroll-margin-top:25px}.pay-inline{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.pay-inline select{flex:1;min-width:180px}.pay-loading{padding:40px 20px;text-align:center;color:#6b7c62}
 @media(max-width:900px){.pay-grid,.pay-item .pay-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.pay-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.pay-rate-list{grid-template-columns:repeat(2,minmax(0,1fr))}.pay-header{flex-direction:column}.pay-period{width:100%}}
 @media(max-width:500px){.pay-header h2{font-size:23px}.pay-card{padding:17px;border-radius:12px}.pay-grid,.pay-grid.two,.pay-item .pay-grid{grid-template-columns:minmax(0,1fr)}.pay-tabs{gap:3px}.pay-tab{padding:10px 9px;font-size:12px!important}.pay-metric{padding:13px 11px}.pay-metric strong{font-size:18px}.pay-rate-list{grid-template-columns:repeat(2,minmax(0,1fr))}.pay-rate{padding:13px}.pay-rate b{font-size:18px}.pay-actions>.btn{flex:1}.pay-period label{flex:1}.payroll{overflow-wrap:anywhere}.pay-item{padding:12px}}
+
+/* V54: insurance-rate cards and 4-insurance amounts must never crop on mobile */
+#workspace .payroll,#workspace .payroll .pay-card,#workspace .payroll .pay-rate-list,#workspace .payroll .pay-rate,
+#workspace .payroll .pay-metric,#workspace .payroll .pay-preview{min-width:0;max-width:100%}
+#workspace .payroll .pay-rate b,#workspace .payroll .pay-metric strong{
+ display:block;max-width:100%;white-space:normal;overflow-wrap:anywhere;word-break:break-word;line-height:1.35;
+ font-variant-numeric:tabular-nums
+}
+#workspace .payroll .pay-rate-list{grid-template-columns:repeat(3,minmax(0,1fr))}
+#workspace .payroll .pay-rate{padding:14px}
+#workspace .payroll .pay-table{overflow-x:auto;max-width:100%;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
+#workspace .payroll .pay-table td,#workspace .payroll .pay-table th{vertical-align:middle}
+@media(max-width:980px){#workspace .payroll .pay-rate-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:490px){#workspace .payroll .pay-rate-list{grid-template-columns:minmax(0,1fr)}#workspace .payroll .pay-rate b{font-size:19px}}

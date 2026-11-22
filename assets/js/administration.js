@@ -226,7 +226,7 @@
       $('pageBody').innerHTML='<section class="bw52-home-hero" aria-label="오늘의 업무"><div class="bw52-home-copy"><span class="bw52-home-kicker">BRIDGE WONDER / TEAM WORKSPACE</span><h2>오늘 업무, 가볍게 시작해요.</h2><p>수업 일정부터 상담 기록까지, 필요한 내용을 바로 확인하세요.</p></div><div class="bw53-home-pills" aria-hidden="true"><span><b>01</b>상담</span><span><b>02</b>수업</span><span><b>03</b>운영</span></div></section>'+head('오늘의 운영 현황','필요한 업무부터 편하게 시작하세요.')+
         `<div class="metric-grid">${metrics.map(([key,title])=>`<article class="metric"><div class="metric-name">${h(title)}</div><div class="metric-value" id="bw271Metric_${key}" aria-live="polite">—</div></article>`).join('')}</div>`+
         panel('현재 수업 운영 기준','부모참여형 오감놀이 · 한 타임 기준',
-          '<div class="row" style="gap:8px;flex-wrap:wrap"><span class="pill">생후 7~48개월</span><span class="pill">아이 4명</span><span class="pill">보호자 4명 동반</span><span class="pill">50분</span></div><p class="footnote">보호자는 수업 내내 아이와 함께 참여합니다. 아이만 맡기는 돌봄은 운영하지 않습니다. 다른 공간에서 동시에 활동하는 인원도 확인하세요.</p>'+
+          '<div class="row" style="gap:8px;flex-wrap:wrap"><span class="pill">생후 7~48개월</span><span class="pill">아이 최대 4명</span><span class="pill">아이별 보호자 동반</span><span class="pill">50분</span><span class="pill">정규 10주 320,000원</span></div><p class="footnote">보호자는 수업 내내 아이와 함께 참여합니다. 아이만 맡기는 돌봄은 운영하지 않습니다. 다른 공간에서 동시에 활동하는 인원도 확인하세요.</p>'+
           (bw24Can('themes')&&['owner','director','teacher'].includes(state.user?.role)?'<div class="row spaced"><button type="button" class="btn btn-outline btn-small" data-goto="themes">수업안 파일 관리</button></div>':'') )+
         panel('자주 쓰는 메뉴','필요한 업무를 바로 열어보세요. 권한이 있는 메뉴만 보여요.',
           `<div class="bw39-workstreams">${streams.map(group=>`
@@ -279,22 +279,24 @@
       const v=(d.rows||[]).find(x=>x.code==='BW-SENSORY')||{code:'BW-SENSORY',name:'Bridge Wonder Sensory Play Studio',fee:'',extras:'0',refund:'',business:'',license:'',retention:'',location:'',makeup:'',accompaniment:'',materials:'',safety:'',status:'중지'};
       const labels=[['name','과정 이름','text'],['fee','기존 계약용 수업비 (원)','number'],['extras','기존 계약용 기타 비용 (원)','number'],['business','법정 상호','text'],['license','기존 계약용 학원 등록번호 (해당 시)','text'],['location','수업 장소','text'],['retention','개인정보 보유 기간','text'],['refund','기존 계약용 환불 기준','textarea'],['makeup','결석·보강 기준','textarea'],['accompaniment','보호자 동반 기준','textarea'],['materials','재료·준비물 안내','textarea'],['safety','수업 안전 안내','textarea']];
       const fields=labels.map(([key,label,type])=>`<div class="form-item"><label for="bw23Course_${key}">${label}</label>${type==='textarea'?`<textarea id="bw23Course_${key}" rows="3">${h(v[key]||'')}</textarea>`:`<input id="bw23Course_${key}" type="${type}" value="${h(v[key]||'')}" ${type==='number'?'min="0" max="100000000" step="1"':''}>`}</div>`).join('');
-      $('pageBody').innerHTML=head('스튜디오 이용 조건','정규 50분 30,000원, 체험 50분 25,000원 기준입니다. 실제 결제·세금 적용 조건을 확인하세요.')+panel('Bridge Wonder · Sensory Play Studio','이 화면은 기존 수강계약 시스템에 연결되어 있습니다. 학원 등록번호가 필요한 기존 양식이므로 신규 스튜디오 이용계약에 적용하기 전에 확인해 주세요. 금액을 바꾸면 기존 계약 기능에도 영향을 줄 수 있습니다.',`<form id="bw23CourseForm"><div class="cols">${fields}</div><div class="form-item spaced"><label for="bw23Course_status">운영 상태</label><select id="bw23Course_status"><option value="중지" ${v.status==='중지'?'selected':''}>중지</option><option value="활성" ${v.status==='활성'?'selected':''}>활성</option></select></div><div class="row spaced"><button type="submit" class="btn btn-primary">기존 수강조건 저장</button><span id="bw23CourseStatus" class="inline-status"></span></div></form>
+      $('pageBody').innerHTML=head('스튜디오 이용 조건','정규 10주 320,000원(주 1회·회당 50분) 기준입니다. 체험료와 기존 계약 정보는 별도로 관리합니다.')+panel('Bridge Wonder · Sensory Play Studio','이 화면은 기존 수강계약 시스템에 연결되어 있습니다. 학원 등록번호가 필요한 기존 양식이므로 신규 스튜디오 이용계약에 적용하기 전에 확인해 주세요. 금액을 바꾸면 기존 계약 기능에도 영향을 줄 수 있습니다.',`<form id="bw23CourseForm"><div class="cols">${fields}</div><div class="form-item spaced"><label for="bw23Course_status">운영 상태</label><select id="bw23Course_status"><option value="중지" ${v.status==='중지'?'selected':''}>중지</option><option value="활성" ${v.status==='활성'?'selected':''}>활성</option></select></div><div class="row spaced"><button type="submit" class="btn btn-primary">기존 수강조건 저장</button><span id="bw23CourseStatus" class="inline-status"></span></div></form>
       <div class="form-item spaced" role="group" aria-label="정규 수업 회차별 교습비 계산">
-        <strong>회차별 이용료 계산 (기존 계약용)</strong>
-        <p class="help">정규 수업은 50분 1회 30,000원이며, 체험은 프로모션으로 50분 1회 25,000원입니다.</p>
-        <label for="bw38SessionCount">상담 후 확정할 정규 수업 회차</label>
-        <input type="number" id="bw38SessionCount" min="1" max="60" step="1" placeholder="예: 6" inputmode="numeric" style="max-width:190px">
-        <output id="bw38SessionFee" for="bw38SessionCount" aria-live="polite">회차를 입력하면 참고 금액이 나옵니다.</output>
-        <p class="help">상담할 때 참고하는 예상 금액입니다. 계약 금액은 자동으로 바뀌지 않으니 실제 수업 횟수와 기간, 할인 조건을 확인해 따로 저장해 주세요.</p>
+        <strong>정규 과정 요금 계산</strong>
+        <p class="help">정규 과정은 주 1회 × 10주 총 320,000원입니다. 수업 횟수와 총액을 바꾸어 참고 견적을 계산할 수 있습니다.</p>
+        <label for="bw38SessionCount">정규 과정 수업 횟수 (회)</label>
+        <input type="number" id="bw38SessionCount" min="1" max="60" step="1" value="10" inputmode="numeric" style="max-width:190px"><label for="bw54CourseTotal">정규 과정 총액 (원)</label><input type="number" id="bw54CourseTotal" min="0" max="100000000" step="1" value="320000" inputmode="numeric" style="max-width:230px">
+        <output id="bw38SessionFee" for="bw38SessionCount bw54CourseTotal" aria-live="polite">10회 320,000원 · 회당 환산 32,000원</output>
+        <p class="help">상담용 계산값이며 기존 계약 금액이나 등록 서류를 자동 변경하지 않습니다. 중간 등록·할인·환불 조건은 별도로 확인하세요.</p>
       </div>`);
-      const feeCount=$('bw38SessionCount'),feeOutput=$('bw38SessionFee');
-      if(feeCount&&feeOutput)feeCount.addEventListener('input',()=>{
-        const n=Number(feeCount.value);
-        feeOutput.textContent=feeCount.value&&Number.isSafeInteger(n)&&n>=1&&n<=60
-          ?'정규 수업 '+n+'회 × 30,000원 = '+(n*30000).toLocaleString('ko-KR')+'원 (참고)'
-          :'정규 수업 회차를 1~60회에서 입력해 주세요.';
-      });
+      const feeCount=$('bw38SessionCount'),feeOutput=$('bw38SessionFee'),feeTotal=$('bw54CourseTotal');
+      const updateQuote=()=>{
+        const n=Number(feeCount.value),sum=Number(feeTotal.value);
+        feeOutput.textContent=feeCount.value&&feeTotal.value&&Number.isSafeInteger(n)&&n>=1&&n<=60&&Number.isSafeInteger(sum)&&sum>=0&&sum<=100000000
+          ?'정규 '+n+'회 과정 '+sum.toLocaleString('ko-KR')+'원 · 회당 환산 '+(sum/n).toLocaleString('ko-KR',{maximumFractionDigits:2})+'원 (참고)'
+          :'수업 횟수(1~60회)와 총액을 확인해 주세요.';
+      };
+      feeCount?.addEventListener('input',updateQuote);
+      feeTotal?.addEventListener('input',updateQuote);
       const f=$('bw23CourseForm');
       f.onsubmit=async e=>{e.preventDefault();setBusy(f,true);
         const p={code:'BW-SENSORY'};
@@ -335,7 +337,7 @@
           <div class="bw241-step"><b>2</b>수업 상세 정보</div>
           <div class="bw241-grid bw241-grid--three">
             <div class="form-item"><label for="classDate">수업 시작일</label><input id="classDate" type="date" required><small class="bw241-help">첫 수업 날짜를 선택하세요.</small></div>
-            <div class="form-item"><label for="classPeriod">운영 기간</label><input id="classPeriod" type="text" placeholder="예: 1개월 / 2027.01.02~01.31" maxlength="160" required>${principal?`<div class="bw241-chip-row">${(window.BWStaffDefaults?.classEditor?.durationChoices||['1개월','3개월','6개월']).map(x=>`<button type="button" class="bw241-chip" data-bw241-period="${x}">${x}</button>`).join('')}</div>`:''}</div>
+            <div class="form-item"><label for="classPeriod">운영 기간</label><input id="classPeriod" type="text" placeholder="예: 10주 / 2027.01.04~03.08" maxlength="160" required>${principal?`<div class="bw241-chip-row">${(window.BWStaffDefaults?.classEditor?.durationChoices||['1개월','3개월','6개월']).map(x=>`<button type="button" class="bw241-chip" data-bw241-period="${x}">${x}</button>`).join('')}</div>`:''}</div>
             <div class="form-item"><label for="classId">반 코드</label><div class="row" style="gap:6px;flex-wrap:nowrap"><input id="classId" type="text" placeholder="요일·시간 입력 시 자동 제안" maxlength="32" autocomplete="off" required>${principal?'<button type="button" id="bw241GenerateCode" class="btn btn-outline btn-small" style="flex:none">자동 제안</button>':''}</div><small class="bw241-help">새 반의 코드는 자동 제안됩니다. 등록한 반의 코드는 변경할 수 없습니다.</small></div>
           </div>
           <div class="bw241-grid bw241-grid--three" style="margin-top:15px">
@@ -356,7 +358,7 @@
         <div class="bw241-table-top"><input id="bw241ClassSearch" type="search" aria-label="수업반 검색" placeholder="요일 · 시간 · 반 코드 검색"><small class="muted">검색 결과 <span id="bw241ResultCount">${items.length}</span>건</small></div>
         <div id="bw241Rows"></div>`);
       $('pageBody').innerHTML=head('수업 시간표','요일과 시간을 정하고 반별 운영 상황을 확인하세요.')+
-        '<div class="subtle" role="note">수업은 생후 7~48개월 아이 4명과 보호자 4명이 함께 참여하는 50분 활동을 기준으로 준비합니다. 같은 시간에 반을 겹쳐 운영하지 않도록 확인해 주세요. 실제 정원은 ‘정원 현황’에서 설정합니다.</div>'+form+list;
+        '<div class="subtle" role="note">생후 7~48개월 아이 최대 4명이 보호자와 함께하는 50분 수업입니다. 4명이 모두 등록되지 않아도 운영할 수 있으며, 반별 정원(1~4명)은 ‘정원 현황’에서 수정하세요.</div>'+form+list;
       const listEl=$('bw241Rows');
       const renderRows=()=>{
         const q=$('bw241ClassSearch').value.toLocaleLowerCase('ko').trim();
@@ -705,10 +707,10 @@ async function renderCapacity(){
  const d=await call('staff20Capacity',state.token);if(state.page!=='capacity')return;
  const edit=bw20CanEdit();
  const overLimit=d.rows.filter(x=>Number(x.capacity)>BW44_POLICY.maxChildren||Number(x.enrolled)>BW44_POLICY.maxChildren);
- const cards=d.rows.map(x=>`<article class="bw20-cap-card"><div class="bw20-cap-top"><div><b>${h(x.id)}</b><p>${h(x.day)} · ${h(x.time)}</p></div>${tag(x.status)}</div><dl class="bw20-cap-stats"><div><dt>확정 등록</dt><dd>${bw20Fmt(x.enrolled)}명</dd></div><div><dt>남은 자리</dt><dd>${x.free===null?'—':bw20Fmt(x.free)+'명'}</dd></div><div><dt>대기</dt><dd>${bw20Fmt(x.waiting)}건</dd></div></dl>${edit?`<div class="bw20-cap-edit"><label for="bw20cap-${h(x.id)}">기준 정원</label><div class="row"><input id="bw20cap-${h(x.id)}" type="number" min="1" max="4" value="${x.capacity||''}" placeholder="아이 1~4명"  aria-label="${h(x.id)} 기준 정원" data-cap-value="${h(x.id)}"><button type="button" class="btn btn-outline btn-small" data-cap-save="${h(x.id)}">저장</button></div></div>`:`<p class="footnote">등록된 정원 ${x.capacity?bw20Fmt(x.capacity)+'명':'미설정'}</p>`}</article>`).join('');
- $('pageBody').innerHTML=head('정원 현황','한 타임 아이 정원은 최대 4명입니다. 보호자는 아이마다 1명씩 함께 참여합니다.')+
+ const cards=d.rows.map(x=>`<article class="bw20-cap-card"><div class="bw20-cap-top"><div><b>${h(x.id)}</b><p>${h(x.day)} · ${h(x.time)}</p></div>${tag(x.status)}</div><dl class="bw20-cap-stats"><div><dt>확정 등록</dt><dd>${bw20Fmt(x.enrolled)}명</dd></div><div><dt>남은 자리</dt><dd>${x.free===null?'—':bw20Fmt(x.free)+'명'}</dd></div><div><dt>대기</dt><dd>${bw20Fmt(x.waiting)}건</dd></div></dl>${edit?`<div class="bw20-cap-edit"><label for="bw20cap-${h(x.id)}">모집 정원 (1~4명)</label><div class="row"><input id="bw20cap-${h(x.id)}" type="number" min="1" max="4" value="${x.capacity||''}" placeholder="아이 1~4명"  aria-label="${h(x.id)} 기준 정원" data-cap-value="${h(x.id)}"><button type="button" class="btn btn-outline btn-small" data-cap-save="${h(x.id)}">저장</button></div></div>`:`<p class="footnote">등록된 정원 ${x.capacity?bw20Fmt(x.capacity)+'명':'미설정'}</p>`}</article>`).join('');
+ $('pageBody').innerHTML=head('정원 관리','한 타임 최대 4명 · 실제 등록 상황에 맞춰 반별 정원을 1~4명으로 조정하세요.')+
  (overLimit.length?'<div class="warning" role="alert">기준을 초과한 기존 반이 있습니다: '+overLimit.map(x=>h(x.id)).join(', ')+' · 기존 등록 인원과 정원을 확인해 주세요. 이 안내는 데이터를 자동으로 변경하지 않습니다.</div>':'')+
- panel('반별 운영 인원','한 반의 아이 정원은 1~4명으로 설정하세요. 보호자와 교사 인원은 정원 숫자에 포함하지 않습니다.',`<div class="bw20-cap-grid">${cards||'<div class="empty">등록된 수업반이 없습니다.</div>'}</div>`)+
+ panel('반별 등록·모집 현황','정원 4명은 상한이며 1~3명으로도 운영할 수 있어요. 실제 등록 인원과 남은 자리를 구분해 표시합니다. 보호자와 교사 인원은 정원에서 제외합니다.',`<div class="bw20-cap-grid">${cards||'<div class="empty">등록된 수업반이 없습니다.</div>'}</div>`)+
  (d.legacyNotice?`<p class="footnote">이전 링크로 접수한 ${bw20Fmt(d.legacyNotice)}건은 정원 집계에서 빠져 있을 수 있습니다. 반 배정을 확인해 주세요.</p>`:'')+
  `<p class="footnote">4명은 스튜디오에서 정한 운영 기준이지 법적 인허가 기준이 아닙니다. 기존 신청·다른 운영 화면의 정원 초과 여부는 별도로 확인해 주세요.</p>`;
  if(edit)$('pageBody').querySelectorAll('[data-cap-save]').forEach(b=>b.onclick=async()=>{
@@ -719,7 +721,7 @@ async function renderCapacity(){
    const current=d.rows.find(x=>x.id===classId);
    if(current&&Number(current.enrolled)>capacity){toast('현재 등록된 아이보다 정원을 적게 설정할 수 없습니다. 배정 현황부터 확인해 주세요.',true);return;}
    b.disabled=true;
-   try{await call('staff20SetCapacity',state.token,{classId,capacity});toast('아이 정원을 저장했습니다.');await renderCapacity();}
+   try{await call('staff20SetCapacity',state.token,{classId,capacity});toast('반별 정원을 '+capacity+'명으로 변경했습니다.');await renderCapacity();}
    catch(e){toast(e.message,true);}finally{b.disabled=false;}
  });
 }
@@ -890,7 +892,7 @@ function bw26LoadPayroll(){
     return bw26PayrollLoads[id];
   }
   bw26PayrollAssets=Promise.all([
-    asset('bw26PayrollCSS','link',base+'css/administration-payroll.css?v=39.0.0','급여 화면 스타일'),
+    asset('bw26PayrollCSS','link',base+'css/administration-payroll.css?v=54.0.0','급여 화면 스타일'),
     asset('bw26PayrollJS','script',base+'js/administration-payroll.js?v=39.0.0','급여 화면')
   ]).catch(e=>{bw26PayrollAssets=null;throw e;});
   return bw26PayrollAssets;
@@ -925,9 +927,9 @@ async function renderPayroll(){
      else{element.src=url;element.async=false;document.body.appendChild(element);}
    });
    bw49Assets=Promise.all([
-     asset('link','bw49Style',base+'css/staff-finance-v49.css?v=49.0.0'),
-     asset('script','bw49Model',base+'js/staff-finance-model-v49.js?v=49.0.0')
-   ]).then(()=>asset('script','bw49Interface',base+'js/staff-finance-v49.js?v=49.0.0'))
+     asset('link','bw49Style',base+'css/staff-finance-v49.css?v=54.0.0'),
+     asset('script','bw49Model',base+'js/staff-finance-model-v49.js?v=54.0.0')
+   ]).then(()=>asset('script','bw49Interface',base+'js/staff-finance-v49.js?v=54.0.0'))
      .then(()=>{if(!window.BW49FinanceModel||!window.BW49FinanceUI)throw Error('재무 관리 화면 초기화에 실패했습니다.');})
      .catch(err=>{bw49Assets=null;throw err;});
    return bw49Assets;

@@ -29,17 +29,19 @@ test('non-exempt general taxable 10% and VAT-inclusive posted prices are the def
   assert.equal(M.DEFAULTS.management,300000);
   assert.equal(M.DEFAULTS.deposit,10000000);
   assert.equal(M.DEFAULTS.capacity,4);
+  assert.equal(M.DEFAULTS.regularFee,32000);
+  assert.equal(M.DEFAULTS.termWeeks,10);
   const d=M.compute(M.DEFAULTS);
   nearly(d.monthlySessions,104,.001);
-  nearly(d.salesGross,3120000);
-  nearly(d.outputVat,3120000/11);
-  nearly(d.revenueBook,3120000/1.1);
+  nearly(d.salesGross,3328000);
+  nearly(d.outputVat,3328000/11);
+  nearly(d.revenueBook,3328000/1.1);
   assert.ok(d.vatEstimate>0);
   assert.equal(d.vatUnresolved,false);
   assert.ok(d.operatingProfit<d.revenueBook);
   assert.ok(d.operatingProfit>0);
   assert.ok(d.breakEvenFill>0&&d.breakEvenFill<=100);
-  assert.equal(d.termCashExample,8*4*.75*30000*10);
+  assert.equal(d.termCashExample,8*4*.75*32000*10);
 });
 test('prices excluding VAT add 10% to receipts but not to pre-VAT revenue',()=>{
   const inc=M.compute({...M.DEFAULTS,priceVatIncluded:'yes'});

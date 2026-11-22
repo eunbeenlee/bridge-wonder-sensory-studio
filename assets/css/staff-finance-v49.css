@@ -63,3 +63,35 @@
 #workspace .bw49-delete{background:transparent;border:1px solid #e3d3ca;border-radius:6px;color:#a6563a;cursor:pointer;font-size:10px;padding:5px 8px}
 @media(max-width:960px){#workspace .bw49-cards{grid-template-columns:repeat(2,minmax(0,1fr))}#workspace .bw49-special{grid-template-columns:1fr}}
 @media(max-width:620px){#workspace .bw49{gap:12px}#workspace .bw49-2col,#workspace .bw49-group .bw49-fields,#workspace .bw49-actual-form{grid-template-columns:1fr}#workspace .bw49-panel{padding:13px}#workspace .bw49-tabs button{padding:10px 9px;font-size:11px}#workspace .bw49-kpi{padding:11px}#workspace .bw49-kpi strong{font-size:16px}#workspace .bw49-header h2{font-size:21px}}
+
+/* V54 · keep four-insurance totals and long won values fully visible */
+#workspace .bw49,#workspace .bw49-pane,#workspace .bw49-panel,#workspace .bw49-2col{min-width:0}
+#workspace .bw49-2col .bw49-table{min-width:0;width:100%;table-layout:fixed}
+#workspace .bw49-2col .bw49-table td:first-child,#workspace .bw49-2col .bw49-table th:first-child{
+  width:64%;white-space:normal;overflow-wrap:anywhere;word-break:keep-all
+}
+#workspace .bw49-2col .bw49-table td:last-child,#workspace .bw49-2col .bw49-table th:last-child{
+  width:36%;white-space:normal;overflow-wrap:anywhere;text-align:right;font-variant-numeric:tabular-nums
+}
+#workspace #bw49EmployerCost .bw49-table-scroll,#workspace #bw49IncomeTax .bw49-table-scroll{max-width:100%;min-width:0;overflow-x:auto;overflow-y:visible}
+#workspace #bw49EmployerCost .bw49-table td,#workspace #bw49IncomeTax .bw49-table td{padding:12px 8px;vertical-align:top}
+#workspace .bw49-2col.bw54-tax-columns{grid-template-columns:repeat(2,minmax(0,1fr))}
+#workspace .bw54-budget-quick{background:linear-gradient(114deg,#e6f6ee,#eff7fb);border:1px solid #d2eadc;border-radius:14px;padding:18px;margin:0 0 16px}
+#workspace .bw54-budget-intro{display:flex;align-items:start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:15px}
+#workspace .bw54-budget-intro b{display:block;color:#1e5741;font-size:17px;letter-spacing:-.025em}
+#workspace .bw54-budget-intro p{font-size:12px;color:#59776b;line-height:1.65;margin:5px 0 0}
+#workspace .bw54-budget-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,.9fr);align-items:stretch;gap:10px}
+#workspace .bw54-budget-grid label{display:flex;flex-direction:column;gap:7px;min-width:0}
+#workspace .bw54-budget-grid label span,#workspace .bw54-budget-result span{font-size:12px;color:#4d6a5a;font-weight:700}
+#workspace .bw54-budget-grid label input{width:100%;min-width:0;min-height:46px;border:1px solid #bddfcf;border-radius:10px;background:#fff;color:#174b38;padding:9px 12px;font-size:17px;font-weight:750;font-variant-numeric:tabular-nums}
+#workspace .bw54-budget-result{display:flex;flex-direction:column;gap:6px;min-width:0;background:#ffffffd9;border:1px solid #d1e5dc;border-radius:10px;padding:11px 13px}
+#workspace .bw54-budget-result strong{color:#145339;font-size:21px;overflow-wrap:anywhere}
+#workspace .bw54-budget-result small{font-size:10px;color:#698578}
+#workspace .bw54-seat-presets{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0}
+#workspace .bw54-seat-button{cursor:pointer;border:1px solid #bcded0;border-radius:9px;background:#fff;color:#336a54;font-size:12px;font-weight:730;padding:7px 14px;min-height:38px}
+#workspace .bw54-seat-button[aria-pressed=true]{color:#fff;background:#25644e;border-color:#25644e}
+#workspace .bw54-seat-button:hover{border-color:#28845d}
+#workspace .bw54-budget-quick .bw49-small{margin:10px 0 0;font-size:11px;color:#58756a}
+@media(max-width:1240px){#workspace .bw49-2col.bw54-tax-columns{grid-template-columns:1fr}}
+@media(max-width:860px){#workspace .bw54-budget-grid{grid-template-columns:repeat(2,minmax(0,1fr))}#workspace .bw54-budget-result{grid-column:1/-1}}
+@media(max-width:510px){#workspace .bw54-budget-quick{padding:13px}#workspace .bw54-budget-grid{grid-template-columns:1fr}#workspace .bw54-budget-result{grid-column:auto}#workspace .bw54-seat-button{flex:1 1 19%}#workspace .bw49-2col .bw49-table{min-width:0}}

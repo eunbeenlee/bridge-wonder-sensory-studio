@@ -157,6 +157,9 @@ jobs:
       - name: V53 staff modern UI tests
         if: always()
         run: node tests/staff-modern-v53.test.cjs
+      - name: V54 ten-week tuition, editable occupancy and insurance overflow
+        if: always()
+        run: node tests/staff-pricing-capacity-v54.test.cjs
       - name: Build V49 owner finance Apps Script patch
         if: success()
         run: python3 tools/build-finance-install-v49.py

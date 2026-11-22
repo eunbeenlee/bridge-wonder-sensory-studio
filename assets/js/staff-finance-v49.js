@@ -18,7 +18,7 @@
     const key=row[0],label=row[1],unit=row[2],note=row[4];
     const value=values[key];
     const isCapacity=key==='capacity';
-    const step=unit==='%'||unit==='개월'?'0.01':'1';
+    const step=unit==='%'||unit==='개월'||key==='regularFee'?'0.01':'1';
     return '<div class="bw49-field"><label for="bw49-'+key+'">'+escapeHTML(label)+'</label>'+
       '<div class="bw49-control"><input id="bw49-'+key+'" name="'+key+'" type="number" step="'+step+'" min="0"'+
       (isCapacity?' max="4" readonly':'')+' inputmode="decimal" value="'+escapeHTML(value)+'"><span>'+escapeHTML(unit)+'</span></div>'+
@@ -59,7 +59,7 @@
     };
     root.innerHTML='<div class="bw49" id="bw49Root">'+
       '<div class="bw49-header"><div><h2>운영 손익·현금흐름</h2>'+
-      '<p>아이 4명 부모참여 수업 기준 · 예상 손익과 실제 입출금을 구분해 관리합니다.</p></div>'+
+      '<p>정규 10주 320,000원 · 한 반 최대 4명. 평균 유료 등록 인원에 따라 예상 매출을 조절할 수 있어요.</p></div>'+
       '<div class="bw49-month"><label for="bw49Month">조회 연월</label><input id="bw49Month" type="month" value="'+period+'"></div></div>'+
       '<div class="bw49-alert warning" id="bw49State" role="status">재무 자료 저장 기능을 확인하고 있습니다.</div>'+
       '<nav class="bw49-tabs" role="tablist" aria-label="재무 관리 항목">'+
@@ -75,8 +75,19 @@
         '<div class="bw49-cards" id="bw49ActualCards"></div></div></section>'+
       '<section class="bw49-pane" data-bw49pane="budget" hidden>'+
         '<div class="bw49-panel"><h3>예산 입력·손익 시뮬레이션</h3>'+
-        '<p>입력 즉시 계산됩니다. 실제 납부액을 모르는 항목은 0원 또는 예시값으로 표시되므로 빠진 비용이 없는지 확인하세요.</p>'+
-        '<form id="bw49BudgetForm"><div class="bw49-form-groups">'+groups.filter(g=>g.id!=='opening').map((group,i)=>groupHTML(group,values,i)).join('')+
+        '<p>10주 이용료와 예상 등록 인원을 먼저 설정하세요. 아래 원가·비용·세율도 모두 바꿀 수 있습니다.</p>'+
+        '<form id="bw49BudgetForm">'+
+        '<div class="bw54-budget-quick" aria-label="정규 요금·유료 등록 인원 조절">'+
+          '<div class="bw54-budget-intro"><div><b>정규 과정·등록 인원</b><p>최대 4명 정원이더라도 1~3명만 등록할 수 있어요. 미등록 인원은 매출에 포함하지 않습니다.</p></div>'+
+          '<button type="button" class="btn btn-outline btn-small" id="bw54ApplyStandard">10주 320,000원 적용</button></div>'+
+          '<div class="bw54-budget-grid"><label for="bw54TermFee"><span>정규 과정 총액 (원)</span><input id="bw54TermFee" type="number" min="0" max="100000000" step="1" value="320000" inputmode="numeric"></label>'+
+          '<label for="bw54PaidSeats"><span>한 회 평균 유료 등록 인원 (명)</span><input id="bw54PaidSeats" type="number" min="0" max="4" step="0.25" value="3" inputmode="decimal"></label>'+
+          '<div class="bw54-budget-result"><span>회당 환산 이용료</span><strong id="bw54UnitFee">32,000원</strong><small>총액 ÷ 정규 수업 횟수</small></div></div>'+
+          '<div class="bw54-seat-presets" role="group" aria-label="유료 등록 인원 바로 선택">'+
+          [1,2,3,4].map(n=>'<button class="bw54-seat-button" type="button" data-bw54seats="'+n+'">'+n+'명</button>').join('')+
+          '</div>'+
+          '<p class="bw49-small">실제 반별 정원은 ‘클래스 정원’ 메뉴에서 1~4명으로 설정합니다. 결석은 자동 환불로 처리하지 않으며, 요금·등록률 변경은 이 예산 화면의 예상값에 먼저 적용됩니다.</p></div>'+
+        '<div class="bw49-form-groups">'+groups.filter(g=>g.id!=='opening').map((group,i)=>groupHTML(group,values,i)).join('')+
         '</div><div class="bw49-actions" style="margin-top:15px"><button type="submit" id="bw49SaveBudget" class="btn btn-primary">예산 설정 저장</button>'+
         '<button type="button" class="btn btn-outline" id="bw49ResetBudget">예시값으로 돌아가기</button>'+
         '<span class="bw49-feedback" id="bw49SaveStatus" role="status"></span></div></form></div></section>'+
@@ -107,7 +118,7 @@
         '<p>기본은 일반과세 10%이며, 수업료는 부가세 포함 소비자가격으로 가정합니다. 간이과세는 실제 업종·등록 상태가 확인된 경우만 선택하세요.</p>'+
         '<div class="bw49-special" id="bw49TaxFields">'+special.map(s=>selectField(s,values[s.key])).join('')+'</div>'+
         '<div id="bw49VATPreview" style="margin-top:13px"></div></div>'+
-        '<div class="bw49-2col"><div class="bw49-panel"><h3>종합소득세·지방소득세</h3><div id="bw49IncomeTax"></div></div>'+
+        '<div class="bw49-2col bw54-tax-columns"><div class="bw49-panel"><h3>종합소득세·지방소득세</h3><div id="bw49IncomeTax"></div></div>'+
         '<div class="bw49-panel"><h3>직원 사업주 부담 보험·퇴직급여</h3><div id="bw49EmployerCost"></div></div></div>'+
         '<div class="bw49-alert warning">세금 계산은 예산을 위한 참고치입니다. 실제 신고는 매출·매입 증빙, 사업자 과세유형, 인적공제, 다른 소득, 세액공제, 예정·확정신고 및 실제 고지서를 기준으로 확인해야 합니다. 2027년 개원 시 변경된 요율을 다시 입력하세요.</div></section>'+
       '</div>';
@@ -119,6 +130,7 @@
         if(input)value[row[0]]=Number(input.value)||0;
       }
       for(const def of special){const input=find('#bw49-'+def.key);if(input)value[def.key]=input.value;}
+      // Capacity is a four-child policy ceiling; paid enrollment is the editable occupancy assumption.
       value.capacity=4;
       return M.sanitize(value);
     }
@@ -127,6 +139,30 @@
         const el=find('#bw49-'+f[0]);if(el)el.value=values[f[0]];
       }
       for(const entry of special){const el=find('#bw49-'+entry.key);if(el)el.value=values[entry.key];}
+      syncQuickControls();
+    }
+    // V54 stores only existing, authorized V49 fields (regularFee/termWeeks/occupancy).
+    // The UI's 10-week total and 0–4 paid-seat editor need no new Apps Script API.
+    function syncQuickControls(except){
+      const weeks=Math.max(1,Number(find('#bw49-termWeeks')?.value)||10);
+      const perVisit=Math.max(0,Number(find('#bw49-regularFee')?.value)||0);
+      const paidSeats=Math.max(0,Math.min(4,(Number(find('#bw49-occupancy')?.value)||0)*4/100));
+      if(except!=='fee')find('#bw54TermFee').value=String(Math.round(weeks*perVisit));
+      if(except!=='seats')find('#bw54PaidSeats').value=String(Math.round(paidSeats*100)/100);
+      find('#bw54UnitFee').textContent=money(perVisit);
+      financeRoot.querySelectorAll('[data-bw54seats]').forEach(btn=>{
+        btn.setAttribute('aria-pressed',String(paidSeats===Number(btn.dataset.bw54seats)));
+      });
+    }
+    function updateFromTermTotal(){
+      const weeks=Number(find('#bw49-termWeeks').value);
+      if(!Number.isFinite(weeks)||weeks<1)return;
+      const total=Math.max(0,Math.min(100000000,Number(find('#bw54TermFee').value)||0));
+      find('#bw49-regularFee').value=String(Math.round(total/weeks*100)/100);
+    }
+    function updateFromPaidSeats(){
+      const count=Math.max(0,Math.min(4,Number(find('#bw54PaidSeats').value)||0));
+      find('#bw49-occupancy').value=String(Math.round(count*25*100)/100);
     }
     function rowText(key,amount){return '<tr><td>'+escapeHTML(key)+'</td><td>'+escapeHTML(money(amount))+'</td></tr>';}
     function summary(d){
@@ -152,7 +188,7 @@
         '<tr class="total">'+rowText('월 예상 영업손익',d.operatingProfit).replace('<tr>','').replace('</tr>','')+'</tr>';
       const max=Math.max(1,Math.min(100,d.breakEvenFill)),fill=Math.max(0,Math.min(100,d.input.occupancy));
       find('#bw49BreakEven').innerHTML=
-        '<p class="bw49-small">아이 최대 4명 · 한 주 '+d.input.weeklyClasses+'회 · 월 평균 '+d.monthlyClasses.toFixed(1)+'회 수업 기준입니다.</p>'+
+        '<p class="bw49-small">한 회 최대 4명 · 유료 등록 평균 '+d.registeredPerSession.toFixed(2)+'명 · 주 '+d.input.weeklyClasses+'회 수업(월 평균 '+d.monthlyClasses.toFixed(1)+'회) 기준입니다.</p>'+
         '<div class="bw49-meter" aria-label="평균 가동률 '+fill.toFixed(1)+'%"><span style="width:'+fill+'%"></span></div>'+
         '<p class="bw49-small">현재 가정: '+fill.toFixed(1)+'% · 예상 이용 '+d.monthlySessions.toFixed(1)+'회(아이 기준) / 월</p>'+
         '<div class="bw49-table-scroll"><table class="bw49-table"><tbody>'+
@@ -162,7 +198,7 @@
         (d.occupancyFeasible?
          '<div class="bw49-alert">추정 손익분기점은 평균 '+displayPercent(d.breakEvenFill)+' 등록률입니다. 실제 결석·휴강·시즌 수요를 고려하세요.</div>':
          '<div class="bw49-alert warning">현재 주간 수업 편성만으로는 손익분기점을 넘기기 어려울 수 있습니다. 가격·원가·반 편성 또는 등록률을 함께 조정해 보세요.</div>')+
-        '<p class="bw49-small">현금은 10주 텀 단위로 먼저 받을 수 있지만 매출은 실제 제공 회차에 맞춰 인식하는 모델입니다. 텀 선결제 총액을 월 매출과 다시 더하지 마세요.</p>';
+        '<p class="bw49-small">정규 과정 '+d.input.termWeeks+'주 총 '+money(d.termTotal)+'(회당 환산 '+money(d.input.regularFee)+') 기준입니다. 선결제와 실제 제공 회차 매출을 중복 합산하지 마세요.</p>';
       const actual=d.actual;
       find('#bw49ActualCards').innerHTML=[
         kpi('기록된 현금 수입',money(actual.income),'선택한 월 거래내역 기준',false),
@@ -222,10 +258,10 @@
         '<button type="button" class="bw49-delete" data-bw49-void="'+escapeHTML(e.id)+'">취소</button></div></td></tr>').join('')+
         '</tbody></table></div>';
     }
-    function calculate(){
+    function calculate(except){
       values=collect();
       const d=M.compute(values,entries);
-      summary(d);opening(d);tax(d);transactionRows();
+      summary(d);opening(d);tax(d);transactionRows();syncQuickControls(except);
       return d;
     }
     function activate(name){
@@ -267,11 +303,25 @@
     }
     financeRoot.querySelectorAll('[data-bw49tab]').forEach(button=>button.onclick=()=>activate(button.dataset.bw49tab));
     financeRoot.addEventListener('input',event=>{
-      if(event.target.matches('input[name]')||event.target.id.startsWith('bw49-')&&!['bw49Month','bw49Amount','bw49Date'].includes(event.target.id))calculate();
+      const id=event.target.id;
+      if(id==='bw54TermFee'){updateFromTermTotal();calculate('fee');return;}
+      if(id==='bw54PaidSeats'){updateFromPaidSeats();calculate('seats');return;}
+      if(id==='bw49-termWeeks'){updateFromTermTotal();calculate('fee');return;}
+      if(event.target.matches('input[name]')||id.startsWith('bw49-')&&!['bw49Month','bw49Amount','bw49Date'].includes(id))calculate();
     });
     financeRoot.addEventListener('change',event=>{
       if(event.target.matches('select[name]'))calculate();
     });
+    financeRoot.querySelectorAll('[data-bw54seats]').forEach(btn=>btn.onclick=()=>{
+      find('#bw54PaidSeats').value=btn.dataset.bw54seats;
+      updateFromPaidSeats();calculate();
+    });
+    find('#bw54ApplyStandard').onclick=()=>{
+      find('#bw49-termWeeks').value='10';
+      find('#bw49-regularFee').value='32000';
+      calculate();
+      find('#bw49SaveStatus').textContent='10주 320,000원 요금을 예상값에 적용했습니다. 유지하려면 아래 예산 설정 저장을 눌러 주세요.';
+    };
     find('#bw49Month').onchange=async event=>{
       if(working)return;
       period=event.target.value;
@@ -358,5 +408,5 @@
     find('#bw49Date').value=period===monthNow()?dateNow():period+'-01';
     allowSave(false);calculate();activate(tab);await refresh();
   }
-  global.BW49FinanceUI=Object.freeze({mount,version:'49.0.0'});
+  global.BW49FinanceUI=Object.freeze({mount,version:'54.0.0'});
 })(window);

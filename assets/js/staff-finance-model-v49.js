@@ -8,10 +8,10 @@
   const FIELD_GROUPS=Object.freeze([
     {id:'revenue',title:'클래스 매출·가동률',fields:[
       ['weeklyClasses','주당 운영하는 반(회)','회',8,'예시값 · 한 회차 아이 4명 기준'],
-      ['capacity','한 회차 아이 정원','명',4,'운영 상한 4명 · 부모는 매출 인원에 포함하지 않음'],
-      ['occupancy','평균 등록률','%',75,'예시값 · 실제 예약률로 수정'],
-      ['regularFee','정규 수업 회당 이용료','원',30000,'현재 공개 사이트의 1회 안내 금액'],
-      ['termWeeks','정규 텀 기간','주',10,'주 1회 × 10주 · 예약/수납은 텀 단위일 수 있음'],
+      ['capacity','한 회차 최대 정원','명',4,'스튜디오 상한 4명 · 실제 등록 인원은 0~4명으로 따로 조절'],
+      ['occupancy','평균 유료 등록률','%',75,'4명 중 평균 3명 등록이면 75% · 결석은 자동 환불 아님'],
+      ['regularFee','정규 수업 1회 환산액','원',32000,'10주 320,000원 ÷ 10회 = 32,000원 · 예산 가정에서 수정 가능'],
+      ['termWeeks','정규 과정 기간','주',10,'주 1회 기준 10주 · 과정 기간과 총액은 별도로 수정 가능'],
       ['trialCount','월별 체험 참여 아이','명',0,'체험은 정규 등록과 별도로 입력 · 중복 매출 주의'],
       ['trialFee','체험수업 회당 이용료','원',25000,'1~2월 예정가 · 3월 35,000원은 아직 검토 중'],
       ['otherSales','기타 월매출','원',0,'별도 상품·체험 등 확인된 수입만'],
@@ -131,7 +131,7 @@
         o[f[0]]=clamp(input[f[0]],0,max);
       }
     }));
-    o.capacity=4; // fixed studio policy; not a legal facility occupancy conclusion
+    o.capacity=4; // hard safety ceiling, distinct from editable 0–4 projected paid registrations
     for(const f of SPECIAL_FIELDS){
       if(f.values.some(row=>row[0]===input[f.key]))o[f.key]=input[f.key];
     }
@@ -151,7 +151,8 @@
   function compute(raw,items=[]){
     const c=sanitize(raw);
     const monthlyClasses=c.weeklyClasses*Y;
-    const regularChildren=monthlyClasses*4*c.occupancy/100;
+    const registeredPerSession=c.capacity*c.occupancy/100;
+    const regularChildren=monthlyClasses*registeredPerSession;
     const refundFactor=1-c.refundPercent/100;
     const taxable=c.vatMode==='general',priceIncluded=c.priceVatIncluded==='yes';
     const multiplier=taxable&&!priceIncluded?1.1:1;
@@ -213,14 +214,15 @@
       c.materialPerChild-c.consumablePerChild-c.trialFee*multiplier*c.cardFeePercent/100);
     const neededProfitCover=fixedBase+vatPaidNonDeductible+peopleTotal+c.ownerHealth+c.depreciation-trialContribution-c.otherSales;
     const targetSeats=unitContribution>0?Math.max(0,neededProfitCover)/unitContribution:Infinity;
-    const seatPlaces=monthlyClasses*4;
+    const seatPlaces=monthlyClasses*c.capacity;
     const breakEvenFill=seatPlaces>0&&Number.isFinite(targetSeats)?targetSeats/seatPlaces*100:Infinity;
     const targetGroups=c.occupancy>0&&unitContribution>0?
-      Math.ceil(targetSeats/(4*c.occupancy/100*Y)):Infinity;
-    const cashTerm=c.weeklyClasses*4*c.occupancy/100*c.regularFee*c.termWeeks*multiplier;
+      Math.ceil(targetSeats/(c.capacity*c.occupancy/100*Y)):Infinity;
+    const cashTerm=c.weeklyClasses*registeredPerSession*c.regularFee*c.termWeeks*multiplier;
     const actual=actualSummary(items);
     return {
-      input:c, monthlyWeeks:Y, monthlyClasses, monthlySessions:regularChildren,
+      input:c, monthlyWeeks:Y, monthlyClasses, monthlySessions:regularChildren,registeredPerSession,
+      termTotal:c.termWeeks*c.regularFee,
       salesGross,regGross,trialGross,otherGross,termCashExample:cashTerm,
       revenueBook,outputVat,vatEstimate,vatCarry,vatUnresolved,vatPaidOnRent,priceIncluded,vatRecoverable,
       fixedBase,expenseGroups,material,processing,variableTotal,peopleTotal,
@@ -261,6 +263,6 @@
   }
   global.BW49FinanceModel=Object.freeze({
     FIELD_GROUPS,SPECIAL_FIELDS,DEFAULTS,CATEGORY,TERM_MONTHLY_WEEKS:Y,
-    compute,sanitize,taxBrackets,actualSummary,krw,version:'49.0.0'
+    compute,sanitize,taxBrackets,actualSummary,krw,version:'54.0.0'
   });
 })(window);
