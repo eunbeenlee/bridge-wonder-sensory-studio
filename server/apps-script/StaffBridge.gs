@@ -81,6 +81,9 @@ const BW27_METHODS_ = Object.freeze({
   staff45DownloadLessonPlan: staff45DownloadLessonPlan,
   staff45UpdateLessonPlan: staff45UpdateLessonPlan,
   staff45ArchiveLessonPlan: staff45ArchiveLessonPlan,
+  staff51ListContent: staff51ListContent,
+  staff51SaveContent: staff51SaveContent,
+  staff51ArchiveContent: staff51ArchiveContent,
   payrollCommand: payrollCommand
 });
 const BW27_MAX_BODY_ = 350000;
