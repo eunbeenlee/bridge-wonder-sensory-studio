@@ -239,17 +239,17 @@ check('published prices distinguish regular tuition from trial promotion without
   const experience=from('sensory-studio/experience/index.html');
   const programs=from('sensory-studio/programs/index.html');
   assert.match(home,/체험 프로모션 · 50분 1회.*25,000/s);
-  assert.match(home,/정규 수업 50분 1회 30,000원/);
+  assert.match(home,/정규 과정 주 1회 × 10주 총 320,000원/);
   assert.match(visit,/체험 50분 · 1회.*25,000/s);
-  assert.match(visit,/정규 수업 · 50분 1회.*30,000원/s);
-  assert.match(experience,/정규 수업은 50분 1회 30,000원/);
-  assert.match(programs,/정규 수업은 50분 1회 30,000원/);
+  assert.match(visit,/정규 과정 · 10주 \/ 10회.*320,000원/s);
+  assert.match(experience,/정규 수업은 주 1회 × 10주 총 320,000원/);
+  assert.match(programs,/정규 수업은 주 1회 × 10주 총 320,000원/);
   assert.match(app,/기존 수강계약 시스템에 연결되어 있습니다/);
   assert.match(app,/id="bw38SessionCount"/);
   assert.match(app,/id="bw38SessionFee"/);
   assert.match(app,/n\*30000/);
   assert.match(app,/계약 금액은 자동으로 바뀌지 않으니/);
-  assert.match(visit,/정규 수업 50분 1회 30,000원/);
+  assert.match(visit,/정규 수업 주 1회 × 10주 320,000원/);
   assert.doesNotMatch(academic,/25000|30000|25,000|30,000/);
 });
 check('new public form collects guardian and weekly frequency without mandatory schedule',()=>{

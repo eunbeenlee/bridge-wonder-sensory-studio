@@ -26,8 +26,8 @@ function createHTML(){
 (async()=>{
   test('both staff entrypoints load FAQ as a separate deferred script after existing administration',()=>{
     for(const file of [staff,fallback]){
-      const admin=file.indexOf('administration.js?v=53.0.0');
-      const qa=file.indexOf('staff-parent-faq-v47.js?v=47.0.0');
+      const admin=file.indexOf('administration.js?v=54.0.0');
+      const qa=file.indexOf('staff-parent-faq-v47.js?v=54.0.0');
       assert.ok(admin>=0&&qa>admin,'staff FAQ must load after existing app');
     }
     for(const path of publicPages)assert.doesNotMatch(read(path),/staff-parent-faq-v47/);

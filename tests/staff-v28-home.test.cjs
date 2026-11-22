@@ -34,7 +34,7 @@ check('manual health recheck always drops prior trust before retry',()=>{
 check('no private data placed in static markup or sessions',()=>{
  assert.doesNotMatch(html,/SPREADSHEET_ID|BW17_AUTH_SECRET|BANK_ACCOUNT|api[_-]?key/i);
  // Presentation scripts have independent cache revisions; authentication remains unchanged.
- const versions={'staff-google-bridge.js':'41.0.0','administration-accelerator.js':'49.0.0','administration.js':'53.0.0','staff-native-kdf.js':'41.0.0'};
+ const versions={'staff-google-bridge.js':'41.0.0','administration-accelerator.js':'49.0.0','administration.js':'54.0.0','staff-native-kdf.js':'41.0.0'};
  for(const [file,version] of Object.entries(versions)){
    assert.ok(html.includes(file+'?v='+version),'version mismatch: '+file);
  }

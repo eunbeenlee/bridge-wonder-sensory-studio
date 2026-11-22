@@ -52,7 +52,7 @@ async function test(name,fn){await fn();passed++;console.log('PASS '+name);}
   await settle();
   await test('home states 7–48 months, 4 children, 4 guardians and 50-minute sessions',async()=>{
     const text=d.getElementById('pageBody').textContent;
-    for(const phrase of ['7~48개월','아이 4명','보호자 4명','50분','돌봄은 운영하지 않습니다'])assert.ok(text.includes(phrase),phrase);
+    for(const phrase of ['7~48개월','아이 최대 4명','아이별 보호자 동반','50분','돌봄은 운영하지 않습니다'])assert.ok(text.includes(phrase),phrase);
   });
   await w.__v44.showPage('capacity');await settle();
   await test('capacity screen warns when legacy classes exceed four without rewriting old data',async()=>{
@@ -93,7 +93,7 @@ async function test(name,fn){await fn();passed++;console.log('PASS '+name);}
     assert.doesNotMatch(compliance,/학원 등록 면제 확정|신고 불필요 확정/);
   });
   await test('only staff HTML and staff scripts are versioned; existing public page remains independent',async()=>{
-    for(const html of [index,standalone])assert.match(html,/administration\.js\?v=53\.0\.0/);
+    for(const html of [index,standalone])assert.match(html,/administration\.js\?v=54\.0\.0/);
     assert.match(src,/staff-compliance-v32\.js\?v=44\.0\.0/);
     const publicSite=read('sensory-studio/index.html');
     assert.doesNotMatch(publicSite,/BW44_POLICY|staff-compliance-v32|staff-parent-v44/);
