@@ -121,6 +121,10 @@
   function navGroupHTML(group,menuById){
     return '<div class="bw33-group" data-bw33group="'+esc(group.id)+'">'+
       '<button type="button" class="bw33-group-trigger" data-bw33group-trigger="'+esc(group.id)+'" aria-expanded="false" aria-controls="bw33Panel-'+esc(group.id)+'">'+esc(group.label)+'</button>'+
+      (global.BW50Workspaces?.urlForGroup(group.id,env.can)?
+        '<a class="bw50-workspace-link" data-bw50-entry="'+esc(global.BW50Workspaces.allowedPageInGroup(group.id,env.can))+
+        '" href="'+esc(global.BW50Workspaces.urlForGroup(group.id,env.can))+
+        '" aria-label="'+esc(group.label)+' 업무공간 열기" title="'+esc(group.label)+' 독립 주소로 열기">열기</a>':'')+
       '</div>';
   }
   function panelGroupHTML(group,menuById){
@@ -193,7 +197,15 @@
       shell.querySelectorAll('[data-bw33group-trigger]').forEach(btn=>{
         btn.onclick=()=>togglePanel(btn.dataset.bw33groupTrigger);
       });
-      shell.querySelectorAll('[data-bw33go]').forEach(btn=>{
+      shell.querySelectorAll('[data-bw50-entry]').forEach(link=>{
+         link.onclick=event=>{
+           // Respect ctrl/cmd-click and new tab actions; ordinary clicks stay in the SPA.
+           if(event.defaultPrevented||event.button!==0||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;
+           event.preventDefault();
+           navigate(link.dataset.bw50Entry);
+         };
+       });
+       shell.querySelectorAll('[data-bw33go]').forEach(btn=>{
         if(!btn.closest('#bw33SearchResults'))btn.onclick=()=>navigate(btn.dataset.bw33go);
       });
       $('bw33PdfToggle').hidden=!env.can('documents');
