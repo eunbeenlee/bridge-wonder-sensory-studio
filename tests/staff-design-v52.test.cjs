@@ -1,0 +1,30 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');const path=require('node:path');
+const root=path.join(__dirname,'..');
+const read=p=>fs.readFileSync(path.join(root,p),'utf8');
+const entry=read('staff/index.html');
+assert.match(entry,/staff-fresh-v52\.css\?v=52\.0\.0/,'main staff page loads V52 visuals');
+assert.match(entry,/staff-google-bridge\.js/,'original authenticated bridge retained');
+assert.match(entry,/passwordLoginForm/,'original login retained');
+const core=read('assets/js/administration.js');
+assert.match(core,/bw52-home-hero/,'lightweight home hero included');
+assert.match(core,/staffDashboard/,'original private metrics remain on server');
+for(const section of ['content','costs','curriculum','materials','settings','templates']){
+  const html=read(`staff/${section}/index.html`);
+  assert.match(html,/staff-content-v51\.css\?v=51\.0\.0/);
+  assert.match(html,/staff-content-v52\.css\?v=52\.0\.0/);
+  assert.match(html,/staff-content-v51\.js\?v=51\.0\.0/,'existing editor logic retained');
+  assert.match(html,/authForm|passwordLoginForm/,'authentication stays enabled');
+  assert.match(html,/entryForm/,'data-entry forms remain intact');
+}
+const mainCss=read('assets/css/staff-fresh-v52.css');
+const contentCss=read('assets/css/staff-content-v52.css');
+assert.match(mainCss,/prefers-reduced-motion/);
+assert.match(contentCss,/prefers-reduced-motion/);
+assert.match(contentCss,/focus/);
+assert.match(mainCss,/bw52-home-hero/);
+const art=fs.statSync(path.join(root,'assets/img/staff-v52-beaver.webp'));
+assert.ok(art.size<100000,`webp illustration should be <100 KB; actual=${art.size}`);
+assert.equal(fs.readFileSync(path.join(root,'assets/img/staff-v52-beaver.webp')).subarray(0,4).toString(),'RIFF');
+console.log('V52 visual upgrade smoke tests passed; no server rewrite, original authentication preserved.');

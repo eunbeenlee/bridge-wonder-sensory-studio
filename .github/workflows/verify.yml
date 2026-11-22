@@ -151,6 +151,9 @@ jobs:
       - name: V50 staff category URLs and permission-safe deep links
         if: always()
         run: node tests/staff-deep-links-v50.test.cjs
+      - name: V52 staff UI safety tests
+        if: always()
+        run: node tests/staff-design-v52.test.cjs
       - name: Build V49 owner finance Apps Script patch
         if: success()
         run: python3 tools/build-finance-install-v49.py

@@ -16,6 +16,7 @@
   <link rel="stylesheet" href="../assets/css/staff-sensory-v39.css?v=41.0.0">
   <link rel="stylesheet" href="../assets/css/staff-ux-v31.css?v=30.0.0">
   <link rel="stylesheet" href="../assets/css/staff-enterprise-v40.css?v=41.0.0">
+  <link rel="stylesheet" href="../assets/css/staff-fresh-v52.css?v=52.0.0">
   <style>#bw27-server-status{margin:10px 0 0;padding:10px 12px;border:1px solid #e8dcc8;border-radius:10px;background:#fffdf8;color:#40543a;font:12px/1.7 system-ui,-apple-system,'Noto Sans KR',sans-serif} .bw271-login-tools{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin-top:15px}.bw271-login-tools .inline-link{font-size:12px;color:#40543a;text-underline-offset:3px}.bw271-login-tools a{align-self:center}</style>
 </head><body>
 <!-- BW25_UI_START -->
@@ -24,13 +25,13 @@
       <section class="bw40-login-intro" aria-label="브릿지 원더 스튜디오 운영">
         <div class="login-brand"><img class="logo" alt="Bridge Wonder" src="../assets/img/bridge-wonder-logo.png" decoding="async"><div class="eyebrow">브릿지 원더 · 운영 관리</div></div>
         <div class="bw40-intro-content">
-          <span class="bw40-intro-kicker">센서리 스튜디오 · 직원 전용</span>
-          <h1>스튜디오 운영을<br>한눈에.</h1>
-          <p>상담 접수부터 수업 준비와 출결까지,<br>필요한 업무를 한곳에서 관리할 수 있습니다.</p>
+          <span class="bw40-intro-kicker">우리 스튜디오의 하루를 위한 공간</span>
+          <h1>오늘도 원더풀한<br>하루를 시작해요.</h1>
+          <p>상담도, 수업 준비도, 기록도.<br>필요한 일만 쏙 모아두었어요.</p>
           <div class="bw40-intro-areas" aria-label="주요 업무 영역">
-            <div><span>01</span><strong>상담·등록</strong><small>상담 접수와 아이 정보 관리</small></div>
-            <div><span>02</span><strong>클래스 운영</strong><small>시간표·출결·보강 관리</small></div>
-            <div><span>03</span><strong>오감놀이 준비</strong><small>체험 주제와 재료·안전 확인</small></div>
+            <div><span>01</span><strong>상담·등록</strong><small>아이와 보호자의 첫 만남</small></div>
+            <div><span>02</span><strong>클래스 운영</strong><small>일정부터 출결까지 쉽게</small></div>
+            <div><span>03</span><strong>오감놀이 준비</strong><small>테마와 재료를 한 번에</small></div>
           </div>
         </div>
         <p class="bw40-intro-footer">브릿지 원더 <span aria-hidden="true">/</span> 직원 운영 시스템</p>
@@ -39,8 +40,8 @@
         <section class="login-card" aria-label="직원 로그인">
         <div id="loginStepPassword">
           <div class="bw23-badge">직원 전용</div>
-          <h2>직원 로그인</h2>
-          <p class="help">업무용 이메일과 비밀번호를 입력해 주세요.</p>
+          <h2>다시 만나서 반가워요</h2>
+          <p class="help">업무용 계정으로 로그인하고 오늘의 기록을 이어가세요.</p>
           <form id="passwordLoginForm" autocomplete="on">
             <div><label for="passwordEmail">업무용 이메일</label><input id="passwordEmail" type="email" autocomplete="username" maxlength="180" placeholder="name@example.com" required></div>
             <div><label for="passwordInput">비밀번호</label><input id="passwordInput" type="password" autocomplete="current-password" maxlength="100" required></div>
@@ -50,7 +51,7 @@
             <button type="button" id="bw23FirstTime" class="inline-link">처음 사용하는 계정</button>
             <button type="button" id="bw23Reset" class="inline-link">비밀번호 재설정</button>
           </div>
-          <div class="bw23-legal">처음 이용할 때는 발급받은 임시 비밀번호로 로그인하거나 이메일 인증 후 비밀번호를 설정하세요.</div>
+          <div class="bw23-legal">처음이라면 임시 비밀번호로 로그인하거나 이메일 인증으로 비밀번호를 설정해 주세요.</div>
         </div>
         <div id="loginStepEmail" hidden>
           <div class="bw23-badge">계정 확인</div>
@@ -68,7 +69,7 @@
           <button id="backToEmail" type="button" class="inline-link">로그인 화면으로 돌아가기</button>
         </div>
         <div id="loginFeedback" class="inline-status" role="status" aria-live="polite" style="margin-top:15px"></div>
-        <div class="login-note">직원 전용 화면입니다. 아이와 보호자의 정보가 안전하게 관리되도록 계정을 공유하지 마세요.</div>
+        <div class="login-note">아이와 가족의 소중한 정보를 위해 직원 계정은 함께 사용하지 않아요.</div>
         <div class="bw40-login-connection">
           <p id="bw27-server-status" role="status" aria-live="polite">운영 시스템 연결 상태를 확인하고 있습니다.</p>
           <details class="bw40-login-help">
@@ -81,7 +82,7 @@
     </div>
   </main>
   <div id="workspace" class="app" hidden>
-    <aside class="sidebar" aria-label="관리 메뉴"><img class="sidebar-logo" alt="Bridge Wonder" src="https://bridgewonder.bridgeacademy.co.kr/assets/img/bridge-wonder-logo.png"><div class="eyebrow" style="padding:0 13px">운영 메뉴</div><nav id="sideNav" class="sidebar-nav"></nav><div class="sidebar-bottom"><a href="./content/" class="btn btn-outline btn-small" style="margin:0 12px 12px;display:block;text-align:center">운영 자료 관리</a><div class="sidebar-user" id="staffName"></div><div class="role-desc" id="staffEmail"></div><button class="btn btn-text btn-small" id="logoutBtn">로그아웃</button></div></aside>
+    <aside class="sidebar" aria-label="관리 메뉴"><img class="sidebar-logo" alt="Bridge Wonder" src="https://bridgewonder.bridgeacademy.co.kr/assets/img/bridge-wonder-logo.png"><div class="eyebrow" style="padding:0 13px">운영 메뉴</div><nav id="sideNav" class="sidebar-nav"></nav><div class="sidebar-bottom"><a href="./content/" class="btn btn-outline btn-small" style="margin:0 12px 12px;display:block;text-align:center">콘텐츠 관리</a><div class="sidebar-user" id="staffName"></div><div class="role-desc" id="staffEmail"></div><button class="btn btn-text btn-small" id="logoutBtn">로그아웃</button></div></aside>
     <main class="main"><header class="topbar"><div class="bw21-topbar-lockup"><img class="bw21-topbar-mark" src="https://bridgewonder.bridgeacademy.co.kr/assets/img/staff-brand-mark.png" width="89" height="52" alt="" aria-hidden="true"><div><h1 id="topTitle">스튜디오 운영</h1><div id="topSubtitle" class="topbar-sub">브릿지 원더 센서리 스튜디오</div></div></div><div class="row"><a href="./curriculum/" class="btn btn-outline btn-small" style="text-decoration:none">운영 자료</a><span id="roleBadge" class="tag">직원</span><button id="logoutMobile" class="btn btn-outline btn-small logout-mobile">로그아웃</button></div></header><nav id="mobileNav" class="mobile-menu" aria-label="모바일 관리 메뉴"></nav><div class="bw20-mobile-switch"><label for="bw20PageSelect">업무 선택</label><select id="bw20PageSelect" aria-label="관리 메뉴 선택"></select></div><div id="pageBody" class="content" aria-live="polite"></div></main>
   </div>
   <div id="toast" role="status" aria-live="polite" style="position:fixed;bottom:18px;right:18px;z-index:50;max-width:min(380px,calc(100vw - 36px));background:#354f33;color:#fff;padding:12px 17px;border-radius:12px;box-shadow:0 12px 30px #21372030;display:none;font-size:12px"></div>

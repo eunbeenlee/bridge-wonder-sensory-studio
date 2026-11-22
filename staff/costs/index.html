@@ -1,21 +1,22 @@
 <!doctype html>
 <html lang="ko"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex,nofollow,noarchive,nosnippet"><meta name="referrer" content="strict-origin"><meta name="theme-color" content="#fbf8f2">
+<meta name="robots" content="noindex,nofollow,noarchive,nosnippet"><meta name="referrer" content="strict-origin"><meta name="theme-color" content="#f7f9f4">
 <title>비용 항목 | Bridge Wonder 직원 관리</title>
 <link rel="icon" href="../../assets/img/favicon.png"><link rel="preconnect" href="https://script.google.com" crossorigin>
 <link rel="stylesheet" href="../../assets/css/staff-content-v51.css?v=51.0.0">
+<link rel="stylesheet" href="../../assets/css/staff-content-v52.css?v=52.0.0">
 <script src="../../assets/js/staff-google-bridge.js?v=41.0.0" defer></script>
 <script src="../../assets/js/staff-native-kdf.js?v=41.0.0" defer></script>
 <script src="../../assets/js/staff-content-v51.js?v=51.0.0" defer></script>
 </head><body data-section="costs">
-<header class="top"><div class="top-inner"><a href="../" class="brand"><img src="../../assets/img/bridge-wonder-logo.png" width="65" height="45" alt="" decoding="async"><span>BRIDGE WONDER<small>STAFF OPERATIONS</small></span></a><div class="top-actions"><span class="user" id="userLabel"></span><a href="../">직원 홈</a><button id="logout" class="text-btn" type="button">로그아웃</button></div></div></header>
-<section id="auth" class="auth-card"><div class="eyebrow">STAFF ACCESS</div><h1>직원 로그인</h1><p class="muted">기존 브릿지 원더 직원 계정을 이용합니다. 운영 기록은 직원 전용으로 관리됩니다.</p><form id="authForm" class="auth-form"><label>업무용 이메일<input id="authEmail" type="email" required autocomplete="username" maxlength="180" placeholder="name@example.com"></label><label>비밀번호<input id="authPassword" type="password" required autocomplete="current-password" minlength="12" maxlength="100"></label><button class="btn btn-primary" id="authSubmit" type="submit">로그인</button></form><p id="authFeedback" class="auth-message" role="status" aria-live="polite"></p><a href="../">비밀번호 설정·재설정은 기존 직원 로그인에서 진행</a></section>
+<header class="top"><div class="top-inner"><a href="../" class="brand"><img src="../../assets/img/bridge-wonder-logo.png" width="65" height="45" alt="" decoding="async"><span>BRIDGE WONDER<small>STUDIO WORKSPACE</small></span></a><div class="top-actions"><span class="user" id="userLabel"></span><a href="../">직원 홈</a><button id="logout" class="text-btn" type="button">로그아웃</button></div></div></header>
+<section id="auth" class="auth-card"><div class="eyebrow">WELCOME BACK</div><h1>다시 만나서 반가워요</h1><p class="muted">업무용 계정으로 로그인하고 오늘의 기록을 이어가세요.</p><form id="authForm" class="auth-form"><label>업무용 이메일<input id="authEmail" type="email" required autocomplete="username" maxlength="180" placeholder="name@example.com"></label><label>비밀번호<input id="authPassword" type="password" required autocomplete="current-password" minlength="12" maxlength="100"></label><button class="btn btn-primary" id="authSubmit" type="submit">로그인</button></form><p id="authFeedback" class="auth-message" role="status" aria-live="polite"></p><a href="../">처음 이용하시나요? 직원 홈에서 비밀번호를 설정하세요</a></section>
 <main id="app" class="page" hidden>
 <nav id="sectionNav" class="subnav" aria-label="관리 업무별 화면"></nav>
-<div class="page-head"><div><div class="eyebrow">OPERATIONS / CONTENT</div><h1 id="pageTitle">운영 자료 관리</h1><p id="pageNote"></p></div><button id="newBtn" class="btn btn-primary" type="button">+ 새 항목</button></div>
-<div class="workspace"><section class="panel" aria-label="저장된 운영 자료"><div class="section-bar"><h2>등록된 항목 <span class="muted" id="count"></span></h2><button id="refreshBtn" type="button" class="btn btn-soft">새로고침</button></div><div class="search-row"><input type="search" id="search" placeholder="항목명·내용 검색" aria-label="항목 검색" maxlength="100"><select id="filter" aria-label="상태 필터"><option>전체</option><option>사용</option><option>초안</option><option>보관</option></select></div><div class="hint" id="updated" aria-live="polite">동기화 중…</div><div id="items" class="entry-list" aria-live="polite"><p class="empty">데이터를 불러오고 있습니다.</p></div></section>
-<section id="editor" class="panel" aria-label="항목 입력 및 수정"><h2 id="editorTitle">새 항목 등록</h2><form id="entryForm"><input type="hidden" id="entryId"><input type="hidden" id="entryEtag"><div class="form-grid">
+<div class="page-head"><div><div class="eyebrow">BRIDGE WONDER / STUDIO LIBRARY</div><h1 id="pageTitle">운영 자료 관리</h1><p id="pageNote"></p></div><button id="newBtn" class="btn btn-primary" type="button">+ 새로 만들기</button></div>
+<div class="workspace"><section class="panel" aria-label="저장된 운영 자료"><div class="section-bar"><h2>내 보관함 <span class="muted" id="count"></span></h2><button id="refreshBtn" type="button" class="btn btn-soft">새로고침</button></div><div class="search-row"><input type="search" id="search" placeholder="제목이나 내용 검색" aria-label="항목 검색" maxlength="100"><select id="filter" aria-label="상태 필터"><option>전체</option><option>사용</option><option>초안</option><option>보관</option></select></div><div class="hint" id="updated" aria-live="polite">최신 내용을 확인하고 있어요…</div><div id="items" class="entry-list" aria-live="polite"><p class="empty">데이터를 불러오고 있습니다.</p></div></section>
+<section id="editor" class="panel" aria-label="항목 입력 및 수정"><h2 id="editorTitle">새 내용 작성</h2><form id="entryForm"><input type="hidden" id="entryId"><input type="hidden" id="entryEtag"><div class="form-grid">
 <div class="field"><label id="categoryLabel" for="category">분류</label><input id="category" name="category" maxlength="90" placeholder="예: 2027-01 / 7~12개월"></div>
 <div class="field"><label id="titleLabel" for="title">항목명</label><input id="title" name="title" required maxlength="110" placeholder="항목명을 입력해 주세요"></div>
 <div class="field full"><label id="bodyLabel" for="content">상세 내용</label><textarea id="content" name="content" maxlength="6000" rows="5" placeholder="운영 내용을 입력해 주세요"></textarea></div>
@@ -29,7 +30,7 @@
 <div class="field" data-sections="materials"><label for="quantity">예상 수량</label><input id="quantity" name="quantity" maxlength="120" placeholder="예: 4세트"></div>
 <div class="field" data-sections="costs"><label for="taxType">세금 구분 (내부 검토)</label><select id="taxType" name="taxType"><option value="">미정</option><option>과세</option><option>면세</option><option>혼합 / 검토 필요</option></select></div>
 <div class="field"><label for="status">상태</label><select id="status" name="status"><option>초안</option><option>사용</option><option>보관</option></select></div></div>
-<div class="form-actions"><button id="saveBtn" class="btn btn-primary" type="submit">스프레드시트에 저장</button><button id="archiveBtn" class="btn btn-warn" type="button" hidden>보관 처리</button></div>
-<p class="action-help">변경 내용은 전용 Google 스프레드시트 탭에 기록됩니다. 다른 직원이 수정한 항목은 충돌을 확인하고 덮어쓰지 않습니다.</p></form></section></div>
-<p id="systemMessage" class="feedback" role="status" aria-live="polite">준비 중…</p>
+<div class="form-actions"><button id="saveBtn" class="btn btn-primary" type="submit">저장하기</button><button id="archiveBtn" class="btn btn-warn" type="button" hidden>보관 처리</button></div>
+<p class="action-help">저장한 내용은 연결된 시트에 기록됩니다. 다른 직원이 수정한 항목은 변경 사항을 확인한 뒤 반영합니다.</p></form></section></div>
+<p id="status" class="feedback" role="status" aria-live="polite">준비 중…</p>
 </main></body></html>
