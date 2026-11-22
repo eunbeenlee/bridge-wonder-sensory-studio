@@ -17,7 +17,7 @@ assert.match(fresh,/content:none!important/);
 for(const section of ['content','costs','curriculum','materials','settings','templates']){
  const html=read('staff/'+section+'/index.html');
  assert.match(html,/staff-modern-v53\.css\?v=53\.0\.0/);
- assert.match(html,/staff-content-v51\.js\?v=51\.0\.0/);
+ assert.match(html,/staff-content-v51\.js\?v=53\.0\.0/);
  assert.match(html,/authForm/);
  assert.match(html,/entryForm/);
  assert.doesNotMatch(html,/staff-v52-beaver|원더풀한/);

@@ -4,7 +4,7 @@ const fs=require('node:fs');const path=require('node:path');
 const root=path.join(__dirname,'..');
 const read=p=>fs.readFileSync(path.join(root,p),'utf8');
 const entry=read('staff/index.html');
-assert.match(entry,/staff-fresh-v52\.css\?v=52\.0\.0/,'main staff page loads V52 visuals');
+assert.match(entry,/staff-fresh-v52\.css\?v=53\.0\.0/,'main staff page loads V52 visuals');
 assert.match(entry,/staff-google-bridge\.js/,'original authenticated bridge retained');
 assert.match(entry,/passwordLoginForm/,'original login retained');
 const core=read('assets/js/administration.js');
@@ -13,8 +13,8 @@ assert.match(core,/staffDashboard/,'original private metrics remain on server');
 for(const section of ['content','costs','curriculum','materials','settings','templates']){
   const html=read(`staff/${section}/index.html`);
   assert.match(html,/staff-content-v51\.css\?v=51\.0\.0/);
-  assert.match(html,/staff-content-v52\.css\?v=52\.0\.0/);
-  assert.match(html,/staff-content-v51\.js\?v=51\.0\.0/,'existing editor logic retained');
+  assert.match(html,/staff-content-v52\.css\?v=53\.0\.0/);
+  assert.match(html,/staff-content-v51\.js\?v=53\.0\.0/,'existing editor logic retained');
   assert.match(html,/authForm|passwordLoginForm/,'authentication stays enabled');
   assert.match(html,/entryForm/,'data-entry forms remain intact');
 }

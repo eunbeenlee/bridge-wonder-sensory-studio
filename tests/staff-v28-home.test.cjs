@@ -33,9 +33,10 @@ check('manual health recheck always drops prior trust before retry',()=>{
 });
 check('no private data placed in static markup or sessions',()=>{
  assert.doesNotMatch(html,/SPREADSHEET_ID|BW17_AUTH_SECRET|BANK_ACCOUNT|api[_-]?key/i);
- const release=JSON.parse(fs.readFileSync(__dirname+'/../package.json','utf8')).version;
- for(const file of ['staff-google-bridge.js','administration-accelerator.js','administration.js','staff-native-kdf.js']){
-   assert.ok(html.includes(file+'?v='+(['administration.js','administration-accelerator.js'].includes(file)?release:'41.0.0')),'version mismatch: '+file);
+ // Presentation scripts have independent cache revisions; authentication remains unchanged.
+ const versions={'staff-google-bridge.js':'41.0.0','administration-accelerator.js':'49.0.0','administration.js':'53.0.0','staff-native-kdf.js':'41.0.0'};
+ for(const [file,version] of Object.entries(versions)){
+   assert.ok(html.includes(file+'?v='+version),'version mismatch: '+file);
  }
 });
 console.log(JSON.stringify({suite:'V28.2 concurrent home and health',passed,total:8}));

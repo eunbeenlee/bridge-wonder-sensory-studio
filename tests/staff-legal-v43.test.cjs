@@ -50,7 +50,7 @@ test('old academy-only refund deadline is explicitly labeled a legacy calculatio
   assert.match(app,/실제로 환불한 건만 ‘환불완료’/);
 });
 test('staff copy is brief, conversational Korean and flags pre-existing templates',()=>{
-  assert.match(app,/오늘 처리할 일을 확인해 주세요/);
+  assert.match(app,/필요한 업무부터 편하게 시작하세요/);
   assert.match(app,/신규 스튜디오 이용계약에 적용하기 전에 확인/);
   assert.match(app,/기존 학원용 항목은 적용 여부를 먼저 확인/);
   assert.match(app,/기존 수강조건 저장/);
