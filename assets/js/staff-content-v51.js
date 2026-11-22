@@ -20,7 +20,7 @@
   const safe=x=>String(x==null?'':x);
   const rpc=(name,...args)=>window.BW27Bridge.request(name,args);
   const field=name=>document.querySelector('[name="'+name+'"]');
-  const feedback=(message,error)=>{const el=$('status');if(!el)return;el.textContent=message;el.dataset.error=error?'1':'0';};
+  const feedback=(message,error)=>{const el=$('systemMessage');if(!el)return;el.textContent=message;el.dataset.error=error?'1':'0';};
   const canSee=(code)=>Boolean(state.user?.permissions?.read?.[sections[code].module]);
   function startScreen(){
     $('auth').hidden=true;$('app').hidden=false;
