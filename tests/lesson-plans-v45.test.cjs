@@ -174,7 +174,7 @@ function fixture(){
       assert.ok(text.indexOf('staff-lesson-plans-v45.js?v=45.0.0')>
         text.indexOf('staff-enterprise-v33.js?v=49.0.0'));
       assert.ok(text.indexOf('staff-lesson-plans-v45.js?v=45.0.0')<
-        text.indexOf('administration.js?v=49.0.0'));
+        text.indexOf('administration.js?v=53.0.0'));
     }
     assert.match(app,/BW45LessonPlans\.mount/);
     assert.match(app,/수업안 파일 관리/);

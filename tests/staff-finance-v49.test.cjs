@@ -192,8 +192,8 @@ test('month ledger logs immutable revisions, allows correction and soft-void wit
  test('finance module keeps writes owner-only and requires server before persistence',()=>{
    assert.match(main,/user\?\.role!=='owner'/);
    assert.match(nav,/pages:\['users','payroll','finance','security'\]/);
-   assert.match(index,/administration\.js\?v=49\.0\.0/);
-   assert.match(standalone,/administration\.js\?v=49\.0\.0/);
+   assert.match(index,/administration\.js\?v=53\.0\.0/);
+   assert.match(standalone,/administration\.js\?v=53\.0\.0/);
    assert.match(main,/renderFinance49/);
  });
  await assert.rejects(()=>win.BW49FinanceUI.mount(root,{user:{role:'teacher'},token:'synthetic',call,isCurrent:()=>true}),/원장 계정/);

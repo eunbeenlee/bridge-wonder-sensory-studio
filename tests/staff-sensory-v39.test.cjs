@@ -77,7 +77,7 @@ test('GitHub staff entrypoints get the new layer; Apps Script /exec remains on V
   for(const html of [index,standalone]){
     assert.match(html,/staff-sensory-v39\.css\?v=41\.0\.0/);
     for(const asset of ['staff-google-bridge.js','staff-native-kdf.js','administration.js','staff-enterprise-v33.js','staff-ux-v31.js']){
-      assert.ok(html.includes(asset+'?v='+(['administration.js','staff-enterprise-v33.js'].includes(asset)?'49.0.0':'41.0.0')),asset);
+      assert.ok(html.includes(asset+'?v='+(asset==='administration.js'?'53.0.0':asset==='staff-enterprise-v33.js'?'49.0.0':'41.0.0')),asset);
     }
   }
   assert.match(gasAdmin,/administration-layout\.js\?v=38\.0\.0/);
