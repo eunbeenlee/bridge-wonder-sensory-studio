@@ -82,7 +82,7 @@ function bw51Rows_(sheet){
   if(!sheet||sheet.getLastRow()<2)return [];
   const length=Math.min(BW51.LIMIT,sheet.getLastRow()-1);
   const first=sheet.getLastRow()-length+1;
-  return sheet.getRange(first,1,length,BW51.HEADERS.length).getDisplayValues().filter(row=>String(row[0]||'').trim());
+  return sheet.getRange(first,1,length,BW51.HEADERS.length).getDisplayValues().map((row,index)=>{Object.defineProperty(row,'_sheetRow',{value:first+index});return row;}).filter(row=>String(row[0]||'').trim());
 }
 /** One section per request; 45s foreground polling detects direct Sheet edits without extra triggers. */
 function staff51ListContent(token,section,previousSignature){
@@ -120,7 +120,7 @@ function staff51SaveContent(token,record){
     const now=bw17Now_();
     const line=[nextId,...fields.slice(0,3),fields[3],...fields.slice(4),version,now,auth.user.email,requestId];
     // fields order: category,title,content,amount,unit,effectiveDate,status,extraJson
-    const rownum=existing>=0?sheet.getLastRow()-rows.length+existing+1:sheet.getLastRow()+1;
+    const rownum=existing>=0?rows[existing]._sheetRow:sheet.getLastRow()+1;
     sheet.getRange(rownum,1,1,BW51.HEADERS.length).setValues([line]);
     if(section==='costs'||section==='materials')sheet.getRange(rownum,5).setNumberFormat('#,##0');
     const stored=sheet.getRange(rownum,1,1,BW51.HEADERS.length).getDisplayValues()[0];
@@ -128,7 +128,7 @@ function staff51SaveContent(token,record){
     return {ok:true,item:bw51Item_(stored),duplicate:false};
   }finally{lock.releaseLock();}
 }
-/** Archive rather than delete; retain historical revisions in separate audit log. */
+/** Archive rather than delete; preserve the sheet record and append an action audit entry. */
 function staff51ArchiveContent(token,record){
   const section=String(record&&record.section||''),auth=bw51Auth_(token,section,true);
   if(!auth.mayWrite)throw Error('보관할 권한이 없습니다.');
@@ -142,7 +142,7 @@ function staff51ArchiveContent(token,record){
     const row=rows[index].slice();
     if(bw51Tag_(row)!==etag)throw Error('항목이 변경되었습니다. 최신 내용을 다시 확인해 주세요.');
     const version=(Number(row[9])||0)+1;
-    const rownum=sheet.getLastRow()-rows.length+index+1;
+    const rownum=rows[index]._sheetRow;
     sheet.getRange(rownum,8).setValue('보관');
     sheet.getRange(rownum,10,1,4).setValues([[version,bw17Now_(),auth.user.email,Utilities.getUuid()]]);
     const stored=sheet.getRange(rownum,1,1,BW51.HEADERS.length).getDisplayValues()[0];
