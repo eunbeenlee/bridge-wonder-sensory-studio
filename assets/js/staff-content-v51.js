@@ -6,12 +6,12 @@
   'use strict';
   const $=id=>document.getElementById(id);
   const sections={
-    settings:{title:'운영 설정',module:'courseSettings',note:'정원·운영시간 등 관리용 기준값을 정리합니다. 기존 수강계약이나 공개 사이트 가격은 자동으로 변경하지 않습니다.'},
-    copy:{title:'안내 문구',module:'courseSettings',note:'상담 안내와 직원용 문구를 정리합니다. 저장한 문구는 이 운영 관리 화면에 반영됩니다.'},
-    lessons:{title:'회차별 수업안',module:'themes',note:'교사의 활동 구성, 연령대, 재료, 안전 주의사항을 기록합니다. 기존 수업안 파일 보관함은 그대로 유지됩니다.'},
-    materials:{title:'준비물·재료',module:'themes',note:'수업 재료와 수량·원가를 관리합니다. 아이의 알레르기나 건강정보는 입력하지 마세요.'},
-    costs:{title:'비용 항목',module:'finance',note:'계획용 비용 항목입니다. 기존 수납·회계 장부와 결제액에는 자동 반영하지 않습니다.'},
-    templates:{title:'서식 문구',module:'documents',note:'내부 문서 안내와 서식 초안을 정리합니다. 기존 발급 PDF와 동의서는 자동 변경되지 않습니다.'}
+    settings:{title:'운영 설정',module:'courseSettings',note:'운영 시간과 정원 등 기준을 정리하세요. 기존 수강계약이나 공개 사이트 가격은 자동으로 변경하지 않습니다.'},
+    copy:{title:'안내 문구',module:'courseSettings',note:'상담 안내와 직원용 문구를 여기서 관리하세요. 저장한 문구는 이 운영 관리 화면에 반영됩니다.'},
+    lessons:{title:'회차별 수업안',module:'themes',note:'활동 내용, 월령, 재료, 안전 사항을 한곳에 정리하세요. 기존 수업안 파일 보관함은 그대로 유지됩니다.'},
+    materials:{title:'준비물·재료',module:'themes',note:'수업 재료와 수량, 예상 비용을 정리하세요. 아이의 알레르기나 건강정보는 입력하지 마세요.'},
+    costs:{title:'비용 항목',module:'finance',note:'운영 비용을 정리하는 공간입니다. 기존 수납·회계 장부와 결제액에는 자동 반영하지 않습니다.'},
+    templates:{title:'서식 문구',module:'documents',note:'안내문과 서식 초안을 관리하세요. 기존 발급 PDF와 동의서는 자동 변경되지 않습니다.'}
   };
   const section=document.body.dataset.section||'lessons';
   if(!sections[section])return;
@@ -33,7 +33,7 @@
     }
     $('pageTitle').textContent=sections[section].title;
     $('pageNote').textContent=sections[section].note;
-    $('editorTitle').textContent='새 항목 등록';
+    $('editorTitle').textContent='새 내용 작성';
     const write=Boolean(state.user?.permissions?.write?.[sections[section].module])&&(['owner','director'].includes(state.user.role));
     state.canWrite=write;
     $('editor').hidden=!write;$('newBtn').hidden=!write;
@@ -47,10 +47,10 @@
   }
   function clearForm(){
     $('entryForm').reset();state.selected=null;state.dirty=false;
-    $('entryId').value='';$('entryEtag').value='';$('editorTitle').textContent='새 항목 등록';
+    $('entryId').value='';$('entryEtag').value='';$('editorTitle').textContent='새 내용 작성';
     $('archiveBtn').hidden=true;
     field('status').value='초안';
-    feedback('새 항목을 입력하고 저장할 수 있습니다.',false);
+    feedback('새 내용을 작성하고 저장해 보세요.',false);
   }
   function openItem(item){
     if(!state.canWrite)return;
@@ -59,8 +59,8 @@
     for(const k of ['category','title','content','unit','effectiveDate','status'])field(k).value=item[k]||'';
     field('amount').value=item.amount==null?'':item.amount;
     for(const k of ['ageGroup','durationMinutes','preparation','safety','quantity','taxType'])field(k).value=item.extra?.[k]||'';
-    $('editorTitle').textContent='항목 수정';$('archiveBtn').hidden=item.status==='보관';
-    feedback('기존 내용을 수정할 수 있습니다.',false);
+    $('editorTitle').textContent='내용 수정';$('archiveBtn').hidden=item.status==='보관';
+    feedback('내용을 수정한 뒤 저장해 주세요.',false);
     $('editor').scrollIntoView({behavior:'smooth',block:'start'});
   }
   function renderList(){
@@ -69,7 +69,7 @@
     const mode=$('filter').value;
     const data=state.items.filter(v=>(mode==='전체'||v.status===mode)&&(!term||[v.title,v.category,v.content].some(s=>safe(s).toLowerCase().includes(term))));
     $('count').textContent=data.length+'개 항목';
-    if(!data.length){const empty=document.createElement('p');empty.className='empty';empty.textContent='조건에 맞는 항목이 없습니다.';list.appendChild(empty);return;}
+    if(!data.length){const empty=document.createElement('p');empty.className='empty';empty.textContent='검색 결과가 없어요. 다른 단어로 찾아보세요.';list.appendChild(empty);return;}
     const frag=document.createDocumentFragment();
     for(const item of data){
       const article=document.createElement('article');article.className='entry-card';
@@ -115,7 +115,7 @@
   }
   async function save(event){
     event.preventDefault();if(!state.canWrite||state.busy)return;
-    setSaving(true);feedback('스프레드시트에 저장하고 있습니다. 저장 중에는 다시 누르지 마세요.',false);
+    setSaving(true);feedback('저장하고 있어요. 완료될 때까지 버튼을 다시 누르지 마세요.',false);
     const data={section,id:$('entryId').value,etag:$('entryEtag').value,requestId:window.crypto.randomUUID(),
       category:field('category').value,title:field('title').value,content:field('content').value,
       amount:field('amount').value,unit:field('unit').value,effectiveDate:field('effectiveDate').value,
@@ -125,12 +125,12 @@
     }
     try{
       const response=await rpc('staff51SaveContent',state.token,data);
-      if(!response?.ok||!response.item)throw Error('저장 결과를 확인할 수 없습니다. 목록을 새로고침해 주세요.');
+      if(!response?.ok||!response.item)throw Error('저장 결과를 확인하지 못했어요. 목록을 새로고침해 주세요.');
       state.selected=response.item;state.dirty=false;
       $('entryId').value=response.item.id;$('entryEtag').value=response.item.etag;
-      $('editorTitle').textContent='항목 수정';$('archiveBtn').hidden=response.item.status==='보관';
+      $('editorTitle').textContent='내용 수정';$('archiveBtn').hidden=response.item.status==='보관';
       state.signature='';await load(true);
-      feedback('스프레드시트에 저장했습니다. 다른 직원 화면에도 새로고침 또는 자동 동기화 시 반영됩니다.',false);
+      feedback('저장했어요. 다른 직원 화면에도 새로고침 또는 자동 동기화 후 표시됩니다.',false);
     }catch(error){feedback(error.message||'저장하지 못했습니다. 처리 결과를 확인해 주세요.',true);}
     finally{setSaving(false);}
   }
@@ -141,7 +141,7 @@
     try{
       const response=await rpc('staff51ArchiveContent',state.token,{section,id:$('entryId').value,etag:$('entryEtag').value});
       if(!response?.ok)throw Error('보관 결과를 확인하지 못했습니다.');
-      clearForm();state.signature='';await load(true);feedback('항목을 보관했습니다.',false);
+      clearForm();state.signature='';await load(true);feedback('보관함으로 옮겼어요.',false);
     }catch(error){feedback(error.message||'보관하지 못했습니다.',true);}
     finally{setSaving(false);}
   }

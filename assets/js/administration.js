@@ -223,18 +223,18 @@
       const metrics=[['classCount',state.user?.role==='teacher'?'담당 클래스':'운영 중인 클래스']];
       if(bw24Can('inquiries'))metrics.push(['newInquiries','새 체험·수업 문의']);
       if(bw24Can('registrations'))metrics.push(['pendingEnrollments','확인할 등록 서류']);
-      $('pageBody').innerHTML='<section class="bw52-home-hero" aria-label="오늘의 스튜디오"><div class="bw52-home-copy"><span class="bw52-home-kicker">BRIDGE WONDER / STUDIO TODAY</span><h2>오늘도 즐거운 수업을<br>준비해 볼까요?</h2><p>상담부터 수업 준비와 기록까지, 필요한 업무를 편하게 이어가세요.</p></div><img src="../assets/img/staff-v52-beaver.webp" width="330" height="194" alt="" loading="lazy" decoding="async"></section>'+head('센서리 스튜디오 운영','오늘 처리할 일을 확인해 주세요.')+
+      $('pageBody').innerHTML='<section class="bw52-home-hero" aria-label="오늘의 업무"><div class="bw52-home-copy"><span class="bw52-home-kicker">BRIDGE WONDER / TEAM WORKSPACE</span><h2>오늘 업무, 가볍게 시작해요.</h2><p>수업 일정부터 상담 기록까지, 필요한 내용을 바로 확인하세요.</p></div><div class="bw53-home-pills" aria-hidden="true"><span><b>01</b>상담</span><span><b>02</b>수업</span><span><b>03</b>운영</span></div></section>'+head('오늘의 운영 현황','필요한 업무부터 편하게 시작하세요.')+
         `<div class="metric-grid">${metrics.map(([key,title])=>`<article class="metric"><div class="metric-name">${h(title)}</div><div class="metric-value" id="bw271Metric_${key}" aria-live="polite">—</div></article>`).join('')}</div>`+
         panel('현재 수업 운영 기준','부모참여형 오감놀이 · 한 타임 기준',
           '<div class="row" style="gap:8px;flex-wrap:wrap"><span class="pill">생후 7~48개월</span><span class="pill">아이 4명</span><span class="pill">보호자 4명 동반</span><span class="pill">50분</span></div><p class="footnote">보호자는 수업 내내 아이와 함께 참여합니다. 아이만 맡기는 돌봄은 운영하지 않습니다. 다른 공간에서 동시에 활동하는 인원도 확인하세요.</p>'+
           (bw24Can('themes')&&['owner','director','teacher'].includes(state.user?.role)?'<div class="row spaced"><button type="button" class="btn btn-outline btn-small" data-goto="themes">수업안 파일 관리</button></div>':'') )+
-        panel('자주 쓰는 업무','필요한 메뉴를 선택해 주세요. 사용 권한이 있는 메뉴만 표시됩니다.',
+        panel('자주 쓰는 메뉴','필요한 업무를 바로 열어보세요. 권한이 있는 메뉴만 보여요.',
           `<div class="bw39-workstreams">${streams.map(group=>`
             <section class="bw39-workstream">
               <div class="bw39-stream-head"><h4>${h(group.title)}</h4><p>${h(group.desc)}</p></div>
               <div class="cards-list">${group.items.map(x=>`<button type="button" data-goto="${x[0]}" class="btn btn-outline">${h(x[2])}</button>`).join('')}</div>
             </section>`).join('')}</div>`)+
-        panel('운영 현황','상담과 클래스 기록을 바탕으로 현황을 보여드립니다.',
+        panel('최신 현황','상담과 수업 기록을 기준으로 보여드립니다.',
           `<div class="row" style="align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap"><span class="inline-status" id="bw271HomeStatus" role="status" aria-live="polite">오늘의 운영 현황을 불러오고 있습니다…</span><button type="button" id="bw271RefreshHome" class="btn btn-outline btn-small">현황 새로고침</button></div>`);
       $('pageBody').querySelectorAll('[data-goto]').forEach(b=>b.onclick=()=>showPage(b.dataset.goto));
       $('bw271RefreshHome').onclick=()=>{bw24ClearCache();renderHome();};
@@ -245,7 +245,7 @@
         const status=$('bw271HomeStatus');if(status)status.textContent='최근 조회: '+String(r.updatedAt||'방금');
       }).catch(e=>{
         if(!isCurrent()||e?.message==='BW24_STALE_VIEW')return;
-        const status=$('bw271HomeStatus');if(status)status.textContent='현황 조회가 지연되고 있습니다. 새로고침으로 다시 확인할 수 있습니다.';
+        const status=$('bw271HomeStatus');if(status)status.textContent='현황을 불러오지 못했어요. 새로고침을 눌러 다시 확인해 주세요.';
       });
     }
     function bw37InquiryNote(raw){

@@ -154,6 +154,9 @@ jobs:
       - name: V52 staff UI safety tests
         if: always()
         run: node tests/staff-design-v52.test.cjs
+      - name: V53 staff modern UI tests
+        if: always()
+        run: node tests/staff-modern-v53.test.cjs
       - name: Build V49 owner finance Apps Script patch
         if: success()
         run: python3 tools/build-finance-install-v49.py
