@@ -223,7 +223,7 @@
       const metrics=[['classCount',state.user?.role==='teacher'?'담당 클래스':'운영 중인 클래스']];
       if(bw24Can('inquiries'))metrics.push(['newInquiries','새 체험·수업 문의']);
       if(bw24Can('registrations'))metrics.push(['pendingEnrollments','확인할 등록 서류']);
-      $('pageBody').innerHTML='<section class="bw52-home-hero" aria-label="오늘의 스튜디오"><div class="bw52-home-copy"><span class="bw52-home-kicker">BRIDGE WONDER / STUDIO TODAY</span><h2>오늘도 즐거운 수업을<br>준비해 볼까요?</h2><p>상담부터 수업 준비와 기록까지, 필요한 업무를 편하게 이어가세요.</p></div><img src="../assets/img/staff-v52-beaver.webp" width="330" height="194" alt="" loading="lazy" decoding="async"></section>'+head('오늘의 스튜디오','현재 운영 상황과 자주 쓰는 업무를 확인하세요.')+
+      $('pageBody').innerHTML='<section class="bw52-home-hero" aria-label="오늘의 스튜디오"><div class="bw52-home-copy"><span class="bw52-home-kicker">BRIDGE WONDER / STUDIO TODAY</span><h2>오늘도 즐거운 수업을<br>준비해 볼까요?</h2><p>상담부터 수업 준비와 기록까지, 필요한 업무를 편하게 이어가세요.</p></div><img src="../assets/img/staff-v52-beaver.webp" width="330" height="194" alt="" loading="lazy" decoding="async"></section>'+head('센서리 스튜디오 운영','오늘 처리할 일을 확인해 주세요.')+
         `<div class="metric-grid">${metrics.map(([key,title])=>`<article class="metric"><div class="metric-name">${h(title)}</div><div class="metric-value" id="bw271Metric_${key}" aria-live="polite">—</div></article>`).join('')}</div>`+
         panel('현재 수업 운영 기준','부모참여형 오감놀이 · 한 타임 기준',
           '<div class="row" style="gap:8px;flex-wrap:wrap"><span class="pill">생후 7~48개월</span><span class="pill">아이 4명</span><span class="pill">보호자 4명 동반</span><span class="pill">50분</span></div><p class="footnote">보호자는 수업 내내 아이와 함께 참여합니다. 아이만 맡기는 돌봄은 운영하지 않습니다. 다른 공간에서 동시에 활동하는 인원도 확인하세요.</p>'+
