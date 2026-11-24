@@ -30,9 +30,11 @@ function bw51Auth_(token,section,write){
 }
 function bw51Sheet_(section,create){
   const config=bw51Section_(section);
-  const sheet=bw17Book_().getSheetByName(config.tab);
-  if(sheet || !create)return sheet;
-  return bw17Tab_(config.tab,BW51.HEADERS,true);
+  const sheet=bw17Tab_(config.tab,BW51.HEADERS,create===true);
+  if(!sheet)return null;
+  const actual=sheet.getRange(1,1,1,BW51.HEADERS.length).getDisplayValues()[0];
+  if(BW51.HEADERS.some((h,i)=>actual[i]!==h))throw Error('운영 자료 대장의 열 구성이 바뀌었습니다. 기존 기록을 덮어쓰지 않습니다.');
+  return sheet;
 }
 function bw51Clean_(value,max){
   const s=String(value==null?'':value).replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g,'').trim().slice(0,max);
@@ -80,7 +82,8 @@ function bw51Item_(row){
 }
 function bw51Rows_(sheet){
   if(!sheet||sheet.getLastRow()<2)return [];
-  const length=Math.min(BW51.LIMIT,sheet.getLastRow()-1);
+  const length=sheet.getLastRow()-1;
+  if(length>BW51.LIMIT)throw Error('운영 자료 500개 한도를 초과했습니다. 일부만 표시하지 않고 조회를 중단합니다.');
   const first=sheet.getLastRow()-length+1;
   return sheet.getRange(first,1,length,BW51.HEADERS.length).getDisplayValues().map((row,index)=>{Object.defineProperty(row,'_sheetRow',{value:first+index});return row;}).filter(row=>String(row[0]||'').trim());
 }
@@ -151,6 +154,7 @@ function staff51ArchiveContent(token,record){
   }finally{lock.releaseLock();}
 }
 function setupBridgeWonderContentV51(){
+  bw24RequireEditorOwner_();
   bw17Config_();
   const created=[];
   for(const section of Object.keys(BW51.SECTIONS)){

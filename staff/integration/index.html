@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="ko"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive,nosnippet"><meta name="referrer" content="strict-origin">
+<meta name="theme-color" content="#f5f8f7"><title>연동·요금 관리 | Bridge Wonder</title>
+<link rel="icon" href="../../assets/img/favicon.png">
+<link rel="stylesheet" href="../../assets/css/staff-content-v51.css?v=51.0.0">
+<link rel="stylesheet" href="../../assets/css/staff-content-v52.css?v=53.0.0">
+<link rel="stylesheet" href="../../assets/css/staff-modern-v53.css?v=53.0.0">
+<style>
+[hidden]{display:none!important}.bw55-page{max-width:1120px;margin:auto;padding:26px 20px 60px}.bw55-lead{border:1px solid #d1eadf;border-radius:18px;background:linear-gradient(112deg,#def5e9,#eef6fb);padding:27px;margin-bottom:20px}.bw55-lead h1{margin:8px 0;color:#205646;font-size:clamp(25px,4vw,34px);letter-spacing:-.055em}.bw55-lead p{margin:0;color:#56746a}.bw55-card{background:#fff;border:1px solid #deebe5;border-radius:15px;padding:20px;margin:16px 0;min-width:0}.bw55-card h2{font-size:18px;margin:0 0 10px;color:#203c34}.bw55-card p{font-size:13px;line-height:1.7;color:#577168}.bw55-heading{display:flex;align-items:start;justify-content:space-between;gap:14px;flex-wrap:wrap}.bw55-heading h2{margin-bottom:5px}.bw55-columns{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}.bw55-columns label{display:flex;flex-direction:column;gap:7px;font-size:13px;font-weight:700;color:#335b4a;min-width:0}.bw55-columns input{width:100%;min-width:0;border:1px solid #cfe2d7;border-radius:10px;padding:12px;background:#fff;color:#214a3a;font-size:16px;font-variant-numeric:tabular-nums}.bw55-preview{background:#edf7f2;border:1px solid #d9eae0;border-radius:12px;padding:14px;margin-top:15px;display:flex;gap:13px;justify-content:space-between;align-items:center;flex-wrap:wrap}.bw55-preview strong{font-size:18px;color:#225d47;overflow-wrap:anywhere}.bw55-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}.bw55-notice{padding:12px;border-radius:10px;background:#f6f9f7;color:#405f52;overflow-wrap:anywhere;white-space:pre-wrap}.bw55-notice[data-error="1"]{background:#fff1ec;color:#8b4937}.bw55-tables{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.bw55-group{border:1px solid #e1ebe5;border-radius:10px;min-width:0;padding:12px}.bw55-group h3{font-size:14px;margin:0 0 7px;color:#214d3e}.bw55-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start;gap:8px;border-bottom:1px solid #edf2ef;padding:8px 0;font-size:12px;overflow-wrap:anywhere}.bw55-row:last-child{border:0}.bw55-state{font-size:11px;padding:3px 7px;background:#eef6f1;color:#35634e;border-radius:8px;white-space:nowrap}.bw55-state[data-status="missing"],.bw55-state[data-status="mismatch"]{background:#fff0e7;color:#90533b}.bw55-links{display:flex;gap:8px;flex-wrap:wrap}.bw55-links a{font-size:13px}.bw55-kicker{font-weight:750;color:#37765d;font-size:11px;letter-spacing:.04em}.bw55-lock{margin:18px 0;color:#607469;font-size:12px}
+@media(max-width:680px){.bw55-page{padding:17px 13px 40px}.bw55-lead{padding:20px 17px}.bw55-card{padding:15px}.bw55-columns,.bw55-tables{grid-template-columns:1fr}.bw55-actions .btn{flex:1 1 auto}}
+</style>
+<script src="../../assets/js/staff-google-bridge.js?v=41.0.0" defer></script>
+<script src="../../assets/js/staff-integration-v55.js?v=55.0.0" defer></script>
+</head><body>
+<header class="top"><div class="top-inner"><a href="../" class="brand"><img src="../../assets/img/bridge-wonder-logo.png" width="65" height="45" alt="" decoding="async"><span>BRIDGE WONDER<small>STUDIO WORKSPACE</small></span></a><div class="top-actions"><a href="../">직원 홈</a><a href="../?area=admin&amp;page=security">백업·이용 기록</a></div></div></header>
+<main class="bw55-page">
+<section class="bw55-lead"><div class="bw55-kicker">STUDIO WORKSPACE / SYSTEM</div><h1>연결 · 정규 과정 요금</h1><p>운영 데이터를 한곳에서 확인하고, 승인한 요금만 보호자에게 안내하세요.</p></section>
+<p id="bw55Access" class="bw55-notice" role="status" aria-live="polite">직원 계정의 연결 상태를 확인하고 있어요.</p>
+<section id="bw55Workspace" hidden>
+<section class="bw55-card"><div class="bw55-heading"><div><h2>연결 상태 확인</h2><p>현재 배포된 직원 서버의 대장 구조를 읽기 전용으로 확인합니다. 실제 데이터는 표시하지 않습니다.</p></div><button class="btn btn-outline" id="bw55Refresh" type="button">다시 확인</button></div><p id="bw55Status" class="bw55-notice" role="status" aria-live="polite">확인 중…</p><div id="bw55Tables" class="bw55-tables"></div></section>
+<section class="bw55-card">
+<div class="bw55-heading"><div><h2>정규 과정 요금 관리</h2><p>10주 320,000원을 기본값으로 제공합니다. 과정은 주 1회, 회당 50분, 한 회 최대 4명입니다.</p></div><a href="../?area=admin&amp;page=finance" class="btn btn-outline btn-small">운영 손익 열기</a></div>
+<form id="bw55PriceForm"><div class="bw55-columns"><label>정규 과정 주수<input type="number" id="bw55Weeks" min="1" max="52" step="1" value="10" required></label><label>정규 과정 총액 (원)<input type="number" id="bw55Total" min="1" max="100000000" step="1" value="320000" required></label></div>
+<div class="bw55-preview"><div><span>회당 환산</span><br><strong id="bw55PerVisit">32,000원</strong></div><div><span>한 반 4명 모두 등록 시</span><br><strong id="bw55Max">1,280,000원</strong></div><div><span>현재 공개 승인값</span><br><strong id="bw55Published">확인 전</strong></div></div>
+<div class="bw55-actions"><button id="bw55Save" type="submit" class="btn btn-primary" disabled>초안 저장</button><button id="bw55Publish" class="btn btn-outline" type="button" disabled>홈페이지 공개 승인</button><button id="bw55ReloadPrice" class="btn btn-outline" type="button">요금 다시 조회</button></div>
+<p id="bw55PriceState" class="bw55-notice" role="status" aria-live="polite">서버 연결을 확인하고 있어요.</p></form>
+<p class="bw55-lock">초안 저장은 홈페이지나 기존 계약에 영향을 주지 않습니다. 원장이 공개 승인한 정규 주수와 총액만 공개 홈페이지에 반영됩니다. 체험료, 할인, 세금, 기존 결제·등록 기록과 재무 가정은 별도로 관리합니다.</p>
+</section>
+<section class="bw55-card"><h2>운영 자료 바로가기</h2><div class="bw55-links"><a class="btn btn-outline" href="../settings/">운영 설정</a><a class="btn btn-outline" href="../curriculum/">수업안</a><a class="btn btn-outline" href="../materials/">재료</a><a class="btn btn-outline" href="../costs/">비용</a><a class="btn btn-outline" href="../content/">안내 문구</a><a class="btn btn-outline" href="../templates/">서식</a></div></section>
+</section></main></body></html>

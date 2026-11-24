@@ -44,7 +44,11 @@ function bw49Period_(value){
 function bw49Sheet_(kind,create){
   const name=kind==='settings'?BW49.SETTINGS:BW49.ENTRIES;
   const headers=kind==='settings'?BW49.SETTINGS_HEADERS:BW49.ENTRY_HEADERS;
-  return bw17Tab_(name,headers,create===true);
+  const sheet=bw17Tab_(name,headers,create===true);
+  if(!sheet)return null;
+  const actual=sheet.getRange(1,1,1,headers.length).getDisplayValues()[0];
+  if(headers.some((h,i)=>actual[i]!==h))throw Error('재무 대장 열 구성이 변경되었습니다. 기존 데이터를 수정하지 않습니다.');
+  return sheet;
 }
 function bw49Settings_(sheet){
   if(!sheet||sheet.getLastRow()<2)return {revision:0,values:null,updatedAt:null};

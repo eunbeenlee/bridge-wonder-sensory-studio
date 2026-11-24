@@ -249,7 +249,7 @@ check('published prices distinguish regular tuition from trial promotion without
   assert.match(app,/id="bw38SessionFee"/);
   assert.match(app,/bw54CourseTotal/);
   assert.match(app,/기존 계약 금액이나 등록 서류를 자동 변경하지 않습니다/);
-  assert.match(visit,/정규 수업 주 1회 × 10주 320,000원/);
+  assert.match(visit,/data-bw55-price="term">정규 과정 · 10주 \/ 10회/);
   assert.doesNotMatch(academic,/25000|30000|25,000|30,000/);
 });
 check('new public form collects guardian and weekly frequency without mandatory schedule',()=>{

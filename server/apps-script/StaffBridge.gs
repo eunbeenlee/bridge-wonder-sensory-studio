@@ -84,6 +84,10 @@ const BW27_METHODS_ = Object.freeze({
   staff51ListContent: staff51ListContent,
   staff51SaveContent: staff51SaveContent,
   staff51ArchiveContent: staff51ArchiveContent,
+  staff55SystemStatus: function(...args){if(typeof staff55SystemStatus!=='function')throw Error('V55 통합 모듈 설치 및 재배포가 필요합니다.');return staff55SystemStatus(...args);},
+  staff55ReadPricing: function(...args){if(typeof staff55ReadPricing!=='function')throw Error('V55 통합 모듈 설치 및 재배포가 필요합니다.');return staff55ReadPricing(...args);},
+  staff55SavePricing: function(...args){if(typeof staff55SavePricing!=='function')throw Error('V55 통합 모듈 설치 및 재배포가 필요합니다.');return staff55SavePricing(...args);},
+  staff55PublishPricing: function(...args){if(typeof staff55PublishPricing!=='function')throw Error('V55 통합 모듈 설치 및 재배포가 필요합니다.');return staff55PublishPricing(...args);},
   payrollCommand: payrollCommand
 });
 const BW27_MAX_BODY_ = 350000;

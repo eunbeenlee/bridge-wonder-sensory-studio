@@ -20,6 +20,8 @@ const BW17 = Object.freeze({
 function doGet(e) {
   // Read-only public themes — intentionally contains no child/guardian data.
   if(e&&e.parameter&&e.parameter.view==='experience')return bw37PublicExperienceScript_();
+  // V55: anonymous, approved numeric tuition only. Legacy deployments remain compatible.
+  if(e&&e.parameter&&e.parameter.view==='pricing-v55'&&typeof bw55PublicPricingScript_==='function')return bw55PublicPricingScript_();
   return HtmlService.createHtmlOutputFromFile('Admin').setTitle('Bridge Wonder · 직원 관리').addMetaTag('viewport','width=device-width,initial-scale=1').setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 // --- Private server utilities. Keep trailing underscore: hidden from google.script.run ---

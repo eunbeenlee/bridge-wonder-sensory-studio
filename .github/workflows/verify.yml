@@ -160,6 +160,20 @@ jobs:
       - name: V54 ten-week tuition, editable occupancy and insurance overflow
         if: always()
         run: node tests/staff-pricing-capacity-v54.test.cjs
+      - name: V55 integrated setup and approved public pricing
+        if: always()
+        run: node tests/staff-integration-v55.test.cjs
+      - name: Build V55 integrated staff Apps Script installer
+        if: success()
+        run: python3 tools/build-integrated-install-v55.py
+      - name: Upload V55 integrated staff installer
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: BridgeWonder-V55-Integrated-Staff-Install
+          path: dist/Bridge_Wonder_V55_Integrated_Staff_Install.zip
+          if-no-files-found: error
+          retention-days: 30
       - name: Build V49 owner finance Apps Script patch
         if: success()
         run: python3 tools/build-finance-install-v49.py
