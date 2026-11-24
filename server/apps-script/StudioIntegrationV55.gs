@@ -38,6 +38,7 @@ function bw55Specs_(){
   Object.keys(BW51.SECTIONS).forEach(k=>result.push({
     group:'content',name:BW51.SECTIONS[k].tab,headers:BW51.HEADERS,create:true
   }));
+  if(typeof bw56Spec_==='function')result.push(bw56Spec_());
   return result;
 }
 function bw55TabState_(book,spec){

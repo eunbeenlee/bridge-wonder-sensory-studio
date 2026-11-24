@@ -163,6 +163,20 @@ jobs:
       - name: V55 integrated setup and approved public pricing
         if: always()
         run: node tests/staff-integration-v55.test.cjs
+      - name: V56 mixed enrollment and calendar-based financial planning
+        if: always()
+        run: node tests/staff-planning-v56.test.cjs
+      - name: Build V56 integrated staff Apps Script installer
+        if: success()
+        run: python3 tools/build-integrated-install-v56.py
+      - name: Upload V56 integrated staff installer
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: BridgeWonder-V56-Integrated-Staff-Install
+          path: dist/Bridge_Wonder_V56_Integrated_Staff_Install.zip
+          if-no-files-found: error
+          retention-days: 30
       - name: Build V55 integrated staff Apps Script installer
         if: success()
         run: python3 tools/build-integrated-install-v55.py
