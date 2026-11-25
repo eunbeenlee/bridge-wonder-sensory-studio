@@ -39,6 +39,7 @@ function bw55Specs_(){
     group:'content',name:BW51.SECTIONS[k].tab,headers:BW51.HEADERS,create:true
   }));
   if(typeof bw56Spec_==='function')result.push(bw56Spec_());
+  if(typeof bw59Spec_==='function')result.push(bw59Spec_());
   return result;
 }
 function bw55TabState_(book,spec){

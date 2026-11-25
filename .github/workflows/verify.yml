@@ -172,6 +172,20 @@ jobs:
       - name: V58 daily workbench, privacy and permission-filtered rollups
         if: always()
         run: node tests/staff-workbench-v58.test.cjs
+      - name: V59 annual curriculum procurement, launch plan and private budget validation
+        if: always()
+        run: node tests/staff-launch-v59.test.cjs
+      - name: Build V59 integrated staff installer
+        if: success()
+        run: python3 tools/build-integrated-install-v59.py
+      - name: Upload V59 integrated staff installer
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: BridgeWonder-V59-Integrated-Staff-Install
+          path: dist/Bridge_Wonder_V59_Integrated_Staff_Install.zip
+          if-no-files-found: error
+          retention-days: 30
       - name: Build V58 integrated staff installer
         if: success()
         run: python3 tools/build-integrated-install-v58.py
