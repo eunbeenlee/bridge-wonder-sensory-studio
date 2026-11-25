@@ -169,6 +169,20 @@ jobs:
       - name: V57 shared workspace, protected editing and retry-safe saves
         if: always()
         run: node tests/staff-workspace-v57.test.cjs
+      - name: V58 daily workbench, privacy and permission-filtered rollups
+        if: always()
+        run: node tests/staff-workbench-v58.test.cjs
+      - name: Build V58 integrated staff installer
+        if: success()
+        run: python3 tools/build-integrated-install-v58.py
+      - name: Upload V58 integrated staff installer
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: BridgeWonder-V58-Integrated-Staff-Install
+          path: dist/Bridge_Wonder_V58_Integrated_Staff_Install.zip
+          if-no-files-found: error
+          retention-days: 30
       - name: Build V57 integrated staff installer
         if: success()
         run: python3 tools/build-integrated-install-v57.py

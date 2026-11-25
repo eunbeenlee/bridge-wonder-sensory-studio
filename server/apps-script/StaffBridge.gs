@@ -90,6 +90,7 @@ const BW27_METHODS_ = Object.freeze({
   staff55PublishPricing: function(...args){if(typeof staff55PublishPricing!=='function')throw Error('V55 통합 모듈 설치 및 재배포가 필요합니다.');return staff55PublishPricing(...args);},
   staff56PlanningRead: function(...args){if(typeof staff56PlanningRead!=='function')throw Error('V56 운영계획 모듈 설치 및 재배포가 필요합니다.');return staff56PlanningRead(...args);},
   staff56PlanningSave: function(...args){if(typeof staff56PlanningSave!=='function')throw Error('V56 운영계획 모듈 설치 및 재배포가 필요합니다.');return staff56PlanningSave(...args);},
+  staff58WorkspaceSnapshot: function(...args){if(typeof staff58WorkspaceSnapshot!=='function')throw Error('V58 업무 허브 모듈 설치 및 재배포가 필요합니다.');return staff58WorkspaceSnapshot(...args);},
   payrollCommand: payrollCommand
 });
 const BW27_MAX_BODY_ = 350000;

@@ -1,18 +1,19 @@
 {
   "name": "bridge-wonder-sensory-studio",
-  "version": "57.0.0",
+  "version": "58.0.0",
   "private": true,
   "description": "Bridge Wonder public site and Google Apps Script staff workspace",
   "scripts": {
     "build": "python3 tools/build-administration.py",
-    "test": "node tests/payroll.test.cjs && node tests/acceleration.test.cjs && node tests/security.test.cjs && node tests/payroll-ui.test.cjs && node tests/administration.test.cjs && node tests/staff-login-gateway.test.cjs && node tests/staff-google-bridge.test.cjs && node tests/staff-static-fast.test.cjs && node tests/staff-v28-home.test.cjs && node tests/native-kdf-login.test.cjs && node tests/account-issuance.test.cjs && node tests/staff-ux-v31.test.cjs && node tests/staff-enterprise-v33.test.cjs && node tests/staff-polish-v34.test.cjs && node tests/sensory-profile-v35.test.cjs && node tests/academic-management-v37.test.cjs && node tests/compliance-v32.test.cjs && node tests/staff-sensory-v39.test.cjs && node tests/staff-enterprise-v40.test.cjs && node tests/staff-topnav-v41.test.cjs && node tests/staff-documents-v42.test.cjs && node tests/staff-legal-v43.test.cjs && node tests/staff-parent-participation-v44.test.cjs && node tests/lesson-plans-v45.test.cjs && node tests/sensory-parent-participation-v44.test.cjs && node tests/staff-parent-faq-v47.test.cjs && node tests/staff-course-policy-v48.test.cjs && node tests/staff-finance-v49.test.cjs && node tests/staff-deep-links-v50.test.cjs && node tests/staff-design-v52.test.cjs && node tests/staff-modern-v53.test.cjs && node tests/staff-pricing-capacity-v54.test.cjs && node tests/staff-integration-v55.test.cjs && node tests/staff-planning-v56.test.cjs && node tests/staff-workspace-v57.test.cjs",
+    "test": "node tests/payroll.test.cjs && node tests/acceleration.test.cjs && node tests/security.test.cjs && node tests/payroll-ui.test.cjs && node tests/administration.test.cjs && node tests/staff-login-gateway.test.cjs && node tests/staff-google-bridge.test.cjs && node tests/staff-static-fast.test.cjs && node tests/staff-v28-home.test.cjs && node tests/native-kdf-login.test.cjs && node tests/account-issuance.test.cjs && node tests/staff-ux-v31.test.cjs && node tests/staff-enterprise-v33.test.cjs && node tests/staff-polish-v34.test.cjs && node tests/sensory-profile-v35.test.cjs && node tests/academic-management-v37.test.cjs && node tests/compliance-v32.test.cjs && node tests/staff-sensory-v39.test.cjs && node tests/staff-enterprise-v40.test.cjs && node tests/staff-topnav-v41.test.cjs && node tests/staff-documents-v42.test.cjs && node tests/staff-legal-v43.test.cjs && node tests/staff-parent-participation-v44.test.cjs && node tests/lesson-plans-v45.test.cjs && node tests/sensory-parent-participation-v44.test.cjs && node tests/staff-parent-faq-v47.test.cjs && node tests/staff-course-policy-v48.test.cjs && node tests/staff-finance-v49.test.cjs && node tests/staff-deep-links-v50.test.cjs && node tests/staff-design-v52.test.cjs && node tests/staff-modern-v53.test.cjs && node tests/staff-pricing-capacity-v54.test.cjs && node tests/staff-integration-v55.test.cjs && node tests/staff-planning-v56.test.cjs && node tests/staff-workspace-v57.test.cjs && node tests/staff-workbench-v58.test.cjs",
     "check": "python3 tools/verify-release.py",
     "test:visual": "node tests/staff-design-v52.test.cjs && node tests/staff-modern-v53.test.cjs",
     "test:pricing": "node tests/staff-finance-v49.test.cjs && node tests/staff-pricing-capacity-v54.test.cjs",
     "test:integration": "node tests/staff-integration-v55.test.cjs",
-    "build:integrated": "python3 tools/build-integrated-install-v57.py",
+    "build:integrated": "python3 tools/build-integrated-install-v58.py",
     "test:planning": "node tests/staff-planning-v56.test.cjs",
-    "test:workspace": "node tests/staff-workspace-v57.test.cjs"
+    "test:workspace": "node tests/staff-workspace-v57.test.cjs",
+    "test:workbench": "node tests/staff-workbench-v58.test.cjs"
   },
   "devDependencies": {
     "jsdom": "31.0.1"

@@ -6,14 +6,19 @@
  const base='/staff/';
  const roles=['owner','director','teacher','frontdesk'];
  const pageGroups=[
-  {label:'상담·등록',items:[['상담 접수','?area=consult&page=inquiries','inquiries'],['등록 확인','?area=consult&page=registrations','registrations'],['아이 정보','?area=consult&page=students','students']]},
-  {label:'클래스',items:[['시간표','?area=class&page=classes','classes'],['정원','?area=class&page=capacity','capacity'],['출결','?area=class&page=attendance','attendance'],['결석·보강','?area=class&page=makeups','makeups']]},
-  {label:'운영 자료',items:[['수업안','curriculum/','themes',['owner','director','teacher']],['재료','materials/','themes',['owner','director','teacher']],['운영 설정','settings/','courseSettings',['owner','director']],['안내 문구','content/','courseSettings',['owner','director']],['서식','templates/','documents',['owner','director']]]},
-  {label:'수납·관리',items:[['수납','?area=service&page=tuition','tuition'],['문서','?area=service&page=documents','documents'],['시설·안전','?area=admin&page=operations','operations'],['급여','?area=admin&page=payroll','payroll',['owner']],['운영 손익','?area=admin&page=finance','finance',['owner']],['손익 계획','planning/','finance',['owner']],['비용','costs/','finance',['owner']],['연동·요금','integration/','courseSettings',['owner']]]}
+  {label:'상담·등록',items:[['상담 접수','?area=consult&page=inquiries','inquiries'],['대기 상담','?area=consult&page=waitlist','waitlist'],['등록 확인','?area=consult&page=registrations','registrations'],['아이 정보','?area=consult&page=students','students']]},
+  {label:'클래스',items:[['시간표','?area=class&page=classes','classes'],['반별 정원','?area=class&page=capacity','capacity'],['아이 명단','?area=class&page=roster','roster'],['출결','?area=class&page=attendance','attendance'],['결석·보강','?area=class&page=makeups','makeups'],['보호자 동반·인계','?area=class&page=handoff','handoff']]},
+  {label:'오감놀이·운영 자료',items:[['월간 체험 테마','?area=sensory&page=experiences','experiences'],['월간 수업 주제·수업안 파일','?area=sensory&page=themes','themes'],['재료·안전 점검','?area=sensory&page=safety','safety'],['회차별 수업안','curriculum/','themes',['owner','director','teacher']],['재료 목록','materials/','themes',['owner','director','teacher']],['운영 설정','settings/','courseSettings',['owner','director']],['안내 문구','content/','courseSettings',['owner','director']],['서식 문구','templates/','documents',['owner','director']]]},
+  {label:'수납·문서',items:[['수납·환불','?area=service&page=tuition','tuition'],['보호자 문서','?area=service&page=documents','documents']]},
+  {label:'스튜디오 관리',items:[['시설·운영 점검','?area=admin&page=operations','operations'],['이용 조건','?area=admin&page=courseSettings','courseSettings'],['법정·행정 관리','?area=admin&page=compliance','compliance'],['직원 준수 사항','?area=admin&page=staffCompliance','staffCompliance',['owner']],['직원 계정·권한','?area=admin&page=users','users',['owner']],['급여','?area=admin&page=payroll','payroll',['owner']],['운영 손익','?area=admin&page=finance','finance',['owner']],['손익 계획','planning/','finance',['owner']],['비용','costs/','finance',['owner']],['연동·요금','integration/','courseSettings',['owner']],['접속기록·백업','?area=admin&page=security','security']]}
  ];
  let guard=null,user=null,allowUnloadUntil=0;
  const node=(tag,text)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;return e;};
  const can=(item)=>Boolean(user&&(!item[3]||item[3].includes(user.role))&&user.permissions?.read?.[item[2]]===true);
+ function links(){
+   if(!user)return [];
+   return pageGroups.flatMap(group=>group.items.filter(can).map(item=>({label:item[0],href:base+item[1],group:group.label,keywords:item[2]})));
+ }
  function isCurrent(href){
    const target=new URL(href,location.origin),here=new URL(location.href);
    if(target.pathname.replace(/index\.html$/,'')!==here.pathname.replace(/index\.html$/,''))return false;
@@ -26,6 +31,7 @@
    if(!user)return;
    const main=Boolean(document.getElementById('workspace')&&document.getElementById('loginScreen'));
    if(!main){const home=node('a','업무 홈');home.href=base;home.className='bw57-nav-home';mount.appendChild(home);}
+   if(user.permissions?.read?.home===true){const hub=node('a','오늘의 업무');hub.href=base+'workbench/';hub.className='bw57-nav-home bw58-nav-hub';if(isCurrent(hub.href))hub.setAttribute('aria-current','page');mount.appendChild(hub);}
    for(const group of pageGroups){
      const visible=group.items.filter(item=>can(item)&&(!main||!item[1].startsWith('?')));if(!visible.length)continue;
      const box=node('details');box.className='bw57-nav-group';
@@ -71,5 +77,5 @@
  // Restore from back/forward cache only with a fresh authorization check.
  // Reload rather than displaying a retained private workspace after a logout.
  window.addEventListener('pageshow',event=>{if(event.persisted&&user)location.reload();});
- window.BW57Workspace=Object.freeze({setUser,clearUser,setGuard,clearGuard,confirmLeave,render});
+ window.BW57Workspace=Object.freeze({setUser,clearUser,setGuard,clearGuard,confirmLeave,render,links});
 })();

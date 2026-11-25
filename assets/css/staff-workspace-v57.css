@@ -15,3 +15,9 @@ body[data-section] .entry-card .entry-heading>div{min-width:0}.bw57-list-note{fo
 @media(max-width:850px){.bw57-nav{margin:0 12px;gap:5px;padding:8px}.bw57-nav-label{display:none}.bw57-nav-group summary,.bw57-nav-home{font-size:12px;padding:9px 8px}.bw57-nav-group:last-of-type .bw57-nav-list{left:auto;right:0}.top-inner{flex-wrap:wrap;gap:7px}.top-actions{gap:8px}.top-actions a,.top-actions button{min-height:37px;display:inline-flex;align-items:center}.bw57-nav{z-index:21}}
 @media(max-width:540px){.bw57-nav{padding:7px;gap:5px}.bw57-nav-home,.bw57-nav-group{flex:1 1 29%;min-width:0}.bw57-nav-group summary,.bw57-nav-home{text-align:center}.bw57-nav-list{position:static;box-shadow:none;min-width:0;max-width:none;margin-top:4px}.bw57-nav-group[open]{flex:1 1 100%}.bw57-nav-list{grid-template-columns:repeat(2,minmax(0,1fr))}.top-inner{position:relative}.top-actions{width:100%;justify-content:flex-end}.bw56-page .bw56-table-scroll,.bw55-page .bw55-columns{min-width:0}body[data-section] .entry-foot{flex-wrap:wrap}.bw57-editor-status{position:static}}
 @media(prefers-reduced-motion:reduce){.bw57-nav *{transition:none!important}}
+
+/* V58 — priority hub link and dropdown viewport safety. */
+.bw57-nav .bw58-nav-hub{background:#e4f4ea;border-color:#bfdccc;color:#205646}
+.bw57-nav .bw58-nav-hub[aria-current=page]{background:#205646;border-color:#205646;color:#fff}
+.bw57-nav-list{max-height:min(65vh,440px);overflow-y:auto;overscroll-behavior:contain}
+@media(max-width:540px){.bw57-nav-list{max-height:min(45vh,320px);overflow-y:auto}.bw57-nav .bw58-nav-hub{flex:1 1 29%}.bw57-nav-list a{min-height:40px;display:flex;align-items:center}}

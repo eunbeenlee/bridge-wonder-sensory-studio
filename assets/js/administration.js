@@ -229,6 +229,7 @@
         panel('현재 수업 운영 기준','부모참여형 오감놀이 · 한 타임 기준',
           '<div class="row" style="gap:8px;flex-wrap:wrap"><span class="pill">생후 7~48개월</span><span class="pill">아이 최대 4명</span><span class="pill">아이별 보호자 동반</span><span class="pill">50분</span><span class="pill">정규 10주 320,000원</span></div><p class="footnote">보호자는 수업 내내 아이와 함께 참여합니다. 아이만 맡기는 돌봄은 운영하지 않습니다. 다른 공간에서 동시에 활동하는 인원도 확인하세요.</p>'+
           (bw24Can('themes')&&['owner','director','teacher'].includes(state.user?.role)?'<div class="row spaced"><button type="button" class="btn btn-outline btn-small" data-goto="themes">수업안 파일 관리</button></div>':'') )+
+        panel('오늘의 업무 허브','상담·등록·정원·안전·개원 점검을 한 화면에서 확인하세요.', '<div class="row"><a class="btn btn-primary" href="/staff/workbench/" style="text-decoration:none">오늘의 업무 열기</a><span class="help">권한별 집계와 업무 검색을 이용할 수 있어요.</span></div>')+
         panel('자주 쓰는 메뉴','필요한 업무를 바로 열어보세요. 권한이 있는 메뉴만 보여요.',
           `<div class="bw39-workstreams">${streams.map(group=>`
             <section class="bw39-workstream">
