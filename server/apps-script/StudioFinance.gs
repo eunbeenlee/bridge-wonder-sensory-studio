@@ -126,14 +126,17 @@ function staff49FinanceSaveSettings(token,p){
   const lock=LockService.getScriptLock();lock.waitLock(15000);
   try{
     const sheet=bw49Sheet_('settings',true),current=bw49Settings_(sheet);
-    if(current.lastRequestId===req)return {ok:true,revision:current.revision,alreadySaved:true};
+    if(current.lastRequestId===req){
+      if(JSON.stringify(bw49SettingsInput_({values:current.values}))!==JSON.stringify(input))throw Error('같은 저장 요청에 다른 예산이 입력되었습니다.');
+      return {ok:true,revision:current.revision,alreadySaved:true};
+    }
     if(rev!==current.revision)throw Error('다른 화면에서 설정이 변경됐습니다. 새로 조회한 뒤 저장해 주세요.');
     const revision=rev+1;
     const json=JSON.stringify(input);
     if(json.length>16000)throw Error('재무 설정이 너무 큽니다.');
     sheet.appendRow([revision,bw17Now_(),user.email,json,req]);
-    bw17Audit_(user,'재무 시뮬레이션 설정 저장','finance','성공','v'+revision);
-    return {ok:true,revision};
+    let auditWarning=false;try{bw17Audit_(user,'재무 시뮬레이션 설정 저장','finance','성공','v'+revision);}catch(_){auditWarning=true;}
+    return {ok:true,revision,auditWarning:auditWarning};
   }finally{lock.releaseLock();}
 }
 function bw49EntryInput_(p){
@@ -162,15 +165,20 @@ function staff49FinanceSaveEntry(token,p){
   try{
     const sheet=bw49Sheet_('entries',true),rows=bw49Entries_(sheet);
     const duplicate=rows.find(x=>x.requestId===req);
-    if(duplicate)return {ok:true,id:duplicate.id,revision:duplicate.revision,alreadySaved:true};
+    if(duplicate){
+      const clean=x=>String(x||'').replace(/^'(?=[=+\-@])/,'');
+      if(duplicate.state!=='유효'||(v.id&&duplicate.id!==v.id)||duplicate.month!==v.month||duplicate.date!==v.date||duplicate.category!==v.category||duplicate.amount!==v.amount||duplicate.method!==v.method||clean(duplicate.note)!==clean(v.note))throw Error('같은 저장 요청에 다른 거래가 입력되었습니다.');
+      return {ok:true,id:duplicate.id,revision:duplicate.revision,alreadySaved:true};
+    }
     const existing=v.id?rows.find(x=>x.id===v.id):null;
     if(v.id&&(!existing||existing.state!=='유효'))throw Error('수정할 거래 기록을 찾지 못했습니다.');
     if((existing?.revision||0)!==rev)throw Error('다른 화면에서 거래가 변경됐습니다. 새로 조회해 주세요.');
-    const id=v.id||'FIN-'+Utilities.getUuid(),revision=rev+1;
+    const id=v.id||'FIN-'+req,revision=rev+1;
+    if(!v.id&&rows.some(row=>row.id===id))throw Error('이미 생성된 거래가 변경되었습니다. 거래 목록을 확인해 주세요.');
     sheet.appendRow([id,revision,v.month,v.date,v.category,v.amount,v.method,v.note,
       '유효',user.email,bw17Now_(),req]);
-    bw17Audit_(user,'재무 거래 기록',id,'성공',v.category+' / '+String(v.amount));
-    return {ok:true,id,revision};
+    let auditWarning=false;try{bw17Audit_(user,'재무 거래 기록',id,'성공',v.category+' / '+String(v.amount));}catch(_){auditWarning=true;}
+    return {ok:true,id,revision,auditWarning:auditWarning};
   }finally{lock.releaseLock();}
 }
 function staff49FinanceVoidEntry(token,p){
@@ -181,12 +189,12 @@ function staff49FinanceVoidEntry(token,p){
   try{
     const sheet=bw49Sheet_('entries',false),rows=bw49Entries_(sheet);
     const duplicate=rows.find(x=>x.requestId===req);
-    if(duplicate)return {ok:true,id,revision:duplicate.revision,alreadySaved:true};
+    if(duplicate){if(duplicate.id!==id||duplicate.state!=='취소'||duplicate.revision!==revision+1)throw Error('같은 요청에 다른 취소 기록이 입력되었습니다.');return {ok:true,id,revision:duplicate.revision,alreadySaved:true};}
     const row=rows.find(x=>x.id===id);
     if(!row||row.state!=='유효'||row.revision!==revision)throw Error('기록이 변경됐습니다. 새로 조회해 주세요.');
     sheet.appendRow([id,revision+1,row.month,row.date,row.category,row.amount,row.method,row.note,
       '취소',user.email,bw17Now_(),req]);
-    bw17Audit_(user,'재무 거래 취소',id,'성공','원본 보존');
-    return {ok:true,id,revision:revision+1};
+    let auditWarning=false;try{bw17Audit_(user,'재무 거래 취소',id,'성공','원본 보존');}catch(_){auditWarning=true;}
+    return {ok:true,id,revision:revision+1,auditWarning:auditWarning};
   }finally{lock.releaseLock();}
 }

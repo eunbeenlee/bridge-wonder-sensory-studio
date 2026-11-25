@@ -113,22 +113,31 @@ function staff51SaveContent(token,record){
     const sheet=bw51Sheet_(section,true);
     const rows=bw51Rows_(sheet);
     const duplicate=rows.find(row=>String(row[12])===requestId);
-    if(duplicate)return {ok:true,item:bw51Item_(duplicate),duplicate:true};
+    if(duplicate){
+      const clean=v=>String(v==null?'':v).replace(/^'(?=[=+\-@])/,'');
+      const same=fields.every((value,i)=>i===3?clean(duplicate[i+1]).replace(/,/g,'')===clean(value):clean(duplicate[i+1])===clean(value));
+      if(!same||(id&&String(duplicate[0])!==id))throw Error('같은 요청에 다른 내용이 입력되었습니다. 최신 목록을 확인해 주세요.');
+      return {ok:true,item:bw51Item_(duplicate),duplicate:true};
+    }
     const existing=rows.findIndex(row=>String(row[0])===id);
     if(id&&existing<0)throw Error('항목을 찾을 수 없습니다. 다시 불러와 주세요.');
     if(id&&bw51Tag_(rows[existing])!==etag)throw Error('다른 사용자가 항목을 수정했습니다. 최신 내용을 확인한 후 다시 저장해 주세요.');
     if(!id&&sheet.getLastRow()-1>=BW51.LIMIT)throw Error('관리 항목이 500개를 초과했습니다. 보관된 항목을 별도 정리해 주세요.');
-    const nextId=id||'BW51-'+Utilities.getUuid();
+    // A create retry keeps its original identifier even after another user edits the item.
+    const nextId=id||'BW51-'+requestId;
+    if(!id&&rows.some(row=>String(row[0])===nextId))throw Error('이미 생성된 항목이 변경되었습니다. 목록에서 확인해 주세요.');
     const version=existing>=0?Number(rows[existing][9]||0)+1:1;
     const now=bw17Now_();
     const line=[nextId,...fields.slice(0,3),fields[3],...fields.slice(4),version,now,auth.user.email,requestId];
     // fields order: category,title,content,amount,unit,effectiveDate,status,extraJson
     const rownum=existing>=0?rows[existing]._sheetRow:sheet.getLastRow()+1;
+    sheet.getRange(rownum,7).setNumberFormat('@');
     sheet.getRange(rownum,1,1,BW51.HEADERS.length).setValues([line]);
     if(section==='costs'||section==='materials')sheet.getRange(rownum,5).setNumberFormat('#,##0');
     const stored=sheet.getRange(rownum,1,1,BW51.HEADERS.length).getDisplayValues()[0];
-    bw17Audit_(auth.user,'운영 콘텐츠 저장',section+'/'+nextId,'성공','버전 '+version);
-    return {ok:true,item:bw51Item_(stored),duplicate:false};
+    let auditWarning=false;
+    try{bw17Audit_(auth.user,'운영 콘텐츠 저장',section+'/'+nextId,'성공','버전 '+version);}catch(_){auditWarning=true;}
+    return {ok:true,item:bw51Item_(stored),duplicate:false,auditWarning:auditWarning};
   }finally{lock.releaseLock();}
 }
 /** Archive rather than delete; preserve the sheet record and append an action audit entry. */
@@ -149,8 +158,9 @@ function staff51ArchiveContent(token,record){
     sheet.getRange(rownum,8).setValue('보관');
     sheet.getRange(rownum,10,1,4).setValues([[version,bw17Now_(),auth.user.email,Utilities.getUuid()]]);
     const stored=sheet.getRange(rownum,1,1,BW51.HEADERS.length).getDisplayValues()[0];
-    bw17Audit_(auth.user,'운영 콘텐츠 보관',section+'/'+id,'성공','버전 '+version);
-    return {ok:true,item:bw51Item_(stored)};
+    let auditWarning=false;
+    try{bw17Audit_(auth.user,'운영 콘텐츠 보관',section+'/'+id,'성공','버전 '+version);}catch(_){auditWarning=true;}
+    return {ok:true,item:bw51Item_(stored),auditWarning:auditWarning};
   }finally{lock.releaseLock();}
 }
 function setupBridgeWonderContentV51(){

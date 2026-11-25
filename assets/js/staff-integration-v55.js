@@ -119,6 +119,7 @@
       const user=await rpc('staffCurrentUser',token);
       if(user?.role!=='owner'||user.mustChange){message('bw55Access','원장 계정으로 로그인해야 연동·요금 관리 화면을 이용할 수 있습니다.',true);return;}
       authorized=true;$('bw55Workspace').hidden=false;$('bw55Access').hidden=true;
+      window.BW57Workspace?.setUser(user);window.BW57Workspace?.setGuard(()=>busy?'저장 또는 공개 승인 결과를 확인 중입니다. 이동할까요?':dirty||pending?'저장하지 않은 요금 초안이 있습니다. 이동할까요?':'');
       await Promise.all([diagnose(),readPrice(true)]);
     }catch(error){message('bw55Access','로그인 상태를 확인하지 못했습니다. 직원 홈에서 다시 로그인해 주세요.',true);}
   }

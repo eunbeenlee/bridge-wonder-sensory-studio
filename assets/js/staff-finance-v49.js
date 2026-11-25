@@ -50,7 +50,7 @@
     const session=ctx.token,nav=ctx.navigation;
     const good=()=>ctx.isCurrent()&&root.isConnected;
     let values={...M.DEFAULTS},savedRevision=0,savedUpdated='',entries=[],backend=false,working=false;
-    let period=monthNow(),tab='overview',edit=null;
+    let period=monthNow(),tab='overview',edit=null,budgetDirty=false,entryDirty=false,refreshing=false,readEpoch=0,budgetPending=null,entryPending=null;
     const groups=M.FIELD_GROUPS,special=M.SPECIAL_FIELDS,categories=M.CATEGORY;
     const find=sel=>$(root,sel);
     const note=(message,warning)=>{
@@ -60,6 +60,7 @@
     root.innerHTML='<div class="bw49" id="bw49Root">'+
       '<div class="bw49-header"><div><h2>운영 손익·현금흐름</h2>'+
       '<p>정규 10주 320,000원 · 한 반 최대 4명. 평균 유료 등록 인원에 따라 예상 매출을 조절할 수 있어요.</p></div>'+
+      '<div class="bw49-actions"><a class="btn btn-outline btn-small" href="/staff/planning/">반별 손익 계획</a></div>'+
       '<div class="bw49-month"><label for="bw49Month">조회 연월</label><input id="bw49Month" type="month" value="'+period+'"></div></div>'+
       '<div class="bw49-alert warning" id="bw49State" role="status">재무 자료 저장 기능을 확인하고 있습니다.</div>'+
       '<nav class="bw49-tabs" role="tablist" aria-label="재무 관리 항목">'+
@@ -123,6 +124,7 @@
         '<div class="bw49-alert warning">세금 계산은 예산을 위한 참고치입니다. 실제 신고는 매출·매입 증빙, 사업자 과세유형, 인적공제, 다른 소득, 세액공제, 예정·확정신고 및 실제 고지서를 기준으로 확인해야 합니다. 2027년 개원 시 변경된 요율을 다시 입력하세요.</div></section>'+
       '</div>';
     const financeRoot=find('#bw49Root');
+    global.BW57Workspace?.setGuard(()=>good()?(working?'저장 결과가 아직 확인되지 않았습니다. 이동할까요?':budgetDirty||entryDirty||budgetPending||entryPending?'저장하지 않았거나 확인이 필요한 재무 입력이 있습니다. 이동할까요?':''):'');
     function collect(){
       const value={...values};
       for(const group of groups)for(const row of group.fields){
@@ -258,10 +260,10 @@
         '<button type="button" class="bw49-delete" data-bw49-void="'+escapeHTML(e.id)+'">취소</button></div></td></tr>').join('')+
         '</tbody></table></div>';
     }
-    function calculate(except){
+    function calculate(except,updateLedger=false){
       values=collect();
       const d=M.compute(values,entries);
-      summary(d);opening(d);tax(d);transactionRows();syncQuickControls(except);
+      summary(d);opening(d);tax(d);if(updateLedger)transactionRows();syncQuickControls(except);
       return d;
     }
     function activate(name){
@@ -275,124 +277,141 @@
     function allowSave(allowed){
       backend=allowed;
       const save=find('#bw49SaveBudget'),entry=find('#bw49SaveEntry');
-      if(save)save.disabled=!allowed;
-      if(entry)entry.disabled=!allowed;
+      if(save)save.disabled=!allowed||working||refreshing;
+      if(entry)entry.disabled=!allowed||working||refreshing;
     }
     async function refresh(){
       if(!good())return;
+      const requestPeriod=period,epoch=++readEpoch;refreshing=true;allowSave(backend);
       try{
-        const data=await ctx.call('staff49FinanceRead',session,period);
-        if(!good())return;
-        if(data?.settings?.values){
+        const data=await ctx.call('staff49FinanceRead',session,requestPeriod);
+        if(!good()||epoch!==readEpoch||period!==requestPeriod)return;
+        if(!data||!Array.isArray(data.entries)||!data.settings)throw Error('재무 조회 결과를 확인해 주세요.');
+        if(!budgetDirty&&!budgetPending&&data.settings.values){
           values=M.sanitize(data.settings.values);
           savedRevision=Number(data.settings.revision)||0;
           savedUpdated=String(data.settings.updatedAt||'');
           updateInputValues();
         }
-        entries=Array.isArray(data.entries)?data.entries:[];
-        allowSave(true);
+        else if(!budgetDirty&&!budgetPending){values={...M.DEFAULTS};savedRevision=0;savedUpdated='';updateInputValues();}
+        entries=data.entries;
+        refreshing=false;allowSave(true);
         note('비공개 재무 기록과 연결됐습니다. 예상 손익은 가정값이며, 실제 입출금은 직접 등록한 거래만 표시됩니다.',false);
-        calculate();
+        calculate(undefined,true);
       }catch(error){
-        if(!good())return;
-        allowSave(false);
+        if(!good()||epoch!==readEpoch||period!==requestPeriod)return;
+        refreshing=false;allowSave(false);
         note('계산 기능은 사용할 수 있지만 저장·실제 거래 기록은 아직 연결되지 않았습니다. 직원용 Apps Script에 V49 재무 모듈을 설치하고 기존 웹앱을 재배포해 주세요. ('+
           escapeHTML(errorMessage(error))+')',true);
-        calculate();
-      }
+        entries=[];calculate(undefined,true);
+      }finally{if(good()&&epoch===readEpoch){refreshing=false;allowSave(backend);}}
     }
     financeRoot.querySelectorAll('[data-bw49tab]').forEach(button=>button.onclick=()=>activate(button.dataset.bw49tab));
     financeRoot.addEventListener('input',event=>{
       const id=event.target.id;
+      if(event.target.closest('#bw49TransactionForm')){entryDirty=true;return;}
+      if(id==='bw49Month')return;
+      budgetDirty=true;
       if(id==='bw54TermFee'){updateFromTermTotal();calculate('fee');return;}
       if(id==='bw54PaidSeats'){updateFromPaidSeats();calculate('seats');return;}
       if(id==='bw49-termWeeks'){updateFromTermTotal();calculate('fee');return;}
       if(event.target.matches('input[name]')||id.startsWith('bw49-')&&!['bw49Month','bw49Amount','bw49Date'].includes(id))calculate();
     });
     financeRoot.addEventListener('change',event=>{
-      if(event.target.matches('select[name]'))calculate();
+      if(event.target.closest('#bw49TransactionForm')){entryDirty=true;return;}
+      if(event.target.matches('select[name]')){budgetDirty=true;calculate();}
     });
     financeRoot.querySelectorAll('[data-bw54seats]').forEach(btn=>btn.onclick=()=>{
-      find('#bw54PaidSeats').value=btn.dataset.bw54seats;
+      budgetDirty=true;find('#bw54PaidSeats').value=btn.dataset.bw54seats;
       updateFromPaidSeats();calculate();
     });
     find('#bw54ApplyStandard').onclick=()=>{
-      find('#bw49-termWeeks').value='10';
+      budgetDirty=true;find('#bw49-termWeeks').value='10';
       find('#bw49-regularFee').value='32000';
       calculate();
       find('#bw49SaveStatus').textContent='10주 320,000원 요금을 예상값에 적용했습니다. 유지하려면 아래 예산 설정 저장을 눌러 주세요.';
     };
     find('#bw49Month').onchange=async event=>{
-      if(working)return;
-      period=event.target.value;
-      if(!/^20\d{2}-(0[1-9]|1[0-2])$/.test(period))return;
-      find('#bw49Date').value=period+'-01';
-      edit=null;await refresh();
+      const requested=event.target.value;
+      if(working||refreshing||!/^20\d{2}-(0[1-9]|1[0-2])$/.test(requested)){event.target.value=period;return;}
+      if((budgetDirty||entryDirty||budgetPending||entryPending)&&!global.confirm('저장하지 않았거나 확인이 필요한 입력값이 있습니다. 조회 월을 바꾸고 다시 불러올까요?')){event.target.value=period;return;}
+      period=requested;budgetDirty=false;budgetPending=null;entryPending=null;resetEntry();await refresh();
     };
     find('#bw49BudgetForm').onsubmit=async event=>{
       event.preventDefault();
-      if(!backend||working)return;
-      working=true;const btn=find('#bw49SaveBudget'),feedback=find('#bw49SaveStatus');btn.disabled=true;
+      if(!backend||working||refreshing)return;
+      const feedback=find('#bw49SaveStatus'),sent=collect(),key=JSON.stringify([savedRevision,sent]);
+      if(budgetPending&&budgetPending.key!==key){feedback.textContent='이전 저장 결과를 먼저 확인해 주세요. 같은 내용으로 다시 시도하거나 조회 월을 다시 선택하세요.';return;}
+      if(!budgetPending)budgetPending={key,requestId:requestId()};
+      working=true;allowSave(backend);
       try{
-        values=collect();
         const result=await ctx.call('staff49FinanceSaveSettings',session,{
-          revision:savedRevision,values,requestId:requestId()
+          revision:savedRevision,values:sent,requestId:budgetPending.requestId
         });
         if(!good())return;
-        savedRevision=result.revision;
-        feedback.textContent='예산 가정이 저장됐습니다. 이 값은 실제 회계장부나 계약 조건을 변경하지 않습니다.';
+        if(result?.ok!==true||!Number.isSafeInteger(Number(result.revision)))throw Error('저장 결과를 확인하지 못했습니다.');
+        savedRevision=result.revision;budgetPending=null;budgetDirty=JSON.stringify(collect())!==JSON.stringify(sent);
+        feedback.textContent=(result.auditWarning?'저장했으나 변경 이력을 확인해 주세요. ':'예산 가정이 저장됐습니다. ')+(budgetDirty?'저장 이후 수정한 값이 남아 있습니다.':'실제 회계장부나 계약 조건은 변경하지 않습니다.');
         calculate();
       }catch(error){if(good())feedback.textContent=errorMessage(error)+' 저장 결과가 불확실하면 다시 조회해 주세요.';}
-      finally{working=false;if(good())btn.disabled=!backend;}
+      finally{working=false;if(good())allowSave(backend);}
     };
     find('#bw49ResetBudget').onclick=()=>{
       if(working||!global.confirm('화면의 예산 입력값을 예시값으로 되돌릴까요? 저장된 서버 설정은 바뀌지 않습니다.'))return;
-      values={...M.DEFAULTS};updateInputValues();calculate();
+      budgetDirty=true;values={...M.DEFAULTS};updateInputValues();calculate();
       find('#bw49SaveStatus').textContent='화면에서만 예시값으로 바꿨습니다. 서버 설정은 유지됩니다.';
     };
     function resetEntry(){
-      edit=null;const form=find('#bw49TransactionForm');
+      edit=null;entryDirty=false;entryPending=null;const form=find('#bw49TransactionForm');
       form.reset();find('#bw49Date').value=period===monthNow()?dateNow():period+'-01';
       find('#bw49SaveEntry').textContent='거래 기록 저장';
       find('#bw49EntryStatus').textContent='';
     }
     find('#bw49TransactionForm').onsubmit=async event=>{
-      event.preventDefault();if(!backend||working)return;
-      working=true;const btn=find('#bw49SaveEntry');btn.disabled=true;
+      event.preventDefault();if(!backend||working||refreshing)return;
+      working=true;allowSave(backend);const form=find('#bw49TransactionForm');
+      const fields=Array.from(form.querySelectorAll('input,select,textarea'));fields.forEach(el=>el.disabled=true);
       try{
         const date=find('#bw49Date').value;
         if(date.slice(0,7)!==period)throw Error('거래일이 조회 연월과 다릅니다.');
         const payload={id:edit?.id||'',revision:edit?.revision||0,month:period,date,
           category:find('#bw49Category').value,amount:Number(find('#bw49Amount').value),
-          method:find('#bw49Method').value,note:find('#bw49Note').value.trim(),requestId:requestId()};
-        await ctx.call('staff49FinanceSaveEntry',session,payload);
+          method:find('#bw49Method').value,note:find('#bw49Note').value.trim()};
+        const key=JSON.stringify(payload);
+        if(entryPending&&entryPending.key!==key)throw Error('이전 거래 저장 결과를 먼저 확인해 주세요.');
+        if(!entryPending)entryPending={key,requestId:requestId()};
+        payload.requestId=entryPending.requestId;
+        const response=await ctx.call('staff49FinanceSaveEntry',session,payload);
         if(!good())return;
+        if(response?.ok!==true)throw Error('거래 저장 결과를 확인하지 못했습니다.');
         resetEntry();await refresh();
-        if(good())find('#bw49EntryStatus').textContent='거래 기록을 저장했습니다.';
+        if(good())find('#bw49EntryStatus').textContent=response.auditWarning?'거래는 저장했으나 변경 이력을 확인해 주세요.':'거래 기록을 저장했습니다.';
       }catch(error){if(good())find('#bw49EntryStatus').textContent=errorMessage(error)+' 목록을 새로 확인한 뒤 다시 시도하세요.';}
-      finally{working=false;if(good())btn.disabled=!backend;}
+      finally{working=false;if(good()){fields.forEach(el=>el.disabled=false);allowSave(backend);}}
     };
-    find('#bw49CancelEdit').onclick=resetEntry;
+    find('#bw49CancelEdit').onclick=()=>{if(working||refreshing)return;if((entryDirty||entryPending)&&!global.confirm('거래 입력 또는 저장 확인 상태를 초기화할까요? 목록에서 저장 여부를 먼저 확인하세요.'))return;resetEntry();};
     find('#bw49Transactions').addEventListener('click',async event=>{
       const editButton=event.target.closest('[data-bw49-edit]');
       const voidButton=event.target.closest('[data-bw49-void]');
       const id=editButton?.dataset.bw49Edit||voidButton?.dataset.bw49Void;
-      if(!id||working)return;
+      if(!id||working||refreshing)return;
+      if((entryDirty||entryPending)&&!global.confirm('저장하지 않았거나 확인이 필요한 거래 입력이 있습니다. 바꿀까요?'))return;
       const e=entries.find(x=>x.id===id);if(!e)return;
       if(editButton){
-        edit=e;find('#bw49Date').value=e.date;
+        resetEntry();edit=e;entryDirty=true;find('#bw49Date').value=e.date;
         find('#bw49Category').value=e.category;
         find('#bw49Amount').value=e.amount;find('#bw49Method').value=e.method;
         find('#bw49Note').value=e.note||'';
         find('#bw49SaveEntry').textContent='수정 기록 저장';
         find('#bw49TransactionForm').scrollIntoView?.({behavior:'smooth',block:'start'});
       }else if(voidButton&&global.confirm('이 거래를 취소 처리할까요? 원본 기록은 삭제되지 않습니다.')){
-        working=true;
+        working=true;allowSave(backend);
         try{
-          await ctx.call('staff49FinanceVoidEntry',session,{id:e.id,revision:e.revision,requestId:requestId()});
+          const result=await ctx.call('staff49FinanceVoidEntry',session,{id:e.id,revision:e.revision,requestId:requestId()});
+          if(!result?.ok)throw Error('취소 결과를 확인하지 못했습니다.');
           if(good()){resetEntry();await refresh();}
         }catch(error){if(good())note(errorMessage(error),true);}
-        finally{working=false;}
+        finally{working=false;if(good())allowSave(backend);}
       }
     });
     find('#bw49Export').onclick=()=>{
@@ -406,7 +425,7 @@
       }finally{setTimeout(()=>URL.revokeObjectURL(url),30000);}
     };
     find('#bw49Date').value=period===monthNow()?dateNow():period+'-01';
-    allowSave(false);calculate();activate(tab);await refresh();
+    allowSave(false);calculate(undefined,true);activate(tab);await refresh();
   }
   global.BW49FinanceUI=Object.freeze({mount,version:'54.0.0'});
 })(window);

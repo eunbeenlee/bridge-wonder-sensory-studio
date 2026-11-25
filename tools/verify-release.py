@@ -28,7 +28,7 @@ EXCLUDED = {"node_modules", ".git", "__pycache__", ".venv", "venv", "outputs",
             "test-results", "inputs", "chat_files", "private", ".secrets"}
 SCRIPT_SUFFIXES = {".js", ".cjs", ".mjs", ".gs"}
 IMAGE_SUFFIXES = {".png", ".jpg", ".jpeg", ".webp", ".gif", ".svg", ".ico", ".avif"}
-ALLOWED_THEME_ADDITIONS = {"assets/css/administration-payroll.css", "assets/css/staff-ux-v31.css", "assets/css/staff-enterprise-v33.css", "assets/css/staff-polish-v34.css", "assets/css/sensory-polish-v35.css", "assets/css/staff-academic-v37.css", "assets/css/staff-compliance-v32.css", "assets/css/staff-sensory-v39.css", "assets/css/staff-enterprise-v40.css", "assets/css/sensory-family-v44.css", "assets/css/staff-finance-v49.css", "assets/css/staff-content-v51.css", "assets/css/staff-content-v52.css", "assets/css/staff-fresh-v52.css", "assets/css/staff-modern-v53.css", "assets/img/staff-v52-beaver.webp", "assets/img/staff-brand-mark.png"}
+ALLOWED_THEME_ADDITIONS = {"assets/css/administration-payroll.css", "assets/css/staff-ux-v31.css", "assets/css/staff-enterprise-v33.css", "assets/css/staff-polish-v34.css", "assets/css/sensory-polish-v35.css", "assets/css/staff-academic-v37.css", "assets/css/staff-compliance-v32.css", "assets/css/staff-sensory-v39.css", "assets/css/staff-enterprise-v40.css", "assets/css/sensory-family-v44.css", "assets/css/staff-finance-v49.css", "assets/css/staff-content-v51.css", "assets/css/staff-content-v52.css", "assets/css/staff-fresh-v52.css", "assets/css/staff-modern-v53.css", "assets/css/staff-workspace-v57.css", "assets/img/staff-v52-beaver.webp", "assets/img/staff-brand-mark.png"}
 errors: list[str] = []
 stats: Counter = Counter()
 

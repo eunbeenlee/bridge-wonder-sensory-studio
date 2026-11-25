@@ -205,6 +205,7 @@
      const user=await rpc('staffCurrentUser',token);
      if(user?.role!=='owner'||user.mustChange||user.permissions?.read?.finance===false){msg('bw56Access','원장 계정으로 로그인해야 이용할 수 있습니다.',true);return;}
      allowed=true;$('bw56Workspace').hidden=false;$('bw56Access').hidden=true;
+     window.BW57Workspace?.setUser(user);window.BW57Workspace?.setGuard(()=>busy?'계획 저장 또는 조회 중입니다. 이동할까요?':dirty||pending?'저장하지 않은 운영계획이 있습니다. 이동할까요?':'');
      fill(copy(M.DEFAULTS));await reload(true);
    }catch(e){msg('bw56Access','직원 로그인 상태를 확인하지 못했습니다. 직원 홈에서 다시 로그인해 주세요.',true);}
  }

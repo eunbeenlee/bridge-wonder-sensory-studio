@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="../assets/css/staff-enterprise-v40.css?v=41.0.0">
   <link rel="stylesheet" href="../assets/css/staff-fresh-v52.css?v=53.0.0">
   <link rel="stylesheet" href="../assets/css/staff-modern-v53.css?v=53.0.0">
+<link rel="stylesheet" href="../assets/css/staff-workspace-v57.css?v=57.0.0">
   <style>#bw27-server-status{position:static;max-width:none;margin:0 0 7px;padding:0;background:transparent;border:0;border-radius:0;color:#40543a;box-shadow:none;font:11px/1.7 system-ui,-apple-system,'Noto Sans KR',sans-serif}#bw27-server-status[hidden]{display:none} .bw271-login-tools{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin-top:15px}.bw271-login-tools .inline-link{font-size:12px;color:#40543a;text-underline-offset:3px}.bw271-login-tools a{align-self:center}</style>
 </head><body>
 <!-- BW25_UI_START -->
@@ -83,7 +84,7 @@
   </main>
   <div id="workspace" class="app" hidden>
     <aside class="sidebar" aria-label="관리 메뉴"><img class="sidebar-logo" alt="Bridge Wonder" src="https://bridgewonder.bridgeacademy.co.kr/assets/img/bridge-wonder-logo.png"><div class="eyebrow" style="padding:0 13px">운영 메뉴</div><nav id="sideNav" class="sidebar-nav"></nav><div class="sidebar-bottom"><div class="sidebar-user" id="staffName"></div><div class="role-desc" id="staffEmail"></div><button class="btn btn-text btn-small" id="logoutBtn">로그아웃</button></div></aside>
-    <main class="main"><header class="topbar"><div class="bw21-topbar-lockup"><img class="bw21-topbar-mark" src="https://bridgewonder.bridgeacademy.co.kr/assets/img/staff-brand-mark.png" width="89" height="52" alt="" aria-hidden="true"><div><h1 id="topTitle">스튜디오 운영</h1><div id="topSubtitle" class="topbar-sub">브릿지 원더 센서리 스튜디오</div></div></div><div class="row"><a href="./integration/" class="btn btn-outline btn-small" style="text-decoration:none" title="원장 전용">연동·요금</a><a href="./planning/" class="btn btn-outline btn-small" style="text-decoration:none" title="원장 전용">손익 계획</a><span id="roleBadge" class="tag">직원</span><button id="logoutMobile" class="btn btn-outline btn-small logout-mobile">로그아웃</button></div></header><nav id="mobileNav" class="mobile-menu" aria-label="모바일 관리 메뉴"></nav><div class="bw20-mobile-switch"><label for="bw20PageSelect">업무 선택</label><select id="bw20PageSelect" aria-label="관리 메뉴 선택"></select></div><div id="pageBody" class="content" aria-live="polite"></div></main>
+    <main class="main"><header class="topbar"><div class="bw21-topbar-lockup"><img class="bw21-topbar-mark" src="https://bridgewonder.bridgeacademy.co.kr/assets/img/staff-brand-mark.png" width="89" height="52" alt="" aria-hidden="true"><div><h1 id="topTitle">스튜디오 운영</h1><div id="topSubtitle" class="topbar-sub">브릿지 원더 센서리 스튜디오</div></div></div><div class="row"><a href="./integration/" class="btn btn-outline btn-small bw57-direct-link" style="text-decoration:none" title="원장 전용">연동·요금</a><a href="./planning/" class="btn btn-outline btn-small bw57-direct-link" style="text-decoration:none" title="원장 전용">손익 계획</a><span id="roleBadge" class="tag">직원</span><button id="logoutMobile" class="btn btn-outline btn-small logout-mobile">로그아웃</button></div></header><nav id="bw57WorkspaceNav" class="bw57-nav" aria-label="업무 바로가기" hidden></nav><nav id="mobileNav" class="mobile-menu" aria-label="모바일 관리 메뉴"></nav><div class="bw20-mobile-switch"><label for="bw20PageSelect">업무 선택</label><select id="bw20PageSelect" aria-label="관리 메뉴 선택"></select></div><div id="pageBody" class="content" aria-live="polite"></div></main>
   </div>
   <div id="toast" role="status" aria-live="polite" style="position:fixed;bottom:18px;right:18px;z-index:50;max-width:min(380px,calc(100vw - 36px));background:#354f33;color:#fff;padding:12px 17px;border-radius:12px;box-shadow:0 12px 30px #21372030;display:none;font-size:12px"></div>
 <!-- BW25_UI_END -->
@@ -91,6 +92,7 @@
 
 <script src="../assets/js/staff-static-defaults.js?v=54.0.0" defer></script>
 <script src="../assets/js/staff-google-bridge.js?v=41.0.0" defer></script>
+<script src="../assets/js/staff-workspace-v57.js?v=57.0.0" defer></script>
 <script src="../assets/js/administration-accelerator.js?v=49.0.0" defer></script>
 <script src="../assets/js/staff-native-kdf.js?v=41.0.0" defer></script>
 <script src="../assets/js/staff-account-management.js?v=41.0.0" defer></script>
@@ -98,7 +100,7 @@
 <script src="../assets/js/staff-enterprise-v33.js?v=49.0.0" defer></script>
 <script src="../assets/js/staff-documents-v42.js?v=43.0.0" defer></script>
 <script src="../assets/js/staff-lesson-plans-v45.js?v=45.0.0" defer></script>
-<script src="../assets/js/administration.js?v=54.0.0" defer></script>
+<script src="../assets/js/administration.js?v=54.0.0&amp;rev=57.0.0" defer></script>
 <script src="../assets/js/staff-parent-faq-v47.js?v=54.0.0" defer></script>
 <script src="../assets/js/staff-course-policy-v48.js?v=54.0.0" defer></script>
 </body></html>
